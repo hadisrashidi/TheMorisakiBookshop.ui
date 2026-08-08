@@ -1,0 +1,68 @@
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-5">
+            <h5 class="mb-3">{{ book.title }}</h5>
+            <div class="mb-2">
+                ⭐⭐⭐⭐☆
+                <span class="small text-muted">4 رای</span>
+            </div>
+            <table class="table table-bordered small">
+                <tr *ngFor="let item of specs">
+                    <td class="label">{{ item.label }}</td>
+                    <td>{{ item.value }}</td>
+                </tr>
+            </table>
+            <div class="my-3">
+                <del class="text-danger">{{ book.oldPrice }} تومان</del>
+                <div class="fw-bold text-success">{{ book.price }} تومان</div>
+            </div>
+            <button class="btn btn-success">
+                🛒 اضافه به سبد خرید
+            </button>
+        </div>
+        <div class="col-md-4 text-center">
+            <img [src]="book.image" class="img-fluid main-img" />
+        </div>
+        <div class="col-md-3">
+            <div class="related-box p-2">
+                <h6 class="mb-3">محصولات مرتبط</h6>
+                <div *ngFor="let item of relatedBooks" class="d-flex mb-3 small">
+                    <img [src]="item.image" width="50" class="me-2" />
+                    <div>
+                        <p class="mb-1">{{ item.title }}</p>
+                        <span class="text-success">{{ item.price }} تومان</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="mt-5">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <button class="nav-link active">مشخصات فنی</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link">نظرات کاربران</button>
+            </li>
+        </ul>
+        <div class="tab-content p-3 border">
+            <p>اینجا توضیحات کتاب میاد...</p>
+        </div>
+    </div>
+    <div class="mt-5">
+        <h6 class="mb-3">بر اساس سلیقه شما...</h6>
+
+        <div class="row">
+            <div class="col-md-3" *ngFor="let item of similarBooks">
+                <div class="card text-center">
+                    <img [src]="item.image" class="card-img-top" />
+                    <div class="card-body small">
+                        <p>{{ item.title }}</p>
+                        <span class="text-success">{{ item.price }} تومان</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

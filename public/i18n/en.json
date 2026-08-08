@@ -1,0 +1,93 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "close": "Close",
+    "submit": "Submit",
+    "reset": "Reset",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "refresh": "Refresh"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "loginTitle": "Sign In",
+    "username": "Username",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset Password",
+    "email": "Email",
+    "enterEmail": "Enter your email",
+    "sendResetLink": "Send reset link",
+    "backToLogin": "Back to login"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "minLength": "Minimum {min} characters required",
+    "maxLength": "Maximum {max} characters allowed",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "messages": {
+    "success": "Operation completed successfully",
+    "info": "Informational message",
+    "warning": "Warning: Please check the details",
+    "error": "An error occurred",
+    "noData": "No data found",
+    "confirmDelete": "Are you sure you want to delete this item?"
+  },
+  "demo": {
+    "title": "Element Loading Demo",
+    "dropdown": "Demo Dropdown",
+    "refreshButton": "Refresh (5s)"
+  },
+  "datepicker": {
+    "title": "Date Picker Demo",
+    "gregorian": "Gregorian Calendar",
+    "persian": "Persian (Jalali) Calendar",
+    "gregorianLabel": "Birth Date",
+    "persianLabel": "Birth Date (Persian)",
+    "placeholder": "Select a date",
+    "errorMin": "Date is before minimum allowed",
+    "errorMax": "Date is after maximum allowed",
+    "selected": "Selected"
+  },
+  "searchKeywords": {
+    "demoLoading": "loading,spinner,demo,example",
+    "demoLanguage": "language,rtl,ltr,translation,demo"
+  },
+  "menu": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "errors": {
+    "goHome": "Go Home",
+    "goBack": "Go Back",
+    "tryAgain": "Try Again",
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable."
+    },
+    "forbidden": {
+      "title": "Access Denied",
+      "description": "You don't have permission to access this resource. Please contact your administrator if you believe this is an error."
+    },
+    "serverError": {
+      "title": "Server Error",
+      "description": "Something went wrong on our end. We're working to fix it. Please try again in a few moments."
+    }
+  }
+}

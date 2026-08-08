@@ -1,0 +1,32 @@
+footer {
+  direction: rtl;
+
+  .footer-top {
+    background-color: #ffbcd8;
+    color: #fff;
+
+    li {
+      margin-bottom: 8px;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    i {
+      font-size: 18px;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .footer-bottom {
+    background-color: #949494;
+    color: #fff;
+    font-size: 14px;
+  }
+}

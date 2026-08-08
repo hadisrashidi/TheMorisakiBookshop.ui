@@ -1,0 +1,5 @@
+
+[
+  { "code": "fa", "name": "Persian", "nativeName": "فارسی", "direction": "rtl" },
+  { "code": "en", "name": "English", "nativeName": "English", "direction": "ltr" }
+]

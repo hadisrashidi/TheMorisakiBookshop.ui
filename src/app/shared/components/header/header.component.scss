@@ -1,0 +1,16 @@
+header {
+  background: #fff;
+
+  input {
+    height: 45px;
+  }
+
+  .nav-link {
+    cursor: pointer;
+    font-size: 14px;
+
+    &:hover {
+      color: #ff6600;
+    }
+  }
+}
