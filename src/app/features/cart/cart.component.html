@@ -1,0 +1,31 @@
+<div class="container my-4">
+  <h5 class="section-title">سبد خرید</h5>
+
+  <div *ngIf="cartService.items().length === 0" class="text-muted my-4">
+    سبد خرید شما خالی است.
+  </div>
+
+  <div class="cart-list my-3" *ngIf="cartService.items().length > 0">
+    <div class="cart-row d-flex align-items-center gap-3 p-3 mb-2" *ngFor="let item of cartService.items()">
+      <img [src]="item.image" [alt]="item.title" class="cart-thumb" (click)="goToBookDetail(item.id)" />
+
+      <div class="flex-grow-1">
+        <p class="mb-1">{{ item.title }}</p>
+        <span class="price-current">{{ item.price }} تومان</span>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-secondary" (click)="decrease(item.id, item.quantity)">-</button>
+        <span>{{ item.quantity }}</span>
+        <button class="btn btn-sm btn-outline-secondary" (click)="increase(item.id, item.quantity)">+</button>
+      </div>
+
+      <button class="btn btn-sm btn-link text-danger" (click)="remove(item.id)">حذف</button>
+    </div>
+  </div>
+
+  <div class="cart-summary d-flex justify-content-between align-items-center p-3" *ngIf="cartService.items().length > 0">
+    <span class="fw-bold">جمع کل: <span class="price-current">{{ cartService.totalPrice() }} تومان</span></span>
+    <button class="btn btn-accent" disabled title="به‌زودی">تسویه حساب</button>
+  </div>
+</div>

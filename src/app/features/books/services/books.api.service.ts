@@ -16,4 +16,14 @@ export class BooksApiService {
   return this.http.get<Book>(apiUrl);
 }
 
+  getRelatedBooks(id: number): Observable<Book[]> {
+    const apiUrl = environment.apiUrl + `/Books/GetRelatedBooks?id=${id}`;
+    return this.http.get<Book[]>(apiUrl);
+  }
+
+  getSimilarBooks(id: number): Observable<Book[]> {
+    const apiUrl = environment.apiUrl + `/Books/GetSimilarBooks?id=${id}`;
+    return this.http.get<Book[]>(apiUrl);
+  }
+
 }
