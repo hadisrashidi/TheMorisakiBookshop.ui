@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
 import { Book } from './models/book.model';
 import { HttpClientModule } from '@angular/common/http';
@@ -10,7 +9,7 @@ import { Author } from './models/author.model';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatCardModule, HttpClientModule  ],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
