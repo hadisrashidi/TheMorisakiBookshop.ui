@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BooksApiService } from './services/books.api.service';
 import { Book } from '../home/models/book.model';
+import { CartService } from '../../shared/services/cart.service';
 
 @Component({
   selector: 'app-books',
@@ -15,15 +16,20 @@ import { Book } from '../home/models/book.model';
 export class BooksComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private booksApiService = inject(BooksApiService);
+  private cartService = inject(CartService);
   book: Book = new Book();
+  relatedBooks: Book[] = [];
+  similarBooks: Book[] = [];
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.getBookDetails(id);
- 
-}
-getBookDetails(id: number) {
-     this.booksApiService.getBookById(id).subscribe({
+    this.getRelatedBooks(id);
+    this.getSimilarBooks(id);
+  }
+
+  getBookDetails(id: number) {
+    this.booksApiService.getBookById(id).subscribe({
       next: (data) => {
         this.book = data;
       },
@@ -31,31 +37,31 @@ getBookDetails(id: number) {
         console.error('Error loading book', err);
       }
     });
-}
+  }
 
-specs = [
-  { label: 'تعداد صفحات', value: '689' },
-  { label: 'تعداد جلد', value: '1' },
-  { label: 'زبان کتاب', value: 'انگلیسی' },
-  { label: 'شابک / ISBN', value: '9781292241580' },
-  { label: 'قطع', value: 'رقعی' },
-  { label: 'ناشر', value: 'Forever' },
-  { label: 'نوع جلد', value: 'نرم' },
-  { label: 'نوع چاپ', value: 'سیاه و سفید' },
-  { label: 'نوع کاغذ', value: 'بالک' },
-  { label: 'نویسنده / نویسندگان', value: 'Callie Hart' },
-  { label: 'ژانر', value: 'عاشقانه فانتزی' },
-];
-relatedBooks = [
-  { title: 'کتاب ۱', price: 70000, image: 'https://picsum.photos/50/70?1' },
-  { title: 'کتاب ۲', price: 86000, image: 'https://picsum.photos/50/70?2' },
-  { title: 'کتاب ۳', price: 86000, image: 'https://picsum.photos/50/70?2' },
+  getRelatedBooks(id: number) {
+    this.booksApiService.getRelatedBooks(id).subscribe({
+      next: (data) => {
+        this.relatedBooks = data;
+      },
+      error: (err) => {
+        console.error('Error loading related books', err);
+      }
+    });
+  }
 
-];
+  getSimilarBooks(id: number) {
+    this.booksApiService.getSimilarBooks(id).subscribe({
+      next: (data) => {
+        this.similarBooks = data;
+      },
+      error: (err) => {
+        console.error('Error loading similar books', err);
+      }
+    });
+  }
 
-similarBooks = [
-  { title: 'کتاب مشابه ۱', price: 240000, image: 'https://picsum.photos/200/300?1' },
-  { title: 'کتاب مشابه ۲', price: 240000, image: 'https://picsum.photos/200/300?2' },
-  { title: 'کتاب مشابه ۳', price: 240000, image: 'https://picsum.photos/200/300?3' },
-];
+  addToCart() {
+    this.cartService.addToCart(this.book);
+  }
 }
