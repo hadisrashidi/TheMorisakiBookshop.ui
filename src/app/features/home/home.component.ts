@@ -5,6 +5,7 @@ import { Book } from './models/book.model';
 import { HttpClientModule } from '@angular/common/http';
 import { HomeApiService } from './services/home.api.service';
 import { Author } from './models/author.model';
+import { CartService } from '../../shared/services/cart.service';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +18,7 @@ export class HomeComponent implements OnInit {
 
   private router = inject(Router);
   private homeApiService = inject(HomeApiService)
+  private cartService = inject(CartService);
   featuredBooks: Book[] = [];
 
   newBooks: Book[] = [];
@@ -31,6 +33,10 @@ export class HomeComponent implements OnInit {
  goToBookDetail(id: number | undefined) {
   this.router.navigate(['/books', id]);
 }
+  addToCart(event: Event, book: Book) {
+    event.stopPropagation();
+    this.cartService.addToCart(book);
+  }
   getBooks() {
     this.homeApiService.getBooks().subscribe(
       (data) => {
