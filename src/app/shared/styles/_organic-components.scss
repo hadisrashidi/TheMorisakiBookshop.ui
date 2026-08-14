@@ -1,0 +1,121 @@
+// Organic design system — shared component classes, matching the approved
+// design mockups (Home.dc.html and friends). @use this partial from a
+// component's own stylesheet rather than the global styles.scss: Angular's
+// emulated encapsulation then scopes these rules to that component only,
+// so they never collide with the identically-named Bootstrap classes
+// (.btn, .card) still used on pages that haven't been redesigned yet.
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: 999px;
+  transition: background-color 0.15s ease;
+
+  svg {
+    display: block;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-bg);
+
+  &:hover {
+    background: var(--color-accent-600);
+  }
+
+  &:active {
+    background: var(--color-accent-700);
+  }
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+  caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-text) 45%, transparent);
+  }
+
+  &:focus-visible {
+    border-color: var(--color-accent);
+    outline-offset: 0;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: calc(var(--radius-lg) * 1.15);
+  background: var(--color-surface);
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.elev-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.tag-accent-2 {
+  background: var(--color-accent-2-100);
+  color: var(--color-accent-2-800);
+}
+
+.tag-outline {
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+}
+
+// Every content photograph goes through this wrapper — desaturated,
+// lower-contrast, so it sits back into the warm page instead of on top.
+.washed {
+  filter: saturate(0.6) contrast(0.85) brightness(1.1) opacity(0.94);
+}
