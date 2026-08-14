@@ -1,45 +1,51 @@
-<div class="container my-4">
-  <h5 class="section-title">پیشنهاد ویژه</h5>
+<div class="page">
 
-  <div class="row g-3 my-3">
-    <div class="col-6 col-md-3" *ngFor="let book of featuredBooks">
-      <div class="book-card" (click)="goToBookDetail(book.id)">
-        <img [src]="book.image" [alt]="book.title" />
-        <div class="book-card-body">
-          <p class="book-card-title">{{ book.title }}</p>
-        </div>
+  <div class="section-head">
+    <h2>پیشنهاد ویژه</h2>
+    <a routerLink="/search" class="view-all">مشاهده همه</a>
+  </div>
+  <div class="featured-grid">
+    <a
+      class="card elev-sm"
+      *ngFor="let book of featuredBooks"
+      [routerLink]="['/books', book.id]"
+    >
+      <img class="washed cover" [src]="book.image" [alt]="book.title" />
+      <p class="card-title">{{ book.title }}</p>
+    </a>
+  </div>
+
+  <div class="section-head">
+    <h2>جدیدترین کتاب‌ها</h2>
+    <a routerLink="/search" class="view-all">مشاهده همه</a>
+  </div>
+  <div class="scroll-row">
+    <div class="card elev-sm new-book" *ngFor="let book of newBooks">
+      <a [routerLink]="['/books', book.id]">
+        <img class="washed cover" [src]="book.image" [alt]="book.title" />
+      </a>
+      <p class="card-title">{{ book.title }}</p>
+      <div class="new-book-foot">
+        <span class="tag tag-accent-2">موجود</span>
+        <button
+          type="button"
+          class="btn btn-icon btn-primary"
+          [attr.aria-label]="'افزودن ' + book.title + ' به سبد خرید'"
+          (click)="addToCart($event, book)"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"></path></svg>
+        </button>
       </div>
     </div>
   </div>
 
-  <h5 class="section-title">جدیدترین کتاب‌ها</h5>
-
-  <div class="d-flex gap-3 overflow-auto my-3 pb-2">
-    <div class="book-card flex-shrink-0" style="width: 160px" *ngFor="let book of newBooks" (click)="goToBookDetail(book.id)">
-      <img [src]="book.image" [alt]="book.title" />
-      <div class="book-card-body">
-        <p class="book-card-title">{{ book.title }}</p>
-
-        <div class="d-flex justify-content-between align-items-center">
-          <span class="stock-available small">موجود</span>
-          <button class="btn btn-sm btn-accent" (click)="addToCart($event, book)">🛒</button>
-        </div>
-      </div>
-    </div>
+  <div class="section-head">
+    <h2>نویسندگان</h2>
   </div>
-
-  <h5 class="section-title">نویسندگان</h5>
-
-  <div class="d-flex gap-3 overflow-auto my-3 pb-2">
-    <div class="author-card flex-shrink-0" style="width: 140px" *ngFor="let author of authors">
-      <img
-        [src]="author.image"
-        [alt]="author.name"
-        class="rounded-circle mb-2"
-        width="80"
-        height="80"
-      />
-      <p class="small">{{ author.name }}</p>
+  <div class="scroll-row authors">
+    <div class="author" *ngFor="let author of authors">
+      <img class="washed" [src]="author.image" [alt]="author.name" />
+      <p>{{ author.name }}</p>
     </div>
   </div>
 

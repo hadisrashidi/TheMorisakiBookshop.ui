@@ -1,42 +1,38 @@
-<div class="row align-items-center py-3">
-    <div class="col-3 text-end px-4">
-        <h6 class="brand-mark mb-0">کتابفروشی موریساکی</h6>
-    </div>
-    <div class="col-6 position-relative">
-        <input
-            type="text"
-            class="form-control ps-5"
-            placeholder="جستجو براساس عنوان, نام نویسنده, کلمات کلیدی"
-            [(ngModel)]="searchQuery"
-            (keyup.enter)="search()"
-        />
-        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-4" (click)="search()"></i>
-    </div>
-    <div class="col-3 d-flex justify-content-end gap-3 px-4">
-        <i class="bi bi-person fs-5"></i>
-        <div class="position-relative" (click)="goToCart()">
-            <i class="bi bi-cart fs-5"></i>
-            <span class="cart-badge" *ngIf="cartCount() > 0">{{ cartCount() }}</span>
-        </div>
-        <i class="bi bi-heart fs-5"></i>
-    </div>
+<div class="bar">
+  <a routerLink="/" class="brand">کتابفروشی موریساکی</a>
+
+  <div class="search">
+    <input
+      type="text"
+      class="input"
+      placeholder="جستجو براساس عنوان, نام نویسنده, کلمات کلیدی"
+      aria-label="جستجو براساس عنوان, نام نویسنده, کلمات کلیدی"
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="search()"
+    />
+    <button type="button" class="search-btn" (click)="search()" aria-label="جستجو">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+    </button>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-icon" aria-label="علاقه‌مندی‌ها">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+    </button>
+    <button type="button" class="btn btn-icon cart-btn" (click)="goToCart()" [attr.aria-label]="cartCount() > 0 ? 'سبد خرید، ' + cartCount() + ' کالا' : 'سبد خرید'">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"></path></svg>
+      <span class="cart-badge" *ngIf="cartCount() > 0">{{ cartCount() }}</span>
+    </button>
+    <button type="button" class="btn btn-icon" aria-label="حساب کاربری">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+    </button>
+  </div>
 </div>
-<div class="subnav border-top">
-    <ul class="nav py-2 d-flex">
-        <li>
-            <a class="nav-link">کتاب انگلیسی</a>
-        </li>
-        <li>
-            <a class="nav-link">رمان</a>
-        </li>
-        <li>
-            <a class="nav-link">آلمانی</a>
-        </li>
-        <li>
-            <a class="nav-link">فرانسه</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link">ترکی</a>
-        </li>
-    </ul>
-</div>
+
+<nav class="subnav" aria-label="دسته‌بندی کتاب‌ها">
+  <a routerLink="/search" [queryParams]="{ q: 'کتاب انگلیسی' }">کتاب انگلیسی</a>
+  <a routerLink="/search" [queryParams]="{ q: 'رمان' }">رمان</a>
+  <a routerLink="/search" [queryParams]="{ q: 'آلمانی' }">آلمانی</a>
+  <a routerLink="/search" [queryParams]="{ q: 'فرانسه' }">فرانسه</a>
+  <a routerLink="/search" [queryParams]="{ q: 'ترکی' }">ترکی</a>
+</nav>

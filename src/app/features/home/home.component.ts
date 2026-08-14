@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Book } from './models/book.model';
 import { HttpClientModule } from '@angular/common/http';
 import { HomeApiService } from './services/home.api.service';
@@ -10,13 +10,12 @@ import { CartService } from '../../shared/services/cart.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
 
-  private router = inject(Router);
   private homeApiService = inject(HomeApiService)
   private cartService = inject(CartService);
   featuredBooks: Book[] = [];
@@ -30,9 +29,6 @@ export class HomeComponent implements OnInit {
     this.getAuthors();
 
   }
- goToBookDetail(id: number | undefined) {
-  this.router.navigate(['/books', id]);
-}
   addToCart(event: Event, book: Book) {
     event.stopPropagation();
     this.cartService.addToCart(book);
