@@ -1,19 +1,126 @@
-.cart-row {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+@use '../../shared/styles/organic-components';
+
+:host {
+  display: block;
 }
 
-.cart-thumb {
-  width: 56px;
-  height: 74px;
+.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+
+  h2 {
+    margin: 0 0 var(--space-6);
+  }
+}
+
+.layout {
+  display: flex;
+  gap: var(--space-6);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.items-col {
+  flex: 1 1 400px;
+  min-width: 260px;
+}
+
+.item-row {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.thumb {
+  width: 64px;
+  height: 88px;
   object-fit: cover;
   border-radius: var(--radius-sm);
+  flex-shrink: 0;
   cursor: pointer;
 }
 
-.cart-summary {
-  background: var(--color-surface-alt);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+.item-info {
+  flex: 1;
+
+  .card-title {
+    margin: 0;
+  }
+}
+
+.qty-seg {
+  flex-shrink: 0;
+
+  .seg-opt {
+    padding: 6px 10px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+  }
+
+  .qty-count {
+    cursor: default;
+    min-width: 24px;
+    text-align: center;
+  }
+}
+
+.line-price {
+  color: var(--color-accent-700);
+  font-weight: 700;
+  font-size: 15px;
+  width: 100px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.summary-col {
+  flex: 0 0 300px;
+  min-width: 240px;
+}
+
+.summary-card {
+  background: var(--color-surface);
+
+  h4 {
+    margin: 0;
+  }
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 2px 0;
+}
+
+.discount {
+  color: var(--color-accent-700);
+}
+
+.total-row {
+  font-size: 16px;
+  font-weight: 700;
+
+  span:last-child {
+    color: var(--color-accent-700);
+  }
+}
+
+@media (max-width: 640px) {
+  .items-col,
+  .summary-col {
+    flex: 1 1 100%;
+  }
+
+  .item-row {
+    flex-wrap: wrap;
+  }
+
+  .line-price {
+    width: auto;
+  }
 }

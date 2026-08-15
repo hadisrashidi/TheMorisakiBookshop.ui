@@ -1,31 +1,60 @@
-<div class="container my-4">
-  <h5 class="section-title">سبد خرید</h5>
+<div class="page">
+  <h2>سبد خرید</h2>
 
-  <div *ngIf="cartService.items().length === 0" class="text-muted my-4">
-    سبد خرید شما خالی است.
-  </div>
+  <p class="text-muted" *ngIf="cartService.items().length === 0">سبد خرید شما خالی است.</p>
 
-  <div class="cart-list my-3" *ngIf="cartService.items().length > 0">
-    <div class="cart-row d-flex align-items-center gap-3 p-3 mb-2" *ngFor="let item of cartService.items()">
-      <img [src]="item.image" [alt]="item.title" class="cart-thumb" (click)="goToBookDetail(item.id)" />
+  <div class="layout" *ngIf="cartService.items().length > 0">
 
-      <div class="flex-grow-1">
-        <p class="mb-1">{{ item.title }}</p>
-        <span class="price-current">{{ item.price }} تومان</span>
+    <div class="items-col">
+      <div class="card elev-sm item-row" *ngFor="let item of cartService.items()">
+        <img class="washed thumb" [src]="item.image" [alt]="item.title" (click)="goToBookDetail(item.id)" />
+
+        <div class="item-info">
+          <p class="card-title">{{ item.title }}</p>
+        </div>
+
+        <div class="seg qty-seg">
+          <button type="button" class="seg-opt" (click)="decrease(item.id, item.quantity)">−</button>
+          <span class="seg-opt qty-count">{{ item.quantity }}</span>
+          <button type="button" class="seg-opt" (click)="increase(item.id, item.quantity)">+</button>
+        </div>
+
+        <span class="line-price">{{ item.price }} تومان</span>
+
+        <button type="button" class="btn btn-icon" aria-label="حذف" (click)="remove(item.id)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+        </button>
       </div>
-
-      <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-secondary" (click)="decrease(item.id, item.quantity)">-</button>
-        <span>{{ item.quantity }}</span>
-        <button class="btn btn-sm btn-outline-secondary" (click)="increase(item.id, item.quantity)">+</button>
-      </div>
-
-      <button class="btn btn-sm btn-link text-danger" (click)="remove(item.id)">حذف</button>
     </div>
-  </div>
 
-  <div class="cart-summary d-flex justify-content-between align-items-center p-3" *ngIf="cartService.items().length > 0">
-    <span class="fw-bold">جمع کل: <span class="price-current">{{ cartService.totalPrice() }} تومان</span></span>
-    <button class="btn btn-accent" disabled title="به‌زودی">تسویه حساب</button>
+    <div class="summary-col">
+      <div class="card elev-sm summary-card">
+        <h4>خلاصه سفارش</h4>
+        <div class="hr"></div>
+
+        <div class="summary-row">
+          <span>قیمت کالاها</span>
+          <span>{{ cartService.subtotal() }} تومان</span>
+        </div>
+        <div class="summary-row" *ngIf="cartService.discount() > 0">
+          <span>تخفیف</span>
+          <span class="discount">{{ cartService.discount() }} تومان</span>
+        </div>
+        <div class="summary-row">
+          <span>هزینه ارسال</span>
+          <span>{{ cartService.shipping() > 0 ? (cartService.shipping() + ' تومان') : 'رایگان' }}</span>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="summary-row total-row">
+          <span>مبلغ قابل پرداخت</span>
+          <span>{{ cartService.total() }} تومان</span>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-block" disabled title="به‌زودی">ادامه فرایند خرید</button>
+      </div>
+    </div>
+
   </div>
 </div>

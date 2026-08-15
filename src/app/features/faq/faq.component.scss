@@ -1,0 +1,27 @@
+@use '../../shared/styles/organic-components';
+
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+
+  h2 {
+    margin: 0 0 var(--space-2);
+  }
+}
+
+.intro {
+  margin: 0 0 var(--space-6);
+}
+
+.entry {
+  margin-bottom: var(--space-3);
+
+  h4 {
+    margin: 0;
+  }
+}

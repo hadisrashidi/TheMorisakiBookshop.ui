@@ -1,0 +1,31 @@
+<div class="page">
+
+  <div class="page-head">
+    <h2>علاقه‌مندی‌ها</h2>
+    <span class="text-muted">{{ likedService.items().length }} کتاب</span>
+  </div>
+
+  <p class="text-muted" *ngIf="likedService.items().length === 0">هنوز کتابی به علاقه‌مندی‌ها اضافه نکرده‌اید.</p>
+
+  <div class="liked-grid" *ngIf="likedService.items().length > 0">
+    <div class="card elev-sm liked-card" *ngFor="let item of likedService.items()">
+      <button type="button" class="btn btn-icon remove-btn" aria-label="حذف از علاقه‌مندی‌ها" (click)="remove(item.id)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </button>
+
+      <a [routerLink]="['/books', item.id]">
+        <img class="washed cover" [src]="item.image" [alt]="item.title" />
+      </a>
+      <p class="card-title">{{ item.title }}</p>
+      <p class="card-body" *ngIf="item.authorName">{{ item.authorName }}</p>
+
+      <div class="liked-foot">
+        <span class="price">{{ item.price }} تومان</span>
+        <button type="button" class="btn btn-icon btn-primary" aria-label="افزودن به سبد" (click)="addToCart(item)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

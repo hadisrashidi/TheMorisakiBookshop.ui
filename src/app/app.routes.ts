@@ -26,6 +26,26 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/cart/cart.component').then(m => m.CartComponent),
       },
+      {
+        path: 'authors/:id',
+        loadComponent: () =>
+          import('./features/authors/author-detail.component').then(m => m.AuthorDetailComponent),
+      },
+      {
+        path: 'liked',
+        loadComponent: () =>
+          import('./features/liked/liked.component').then(m => m.LikedComponent),
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/profile.component').then(m => m.ProfileComponent),
+      },
+      {
+        path: 'faq',
+        loadComponent: () =>
+          import('./features/faq/faq.component').then(m => m.FaqComponent),
+      },
     ]
   }
 ];

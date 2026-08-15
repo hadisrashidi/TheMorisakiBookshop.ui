@@ -1,0 +1,65 @@
+<div class="page">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="card elev-sm sidebar-card">
+        <img class="washed avatar" [src]="user.avatar" [alt]="user.name" />
+        <h4>{{ user.name }}</h4>
+        <p class="card-body">{{ user.phone }}</p>
+        <div class="hr"></div>
+        <nav class="side-nav">
+          <a class="nav-item active">اطلاعات حساب</a>
+          <span class="nav-item">سفارش‌های من</span>
+          <a class="nav-item" routerLink="/liked">علاقه‌مندی‌ها</a>
+          <span class="nav-item">آدرس‌ها</span>
+          <span class="nav-item logout">خروج از حساب</span>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="main-col">
+      <div class="card elev-sm account-card">
+        <h3>اطلاعات حساب کاربری</h3>
+        <div class="hr"></div>
+
+        <div class="fields-grid">
+          <label class="field">
+            <span>نام و نام خانوادگی</span>
+            <input class="input" [(ngModel)]="user.name" name="name" />
+          </label>
+          <label class="field">
+            <span>شماره موبایل</span>
+            <input class="input" [(ngModel)]="user.phone" name="phone" />
+          </label>
+          <label class="field">
+            <span>ایمیل</span>
+            <input class="input" [(ngModel)]="user.email" name="email" />
+          </label>
+          <label class="field">
+            <span>تاریخ تولد</span>
+            <input class="input" [(ngModel)]="user.birthdate" name="birthdate" />
+          </label>
+        </div>
+
+        <button type="button" class="btn btn-primary save-btn" (click)="save()">ذخیره تغییرات</button>
+        <span class="saved-note text-muted" *ngIf="saved">تغییرات ذخیره شد.</span>
+      </div>
+
+      <div class="card elev-sm orders-card">
+        <h3>آخرین سفارش‌ها</h3>
+        <div class="hr"></div>
+
+        <table class="table">
+          <tr *ngFor="let order of orders">
+            <td>{{ order.id }}</td>
+            <td>{{ order.date }}</td>
+            <td>{{ order.itemsCount }} کالا</td>
+            <td class="order-total">{{ order.total }} تومان</td>
+            <td><span class="tag tag-accent-2">{{ order.status }}</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
