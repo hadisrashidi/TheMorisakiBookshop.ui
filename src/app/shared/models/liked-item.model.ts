@@ -1,8 +1,7 @@
-export class CartItem {
+export class LikedItem {
   id!: number;
   title!: string;
   image!: string;
   price!: string;
-  oldPrice?: string;
-  quantity!: number;
+  authorName?: string;
 }

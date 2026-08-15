@@ -1,20 +1,107 @@
-<div class="container my-4">
-  <h5 class="section-title">نتایج جستجو برای «{{ query }}»</h5>
+<div class="page">
+  <div class="layout">
 
-  <div class="row g-3 my-3" *ngIf="!loading; else loadingTpl">
-    <div class="col-6 col-md-3" *ngFor="let book of results">
-      <div class="book-card" (click)="goToBookDetail(book.id)">
-        <img [src]="book.image" [alt]="book.title" />
-        <div class="book-card-body">
-          <p class="book-card-title">{{ book.title }}</p>
+    <aside class="sidebar">
+      <div class="card filters-card">
+
+        <h6>ژانر</h6>
+        <label class="radio square" *ngFor="let genre of availableGenres">
+          <input
+            type="checkbox"
+            [checked]="selectedGenres.has(genre)"
+            (change)="toggleGenre(genre)"
+          />
+          <span class="dot"></span>
+          {{ genre }}
+        </label>
+
+        <div class="hr"></div>
+
+        <h6>زبان</h6>
+        <label class="radio square" *ngFor="let language of availableLanguages">
+          <input
+            type="checkbox"
+            [checked]="selectedLanguages.has(language)"
+            (change)="toggleLanguage(language)"
+          />
+          <span class="dot"></span>
+          {{ language }}
+        </label>
+
+        <div class="hr"></div>
+
+        <h6>وضعیت موجودی</h6>
+        <label class="radio">
+          <input type="radio" name="stock" [checked]="stockFilter === 'all'" (change)="stockFilter = 'all'" />
+          <span class="dot"></span>
+          همه
+        </label>
+        <label class="radio">
+          <input type="radio" name="stock" [checked]="stockFilter === 'inStock'" (change)="stockFilter = 'inStock'" />
+          <span class="dot"></span>
+          فقط موجود
+        </label>
+
+        <button type="button" class="btn btn-secondary btn-block" (click)="clearFilters()">پاک کردن فیلترها</button>
+      </div>
+    </aside>
+
+    <div class="results-col">
+      <div class="results-head">
+        <div>
+          <h3>نتایج جستجو برای «{{ query }}»</h3>
+          <span class="text-muted result-count">{{ results.length }} نتیجه</span>
         </div>
+
+        <div class="seg">
+          <label class="seg-opt" [class.active]="sort === ''">
+            <input type="radio" name="sort" [checked]="sort === ''" (change)="setSort('')" />
+            پرفروش‌ترین
+          </label>
+          <label class="seg-opt" [class.active]="sort === 'price_asc'">
+            <input type="radio" name="sort" [checked]="sort === 'price_asc'" (change)="setSort('price_asc')" />
+            ارزان‌ترین
+          </label>
+          <label class="seg-opt" [class.active]="sort === 'newest'">
+            <input type="radio" name="sort" [checked]="sort === 'newest'" (change)="setSort('newest')" />
+            جدیدترین
+          </label>
+        </div>
+      </div>
+
+      <div class="results-grid" *ngIf="!loading; else loadingTpl">
+        <a
+          class="card elev-sm"
+          *ngFor="let book of pagedResults()"
+          [routerLink]="['/books', book.id]"
+        >
+          <img class="washed cover" [src]="book.image" [alt]="book.title" />
+          <p class="card-title">{{ book.title }}</p>
+          <p class="card-body">{{ authorName(book.authorId) }}</p>
+          <div class="result-foot">
+            <span class="price">{{ book.price }} تومان</span>
+            <span class="tag tag-accent-2">موجود</span>
+          </div>
+        </a>
+
+        <p class="text-muted" *ngIf="results.length === 0">کتابی با این مشخصات پیدا نشد.</p>
+      </div>
+
+      <ng-template #loadingTpl>
+        <p class="text-muted">در حال جستجو...</p>
+      </ng-template>
+
+      <div class="pagination" *ngIf="pageCount() > 1">
+        <button
+          type="button"
+          class="btn btn-icon"
+          *ngFor="let p of pageNumbers()"
+          [class.btn-primary]="p === page()"
+          [class.btn-secondary]="p !== page()"
+          (click)="goToPage(p)"
+        >{{ p }}</button>
       </div>
     </div>
 
-    <p class="text-muted" *ngIf="results.length === 0">کتابی با این مشخصات پیدا نشد.</p>
   </div>
-
-  <ng-template #loadingTpl>
-    <p class="text-muted">در حال جستجو...</p>
-  </ng-template>
 </div>

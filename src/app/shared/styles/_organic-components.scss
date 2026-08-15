@@ -46,11 +46,41 @@
   }
 }
 
+.btn-secondary {
+  border-color: var(--color-divider);
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-text) 7%, transparent);
+  }
+
+  &:active {
+    background: color-mix(in srgb, var(--color-text) 14%, transparent);
+  }
+}
+
+.btn-ghost {
+  color: var(--color-accent);
+  padding-inline: var(--space-1);
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
+
+  &:active {
+    background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  }
+}
+
 .btn-icon {
   width: 36px;
   height: 36px;
   padding: 0;
   position: relative;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: var(--space-2);
 }
 
 .input {
@@ -91,8 +121,26 @@
   line-height: 1.2;
 }
 
+.card-body {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+
 .elev-sm {
   box-shadow: var(--shadow-sm);
+}
+
+.elev-md {
+  box-shadow: var(--shadow-md);
 }
 
 .tag {
@@ -104,14 +152,151 @@
   border-radius: 999px;
 }
 
+.tag-accent {
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+
 .tag-accent-2 {
   background: var(--color-accent-2-100);
   color: var(--color-accent-2-800);
 }
 
+.tag-neutral {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-800);
+}
+
 .tag-outline {
   border: 1px solid var(--color-accent);
   color: var(--color-accent);
+}
+
+// — form fields —
+.field {
+  display: block;
+
+  > span {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  }
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .dot {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-divider);
+  }
+
+  &:hover .dot {
+    border-color: var(--color-accent);
+  }
+
+  input:checked + .dot {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    box-shadow: inset 0 0 0 4px var(--color-bg);
+  }
+
+  &.square .dot {
+    border-radius: 6px;
+  }
+}
+
+// — segmented control (tabs, sort) —
+.seg {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+}
+
+.seg-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  & + .seg-opt {
+    border-inline-start: 1px solid var(--color-divider);
+  }
+
+  &.active {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  &:not(.active):hover {
+    background: color-mix(in srgb, var(--color-text) 7%, transparent);
+  }
+}
+
+// — divider —
+.hr {
+  height: 1px;
+  border: 0;
+  margin: var(--space-4) 0;
+  background: var(--color-divider);
+}
+
+// — table —
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    text-align: right;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-text) 60%, transparent);
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--color-divider);
+  }
+
+  td {
+    padding: var(--space-2);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  }
+
+  td.label {
+    width: 40%;
+    color: var(--color-neutral-600);
+  }
+}
+
+.text-muted {
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
 }
 
 // Every content photograph goes through this wrapper — desaturated,

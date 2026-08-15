@@ -9,5 +9,8 @@ export class Book {
   image: string | undefined;
   oldPrice: string | undefined;
   price: string | undefined;
+  authorId: number | undefined;
+  genre: string | undefined;
+  language: string | undefined;
   specs: BookSpec[] | undefined;
 }

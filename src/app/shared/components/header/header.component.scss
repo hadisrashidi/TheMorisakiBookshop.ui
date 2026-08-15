@@ -35,6 +35,12 @@
   }
 }
 
+// Pages that drop the search field still need something to hold that
+// flexible space so the brand and icon group don't collide.
+.spacer {
+  flex: 1;
+}
+
 // Below ~640px the brand text and icon row no longer leave enough space
 // for the search bar to stay usable on the same line — wrap it to its own
 // full-width row instead of letting it collapse to zero width.
@@ -76,6 +82,12 @@
 
 .cart-btn {
   position: relative;
+}
+
+// The icon for the current page (Liked/Cart/Profile) renders as a
+// non-link accent-colored indicator instead of a hover-able nav link.
+.active {
+  color: var(--color-accent-700);
 }
 
 .cart-badge {

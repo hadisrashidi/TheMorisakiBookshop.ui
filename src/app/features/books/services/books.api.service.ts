@@ -26,4 +26,9 @@ export class BooksApiService {
     return this.http.get<Book[]>(apiUrl);
   }
 
+  getBooksByAuthor(authorId: number): Observable<Book[]> {
+    const apiUrl = environment.apiUrl + `/Books/GetBooksByAuthor?authorId=${authorId}`;
+    return this.http.get<Book[]>(apiUrl);
+  }
+
 }

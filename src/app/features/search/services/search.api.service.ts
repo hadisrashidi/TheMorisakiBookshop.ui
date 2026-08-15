@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Book } from '../../home/models/book.model';
+
+export interface SearchFilters {
+  genres?: string[];
+  languages?: string[];
+  sort?: 'price_asc' | 'newest' | '';
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +17,20 @@ export class SearchApiService {
 
   constructor(private http: HttpClient) { }
 
-  searchBooks(query: string): Observable<Book[]> {
+  searchBooks(query: string, filters: SearchFilters = {}): Observable<Book[]> {
     const apiUrl = environment.apiUrl + '/Books/SearchBooks';
-    return this.http.get<Book[]>(apiUrl, { params: { q: query } });
+
+    let params = new HttpParams().set('q', query);
+    for (const genre of filters.genres ?? []) {
+      params = params.append('genres', genre);
+    }
+    for (const language of filters.languages ?? []) {
+      params = params.append('languages', language);
+    }
+    if (filters.sort) {
+      params = params.set('sort', filters.sort);
+    }
+
+    return this.http.get<Book[]>(apiUrl, { params });
   }
 }

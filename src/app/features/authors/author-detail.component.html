@@ -1,0 +1,61 @@
+<div class="page" *ngIf="author">
+
+  <div class="card elev-sm bio-card">
+    <img class="washed portrait" [src]="author.image" [alt]="author.name" />
+    <div class="bio-main">
+      <h2>{{ author.name }}</h2>
+      <p class="card-body">{{ author.bio }}</p>
+      <div class="tag-row">
+        <span class="tag tag-accent">{{ books.length }} کتاب</span>
+        <span class="tag tag-accent-2" *ngIf="author.genre">{{ author.genre }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="seg">
+    <label class="seg-opt" [class.active]="tab === 'books'">
+      <input type="radio" name="authorTabs" [checked]="tab === 'books'" (change)="tab = 'books'" />
+      کتاب‌های نویسنده
+    </label>
+    <label class="seg-opt" [class.active]="tab === 'reviews'">
+      <input type="radio" name="authorTabs" [checked]="tab === 'reviews'" (change)="tab = 'reviews'" />
+      نظرات کاربران
+    </label>
+  </div>
+
+  <div class="books-grid" *ngIf="tab === 'books'">
+    <a class="card elev-sm" *ngFor="let book of books" [routerLink]="['/books', book.id]">
+      <img class="washed cover" [src]="book.image" [alt]="book.title" />
+      <p class="card-title">{{ book.title }}</p>
+      <span class="book-price">{{ book.price }} تومان</span>
+    </a>
+    <p class="text-muted" *ngIf="books.length === 0">کتابی از این نویسنده ثبت نشده است.</p>
+  </div>
+
+  <div class="reviews-list" *ngIf="tab === 'reviews'">
+    <div class="card elev-sm review-card" *ngFor="let review of reviews">
+      <div class="review-head">
+        <span class="reviewer">{{ review.reviewerName }}</span>
+        <span class="tag tag-accent-2">{{ stars(review.rating) }}</span>
+      </div>
+      <p class="card-body">{{ review.text }}</p>
+      <span class="card-meta">{{ review.date }}</span>
+    </div>
+    <p class="text-muted" *ngIf="reviews.length === 0">هنوز نظری برای این نویسنده ثبت نشده است.</p>
+  </div>
+
+  <div class="similar-section" *ngIf="similarAuthors.length > 0">
+    <h3>نویسندگان مشابه</h3>
+    <div class="similar-scroll">
+      <a
+        class="similar-author"
+        *ngFor="let similar of similarAuthors"
+        [routerLink]="['/authors', similar.id]"
+      >
+        <img class="washed" [src]="similar.image" [alt]="similar.name" />
+        <p>{{ similar.name }}</p>
+      </a>
+    </div>
+  </div>
+
+</div>

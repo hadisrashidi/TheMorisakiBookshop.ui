@@ -1,0 +1,72 @@
+@use '../../shared/styles/organic-components';
+
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.page-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.liked-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.liked-card {
+  position: relative;
+
+  a {
+    display: block;
+  }
+}
+
+.remove-btn {
+  position: absolute;
+  top: var(--space-2);
+  inset-inline-start: var(--space-2);
+  background: var(--color-bg);
+  color: var(--color-accent-700);
+  width: 32px;
+  height: 32px;
+  z-index: 1;
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.liked-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  color: var(--color-accent-700);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .liked-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

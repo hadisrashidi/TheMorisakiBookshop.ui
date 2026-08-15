@@ -32,15 +32,11 @@ footer {
     display: block;
     color: var(--color-neutral-200);
     margin: 0 0 var(--space-2);
-    cursor: default;
+    cursor: pointer;
 
     &:last-child {
       margin-bottom: 0;
     }
-  }
-
-  a.link {
-    cursor: pointer;
 
     &:hover {
       color: var(--color-accent-300);

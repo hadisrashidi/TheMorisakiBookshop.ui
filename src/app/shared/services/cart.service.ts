@@ -25,6 +25,23 @@ export class CartService {
     this.itemsSignal().reduce((sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity, 0)
   );
 
+  // "قیمت کالاها" — priced at the pre-discount (old) price where the book
+  // has one, so subtotal - discount lines up with the actual total below.
+  subtotal = computed(() =>
+    this.itemsSignal().reduce((sum, item) => {
+      const unitPrice = parseFloat(item.oldPrice || item.price) || 0;
+      return sum + unitPrice * item.quantity;
+    }, 0)
+  );
+
+  discount = computed(() => this.subtotal() - this.totalPrice());
+
+  // No shipping-cost model exists yet — free shipping is the only real
+  // policy to state until one does.
+  shipping = computed(() => 0);
+
+  total = computed(() => this.totalPrice() + this.shipping());
+
   addToCart(book: Book, quantity = 1) {
     if (book.id === undefined) {
       return;
@@ -43,6 +60,7 @@ export class CartService {
       title: book.title ?? '',
       image: book.image ?? '',
       price: book.price ?? '0',
+      oldPrice: book.oldPrice || undefined,
       quantity
     };
 
