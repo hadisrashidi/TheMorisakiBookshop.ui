@@ -41,7 +41,7 @@ export class SearchComponent implements OnInit {
   selectedGenres = signal<string[]>([]);
   selectedLanguages = signal<string[]>([]);
   stockFilter = signal<'all' | 'inStock'>('all');
-  sort = signal<'price_asc' | 'newest' | ''>('');
+  sort = signal<'price_asc' | 'price_desc' | 'newest' | ''>('');
 
   page = signal(1);
   pageCount = computed(() => Math.max(1, Math.ceil(this.results().length / PAGE_SIZE)));
@@ -125,7 +125,7 @@ export class SearchComponent implements OnInit {
     this.search();
   }
 
-  setSort(sort: 'price_asc' | 'newest' | '') {
+  setSort(sort: 'price_asc' | 'price_desc' | 'newest' | '') {
     this.sort.set(sort);
     this.search();
   }

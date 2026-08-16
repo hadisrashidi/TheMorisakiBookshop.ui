@@ -7,7 +7,8 @@
       class="input"
       placeholder="جستجو براساس عنوان, نام نویسنده, کلمات کلیدی"
       aria-label="جستجو براساس عنوان, نام نویسنده, کلمات کلیدی"
-      [(ngModel)]="searchQuery"
+      [ngModel]="searchQuery"
+      (ngModelChange)="onSearchInput($event)"
       (keyup.enter)="search()"
     />
     <button type="button" class="search-btn" (click)="search()" aria-label="جستجو">

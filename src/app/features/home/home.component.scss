@@ -103,21 +103,13 @@
   margin-bottom: var(--space-8);
 }
 
-// Single-line rows that scroll sideways — items must never wrap down
-// onto a second line when the row runs out of width.
+// These rows wrap onto additional lines when they run out of width —
+// no sideways scrolling, so nothing is hidden off-screen.
 .scroll-row {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: var(--space-4);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  padding-bottom: var(--space-2);
   margin-bottom: var(--space-8);
-
-  > * {
-    scroll-snap-align: start;
-  }
 
   &:last-child {
     margin-bottom: 0;
@@ -137,7 +129,8 @@
 }
 
 .authors {
-  gap: var(--space-6);
+  gap: var(--space-6) var(--space-4);
+  row-gap: var(--space-6);
 }
 
 .author {

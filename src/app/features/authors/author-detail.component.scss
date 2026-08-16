@@ -135,13 +135,12 @@
   margin-bottom: var(--space-4);
 }
 
+// Wraps onto more lines rather than scrolling sideways, so no author is
+// hidden off the edge of the row.
 .similar-scroll {
   display: flex;
-  flex-wrap: nowrap;
-  gap: var(--space-6);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding-bottom: var(--space-2);
+  flex-wrap: wrap;
+  gap: var(--space-6) var(--space-4);
 }
 
 .similar-author {
