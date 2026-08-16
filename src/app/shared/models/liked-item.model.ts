@@ -3,5 +3,6 @@ export class LikedItem {
   title!: string;
   image!: string;
   price!: string;
+  inStock?: boolean;
   authorName?: string;
 }

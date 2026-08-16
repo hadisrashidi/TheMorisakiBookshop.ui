@@ -12,8 +12,8 @@ export class HomeApiService {
 
   constructor(private http: HttpClient) { }
   
-  getBooks(): Observable<Book[]> {
-    const apiUrl = environment.apiUrl + '/Books/GetAllBooks';
+  getFeaturedBooks(): Observable<Book[]> {
+    const apiUrl = environment.apiUrl + '/Books/GetFeaturedBooks';
     return this.http.get<Book[]>(apiUrl);
   }
    getNewBooks(): Observable<Book[]> {

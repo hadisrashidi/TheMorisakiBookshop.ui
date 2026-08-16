@@ -14,6 +14,7 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  gap: var(--space-3);
   margin-bottom: var(--space-4);
 
   h2 {
@@ -38,44 +39,16 @@
   border-radius: var(--radius-md);
 }
 
-.featured-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
-  margin-bottom: var(--space-8);
-
-  .card {
-    text-decoration: none;
-    cursor: pointer;
-
-    .card-title {
-      margin: 0;
-    }
-  }
-
-  @media (max-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.scroll-row {
-  display: flex;
-  gap: var(--space-4);
-  overflow-x: auto;
-  padding-bottom: var(--space-2);
-  margin-bottom: var(--space-8);
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
+.book-card,
 .new-book {
-  flex-shrink: 0;
-  width: 170px;
+  position: relative;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 
-  a {
-    cursor: pointer;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
 
   .card-title {
@@ -83,10 +56,84 @@
   }
 }
 
+.like-btn {
+  position: absolute;
+  top: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  background: var(--color-bg);
+  color: var(--color-accent-700);
+
+  &:hover {
+    background: var(--color-accent-100);
+  }
+}
+
+.price {
+  color: var(--color-accent-700);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+
+  del {
+    color: var(--color-neutral-500);
+    font-size: 12px;
+  }
+}
+
+// Pushes the action to the card's bottom edge so buttons line up across a
+// row regardless of how many lines each title takes.
+.add-btn {
+  width: 100%;
+  font-size: 13px;
+  margin-top: auto;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+// Single-line rows that scroll sideways — items must never wrap down
+// onto a second line when the row runs out of width.
+.scroll-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-4);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-8);
+
+  > * {
+    scroll-snap-align: start;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.new-book {
+  flex: 0 0 auto;
+  width: 170px;
+}
+
 .new-book-foot {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-2);
 }
 
 .authors {
@@ -94,9 +141,11 @@
 }
 
 .author {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   width: 110px;
   text-align: center;
+  color: inherit;
+  text-decoration: none;
 
   img {
     width: 96px;
@@ -104,10 +153,41 @@
     border-radius: 50%;
     object-fit: cover;
     margin: 0 auto var(--space-2);
+    transition: transform 0.15s ease;
   }
 
   p {
     margin: 0;
     font-size: 13px;
+  }
+
+  &:hover {
+    color: var(--color-accent-700);
+
+    img {
+      transform: scale(1.04);
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .featured-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .new-book {
+    width: 150px;
   }
 }

@@ -6,47 +6,82 @@
   </div>
   <div class="featured-grid">
     <a
-      class="card elev-sm"
+      class="card elev-sm book-card"
       *ngFor="let book of featuredBooks"
       [routerLink]="['/books', book.id]"
     >
+      <button
+        type="button"
+        class="btn btn-icon like-btn"
+        [class.liked]="isLiked(book)"
+        (click)="toggleLiked($event, book)"
+        [attr.aria-label]="isLiked(book) ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="isLiked(book) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </button>
+
       <img class="washed cover" [src]="book.image" [alt]="book.title" />
-      <p class="card-title">{{ book.title }}</p>
+      <p class="card-title clamp-2">{{ book.title }}</p>
+      <p class="card-body">{{ authorName(book.authorId) }}</p>
+      <div class="price-row">
+        <span class="price">{{ book.price }} تومان</span>
+        <del *ngIf="book.oldPrice">{{ book.oldPrice }}</del>
+      </div>
+      <button type="button" class="btn btn-primary add-btn" (click)="addToCart($event, book)">
+        افزودن به سبد
+      </button>
     </a>
   </div>
 
   <div class="section-head">
     <h2>جدیدترین کتاب‌ها</h2>
-    <a routerLink="/search" class="view-all">مشاهده همه</a>
+    <a routerLink="/search" [queryParams]="{ sort: 'newest' }" class="view-all">مشاهده همه</a>
   </div>
   <div class="scroll-row">
-    <div class="card elev-sm new-book" *ngFor="let book of newBooks">
-      <a [routerLink]="['/books', book.id]">
-        <img class="washed cover" [src]="book.image" [alt]="book.title" />
-      </a>
-      <p class="card-title">{{ book.title }}</p>
+    <a
+      class="card elev-sm new-book"
+      *ngFor="let book of newBooks"
+      [routerLink]="['/books', book.id]"
+    >
+      <button
+        type="button"
+        class="btn btn-icon like-btn"
+        [class.liked]="isLiked(book)"
+        (click)="toggleLiked($event, book)"
+        [attr.aria-label]="isLiked(book) ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="isLiked(book) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </button>
+
+      <img class="washed cover" [src]="book.image" [alt]="book.title" />
+      <p class="card-title clamp-2">{{ book.title }}</p>
+      <span class="price">{{ book.price }} تومان</span>
+
       <div class="new-book-foot">
-        <span class="tag tag-accent-2">موجود</span>
+        <span class="tag" [class.tag-accent-2]="book.inStock" [class.tag-neutral]="!book.inStock">
+          {{ book.inStock ? 'موجود' : 'ناموجود' }}
+        </span>
         <button
           type="button"
           class="btn btn-icon btn-primary"
+          [disabled]="!book.inStock"
           [attr.aria-label]="'افزودن ' + book.title + ' به سبد خرید'"
           (click)="addToCart($event, book)"
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"></path></svg>
         </button>
       </div>
-    </div>
+    </a>
   </div>
 
   <div class="section-head">
     <h2>نویسندگان</h2>
   </div>
   <div class="scroll-row authors">
-    <div class="author" *ngFor="let author of authors">
+    <a class="author" *ngFor="let author of authors" [routerLink]="['/authors', author.id]">
       <img class="washed" [src]="author.image" [alt]="author.name" />
       <p>{{ author.name }}</p>
-    </div>
+    </a>
   </div>
 
 </div>

@@ -7,6 +7,8 @@ export class Book {
   id: number | undefined;
   title: string | undefined;
   image: string | undefined;
+  description: string | undefined;
+  inStock: boolean | undefined;
   oldPrice: string | undefined;
   price: string | undefined;
   authorId: number | undefined;

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { BooksApiService } from './services/books.api.service';
 import { Book } from '../home/models/book.model';
 import { Author } from '../home/models/author.model';
@@ -14,7 +13,7 @@ import { ReviewsApiService } from '../../shared/services/reviews.api.service';
 @Component({
   selector: 'app-books',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './books.component.html',
   styleUrl: './books.component.scss'
 })
@@ -32,14 +31,36 @@ export class BooksComponent implements OnInit {
   relatedBooks: Book[] = [];
   similarBooks: Book[] = [];
   reviews: Review[] = [];
-  tab: 'specs' | 'reviews' = 'specs';
+  tab: 'description' | 'reviews' = 'description';
+  addedToCart = false;
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.getBookDetails(id);
-    this.getRelatedBooks(id);
-    this.getSimilarBooks(id);
-    this.getReviews(id);
+    // paramMap (not snapshot) — navigating between books via the related
+    // or recommendation cards reuses this component instance, so a
+    // snapshot read would leave the page showing the previous book.
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      if (!id) {
+        return;
+      }
+
+      this.resetForNavigation();
+      this.getBookDetails(id);
+      this.getRelatedBooks(id);
+      this.getSimilarBooks(id);
+      this.getReviews(id);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  private resetForNavigation() {
+    this.book = new Book();
+    this.author = null;
+    this.relatedBooks = [];
+    this.similarBooks = [];
+    this.reviews = [];
+    this.tab = 'description';
+    this.addedToCart = false;
   }
 
   getBookDetails(id: number) {
@@ -50,58 +71,41 @@ export class BooksComponent implements OnInit {
           this.getAuthor(data.authorId);
         }
       },
-      error: (err) => {
-        console.error('Error loading book', err);
-      }
+      error: (err) => console.error('Error loading book', err)
     });
   }
 
   getAuthor(authorId: number) {
     this.authorsApiService.getAuthorById(authorId).subscribe({
-      next: (data) => {
-        this.author = data;
-      },
-      error: (err) => {
-        console.error('Error loading author', err);
-      }
+      next: (data) => (this.author = data),
+      error: (err) => console.error('Error loading author', err)
     });
   }
 
   getRelatedBooks(id: number) {
     this.booksApiService.getRelatedBooks(id).subscribe({
-      next: (data) => {
-        this.relatedBooks = data;
-      },
-      error: (err) => {
-        console.error('Error loading related books', err);
-      }
+      next: (data) => (this.relatedBooks = data),
+      error: (err) => console.error('Error loading related books', err)
     });
   }
 
   getSimilarBooks(id: number) {
     this.booksApiService.getSimilarBooks(id).subscribe({
-      next: (data) => {
-        this.similarBooks = data;
-      },
-      error: (err) => {
-        console.error('Error loading similar books', err);
-      }
+      next: (data) => (this.similarBooks = data),
+      error: (err) => console.error('Error loading similar books', err)
     });
   }
 
   getReviews(id: number) {
     this.reviewsApiService.getByBookId(id).subscribe({
-      next: (data) => {
-        this.reviews = data;
-      },
-      error: (err) => {
-        console.error('Error loading reviews', err);
-      }
+      next: (data) => (this.reviews = data),
+      error: (err) => console.error('Error loading reviews', err)
     });
   }
 
   addToCart() {
     this.cartService.addToCart(this.book);
+    this.addedToCart = true;
   }
 
   toggleLiked() {
@@ -110,6 +114,14 @@ export class BooksComponent implements OnInit {
 
   get isLiked(): boolean {
     return this.book.id !== undefined && this.likedService.isLiked(this.book.id);
+  }
+
+  get averageRating(): number {
+    if (this.reviews.length === 0) {
+      return 0;
+    }
+    const sum = this.reviews.reduce((acc, r) => acc + (r.rating ?? 0), 0);
+    return Math.round((sum / this.reviews.length) * 10) / 10;
   }
 
   stars(rating: number | undefined): string {

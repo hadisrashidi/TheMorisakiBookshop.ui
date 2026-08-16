@@ -10,15 +10,17 @@
   padding: var(--space-8) var(--space-4);
 }
 
+// RTL source order: main info (right) → cover (middle) → related (left).
 .hero {
   display: flex;
   gap: var(--space-6);
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .cover-col {
-  flex: 0 0 33%;
-  min-width: 220px;
+  flex: 1 1 300px;
+  min-width: 0;
 }
 
 .cover {
@@ -29,8 +31,8 @@
 }
 
 .main-col {
-  flex: 1 1 320px;
-  min-width: 260px;
+  flex: 1 1 380px;
+  min-width: 0;
 
   h2 {
     margin: 0 0 var(--space-2);
@@ -47,9 +49,23 @@
   }
 }
 
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: 13px;
+
+  .stars {
+    color: var(--color-accent);
+    letter-spacing: 2px;
+  }
+}
+
 .price-row {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: var(--space-3);
   margin: var(--space-4) 0;
 
@@ -68,6 +84,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .like-btn {
@@ -79,16 +96,30 @@
   }
 }
 
+.added-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  font-size: 13px;
+  color: var(--color-accent-2-800);
+
+  a {
+    color: var(--color-accent-700);
+    text-decoration: underline;
+  }
+}
+
 .side-col {
-  flex: 0 0 26%;
-  min-width: 220px;
+  flex: 0 0 260px;
+  max-width: 100%;
 }
 
 .related-card {
   background: var(--color-surface);
 
   h6 {
-    margin: 0 0 var(--space-2);
+    margin: 0 0 var(--space-1);
   }
 }
 
@@ -98,19 +129,29 @@
   gap: var(--space-2);
   color: inherit;
   text-decoration: none;
+  padding: var(--space-1) 0;
 
   img {
-    width: 44px;
-    height: 60px;
+    width: 48px;
+    height: 64px;
     object-fit: cover;
     border-radius: var(--radius-sm);
     flex-shrink: 0;
   }
+
+  &:hover .related-title {
+    color: var(--color-accent-700);
+  }
+}
+
+.related-text {
+  min-width: 0;
 }
 
 .related-title {
-  margin: 0;
+  margin: 0 0 2px;
   font-size: 13px;
+  line-height: 1.3;
 }
 
 .related-price {
@@ -119,23 +160,39 @@
   font-weight: 700;
 }
 
+.specs-table {
+  font-size: 13px;
+  margin-top: var(--space-4);
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
 .tabs-section {
   margin-top: var(--space-8);
 
   .seg {
     margin-bottom: var(--space-4);
+    max-width: 100%;
+    overflow-x: auto;
   }
 }
 
-.specs-table {
-  max-width: 640px;
+.description-panel {
+  max-width: 720px;
+  line-height: 1.9;
+
+  p {
+    margin: 0;
+  }
 }
 
 .reviews-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  max-width: 640px;
+  max-width: 720px;
 }
 
 .review-card {
@@ -143,6 +200,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--space-2);
   }
 
   .reviewer {
@@ -164,9 +222,19 @@
   gap: var(--space-4);
 }
 
-.rec-grid a {
+.rec-card {
   color: inherit;
   text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-title {
+    margin: 0;
+  }
 }
 
 .rec-price {
@@ -175,15 +243,42 @@
   font-weight: 700;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
+  // Below this the three hero columns don't fit; the related list drops
+  // to a full-width row under the cover rather than squeezing.
+  .side-col {
+    flex: 1 1 100%;
+    order: 3;
+  }
+
+  .related-card {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+
+    h6 {
+      flex: 1 1 100%;
+    }
+  }
+
+  .related-row {
+    flex: 1 1 200px;
+  }
+
   .rec-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (max-width: 640px) {
-  .cover-col,
-  .side-col {
+@media (max-width: 720px) {
+  .cover-col {
+    order: -1;
     flex: 1 1 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .rec-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

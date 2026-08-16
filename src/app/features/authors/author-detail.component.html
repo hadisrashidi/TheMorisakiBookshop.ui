@@ -15,19 +15,40 @@
   <div class="seg">
     <label class="seg-opt" [class.active]="tab === 'books'">
       <input type="radio" name="authorTabs" [checked]="tab === 'books'" (change)="tab = 'books'" />
-      کتاب‌های نویسنده
+      کتاب‌های نویسنده ({{ books.length }})
     </label>
     <label class="seg-opt" [class.active]="tab === 'reviews'">
       <input type="radio" name="authorTabs" [checked]="tab === 'reviews'" (change)="tab = 'reviews'" />
-      نظرات کاربران
+      نظرات کاربران ({{ reviews.length }})
     </label>
   </div>
 
   <div class="books-grid" *ngIf="tab === 'books'">
-    <a class="card elev-sm" *ngFor="let book of books" [routerLink]="['/books', book.id]">
+    <a class="card elev-sm book-card" *ngFor="let book of books" [routerLink]="['/books', book.id]">
+      <button
+        type="button"
+        class="btn btn-icon like-btn"
+        [class.liked]="isLiked(book)"
+        (click)="toggleLiked($event, book)"
+        [attr.aria-label]="isLiked(book) ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="isLiked(book) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </button>
+
       <img class="washed cover" [src]="book.image" [alt]="book.title" />
-      <p class="card-title">{{ book.title }}</p>
-      <span class="book-price">{{ book.price }} تومان</span>
+      <p class="card-title clamp-2">{{ book.title }}</p>
+      <div class="book-foot">
+        <span class="book-price">{{ book.price }} تومان</span>
+        <button
+          type="button"
+          class="btn btn-icon btn-primary"
+          [disabled]="!book.inStock"
+          [attr.aria-label]="'افزودن ' + book.title + ' به سبد خرید'"
+          (click)="addToCart($event, book)"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"></path></svg>
+        </button>
+      </div>
     </a>
     <p class="text-muted" *ngIf="books.length === 0">کتابی از این نویسنده ثبت نشده است.</p>
   </div>

@@ -121,6 +121,16 @@
   line-height: 1.2;
 }
 
+// Grid cards sit side by side, so a two-line title and a one-line title
+// must still produce equal-height rows.
+.card-title.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(2 * 1.2em);
+}
+
 .card-body {
   margin: 0;
   font-size: 13px;
@@ -301,6 +311,9 @@
 
 // Every content photograph goes through this wrapper — desaturated,
 // lower-contrast, so it sits back into the warm page instead of on top.
+// The background keeps the slot from flashing bare page colour while the
+// cover loads (or if it fails).
 .washed {
   filter: saturate(0.6) contrast(0.85) brightness(1.1) opacity(0.94);
+  background: var(--color-neutral-200);
 }

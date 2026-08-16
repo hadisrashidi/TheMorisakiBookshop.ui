@@ -18,16 +18,23 @@ export class LikedComponent {
   likedService = inject(LikedService);
   private cartService = inject(CartService);
 
-  remove(id: number) {
+  remove(event: Event, id: number) {
+    event.preventDefault();
+    event.stopPropagation();
     this.likedService.remove(id);
   }
 
-  addToCart(item: LikedItem) {
+  addToCart(event: Event, item: LikedItem) {
+    event.preventDefault();
+    event.stopPropagation();
+
     const book: Book = {
       id: item.id,
       title: item.title,
       image: item.image,
       price: item.price,
+      inStock: item.inStock ?? true,
+      description: undefined,
       oldPrice: undefined,
       authorId: undefined,
       genre: undefined,

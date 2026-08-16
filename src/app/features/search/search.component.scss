@@ -19,6 +19,8 @@
 
 .sidebar {
   flex: 0 0 230px;
+  position: sticky;
+  top: var(--space-4);
 }
 
 .filters-card {
@@ -36,7 +38,7 @@
 
 .results-col {
   flex: 1 1 480px;
-  min-width: 260px;
+  min-width: 0;
 }
 
 .results-head {
@@ -56,6 +58,10 @@
   font-size: 13px;
 }
 
+.sort-seg {
+  flex-shrink: 0;
+}
+
 .results-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -63,9 +69,31 @@
   margin-bottom: var(--space-6);
 }
 
-.results-grid a {
+.book-card {
+  position: relative;
   color: inherit;
   text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.like-btn {
+  position: absolute;
+  top: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  background: var(--color-bg);
+  color: var(--color-accent-700);
+
+  &:hover {
+    background: var(--color-accent-100);
+  }
 }
 
 .cover {
@@ -79,6 +107,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-2);
 }
 
 .price {
@@ -87,24 +116,58 @@
   font-size: 14px;
 }
 
+// Pushes the action to the card's bottom edge so buttons line up across a
+// row regardless of how many lines each title takes.
+.add-btn {
+  width: 100%;
+  font-size: 13px;
+  margin-top: auto;
+}
+
+.empty-state {
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  background: var(--color-surface);
+
+  p {
+    margin: 0 0 var(--space-3);
+    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  }
+}
+
 .pagination {
   display: flex;
   justify-content: center;
   gap: var(--space-2);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .results-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .sidebar {
     flex: 1 1 100%;
+    position: static;
   }
 
+  .results-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sort-seg {
+    align-self: flex-start;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 420px) {
   .results-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 }
