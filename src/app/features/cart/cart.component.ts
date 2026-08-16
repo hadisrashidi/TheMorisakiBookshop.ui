@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../shared/services/cart.service';
+import { OrdersService } from '../../shared/services/orders.service';
 
 @Component({
   selector: 'app-cart',
@@ -13,11 +14,12 @@ import { CartService } from '../../shared/services/cart.service';
 export class CartComponent {
 
   private router = inject(Router);
+  private ordersService = inject(OrdersService);
   cartService = inject(CartService);
 
-  // There's no payment gateway or order backend yet, so "checkout"
-  // confirms the order locally and empties the cart. Swap this for a real
-  // order POST once the backend grows one.
+  // There's no payment gateway yet, so "checkout" records the order
+  // locally (so it shows up in order history) and empties the cart. Swap
+  // OrdersService for a real order POST once the backend grows one.
   placedOrderNumber = signal<string | null>(null);
 
   goToBookDetail(id: number) {
@@ -41,8 +43,14 @@ export class CartComponent {
       return;
     }
 
-    const orderNumber = '#' + Math.floor(10000 + Math.random() * 89999);
-    this.placedOrderNumber.set(orderNumber);
+    const order = this.ordersService.placeOrder(this.cartService.items(), {
+      subtotal: this.cartService.subtotal(),
+      discount: this.cartService.discount(),
+      shipping: this.cartService.shipping(),
+      total: this.cartService.total()
+    });
+
+    this.placedOrderNumber.set(order.id);
     this.cartService.clear();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

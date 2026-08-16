@@ -1,0 +1,63 @@
+<div class="page">
+  <div class="page-head">
+    <h2>سفارش‌های من</h2>
+    <span class="text-muted">{{ ordersService.count() }} سفارش</span>
+  </div>
+
+  <div class="card empty-card" *ngIf="ordersService.count() === 0">
+    <p class="text-muted">هنوز سفارشی ثبت نکرده‌اید.</p>
+    <a routerLink="/search" class="btn btn-primary">مشاهده کتاب‌ها</a>
+  </div>
+
+  <div class="orders-list" *ngIf="ordersService.count() > 0">
+    <div class="card elev-sm order-card" *ngFor="let order of ordersService.orders()">
+      <button type="button" class="order-head" (click)="toggle(order.id)">
+        <div class="order-meta">
+          <span class="order-id" dir="ltr">{{ order.id }}</span>
+          <span class="text-muted" dir="ltr">{{ order.date }}</span>
+          <span class="text-muted">{{ order.itemsCount }} کالا</span>
+        </div>
+        <div class="order-right">
+          <span class="tag tag-accent-2">{{ order.status }}</span>
+          <span class="order-total">{{ order.total }} تومان</span>
+          <span class="chevron" [class.open]="isExpanded(order.id)">⌄</span>
+        </div>
+      </button>
+
+      <div class="order-body" *ngIf="isExpanded(order.id)">
+        <div class="hr"></div>
+
+        <a
+          class="order-line"
+          *ngFor="let line of order.lines"
+          [routerLink]="['/books', line.id]"
+        >
+          <img class="washed thumb" [src]="line.image" [alt]="line.title" />
+          <div class="line-text">
+            <p class="line-title">{{ line.title }}</p>
+            <span class="text-muted">{{ line.quantity }} × {{ line.price }} تومان</span>
+          </div>
+        </a>
+
+        <div class="hr"></div>
+
+        <div class="summary-row">
+          <span>قیمت کالاها</span>
+          <span>{{ order.subtotal }} تومان</span>
+        </div>
+        <div class="summary-row" *ngIf="order.discount > 0">
+          <span>تخفیف</span>
+          <span class="discount">{{ order.discount }} تومان</span>
+        </div>
+        <div class="summary-row">
+          <span>هزینه ارسال</span>
+          <span>{{ order.shipping > 0 ? (order.shipping + ' تومان') : 'رایگان' }}</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>مبلغ پرداخت‌شده</span>
+          <span>{{ order.total }} تومان</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

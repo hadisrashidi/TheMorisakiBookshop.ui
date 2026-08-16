@@ -53,6 +53,22 @@ footer {
   .tag-outline {
     border-color: var(--color-neutral-500);
     color: var(--color-neutral-200);
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--color-accent-300);
+      color: var(--color-accent-300);
+    }
+  }
+}
+
+.phone-link {
+  color: var(--color-neutral-200);
+  unicode-bidi: isolate;
+
+  &:hover {
+    color: var(--color-accent-300);
   }
 }
 

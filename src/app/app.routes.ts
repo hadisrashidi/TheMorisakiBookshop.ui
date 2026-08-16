@@ -42,6 +42,16 @@ export const routes: Routes = [
           import('./features/profile/profile.component').then(m => m.ProfileComponent),
       },
       {
+        path: 'orders',
+        loadComponent: () =>
+          import('./features/orders/orders.component').then(m => m.OrdersComponent),
+      },
+      {
+        path: 'addresses',
+        loadComponent: () =>
+          import('./features/addresses/addresses.component').then(m => m.AddressesComponent),
+      },
+      {
         path: 'faq',
         loadComponent: () =>
           import('./features/faq/faq.component').then(m => m.FaqComponent),
