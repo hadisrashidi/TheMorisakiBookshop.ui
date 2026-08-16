@@ -1,0 +1,91 @@
+<div class="page">
+  <div class="page-head">
+    <h2>آدرس‌ها</h2>
+    <button type="button" class="btn btn-primary" (click)="startAdd()" *ngIf="!formOpen()">
+      افزودن آدرس
+    </button>
+  </div>
+
+  <div class="card elev-sm form-card" *ngIf="formOpen()">
+    <h4>{{ editingId() ? 'ویرایش آدرس' : 'آدرس جدید' }}</h4>
+    <div class="hr"></div>
+
+    <div class="fields-grid">
+      <label class="field">
+        <span>عنوان آدرس</span>
+        <input class="input" placeholder="خانه، محل کار…"
+          [ngModel]="draft().title" (ngModelChange)="onField('title', $event)" name="title" />
+      </label>
+      <label class="field">
+        <span>نام گیرنده</span>
+        <input class="input"
+          [ngModel]="draft().recipient" (ngModelChange)="onField('recipient', $event)" name="recipient" />
+      </label>
+      <label class="field">
+        <span>شماره تماس</span>
+        <input class="input ltr-field" type="tel" dir="ltr" placeholder="09123456789"
+          [ngModel]="draft().phone" (ngModelChange)="onField('phone', $event)" name="phone" />
+      </label>
+      <label class="field">
+        <span>شهر</span>
+        <input class="input"
+          [ngModel]="draft().city" (ngModelChange)="onField('city', $event)" name="city" />
+      </label>
+      <label class="field field-wide">
+        <span>نشانی کامل</span>
+        <textarea class="input address-text" rows="2"
+          [ngModel]="draft().fullAddress" (ngModelChange)="onField('fullAddress', $event)" name="fullAddress"></textarea>
+      </label>
+      <label class="field">
+        <span>کد پستی</span>
+        <input class="input ltr-field" dir="ltr" inputmode="numeric"
+          [ngModel]="draft().postalCode" (ngModelChange)="onField('postalCode', $event)" name="postalCode" />
+      </label>
+    </div>
+
+    <label class="radio default-toggle">
+      <input type="checkbox" [checked]="draft().isDefault" (change)="onField('isDefault', !draft().isDefault)" />
+      <span class="dot"></span>
+      آدرس پیش‌فرض
+    </label>
+
+    <p class="error-note" *ngIf="error()">{{ error() }}</p>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-primary" (click)="save()">ذخیره</button>
+      <button type="button" class="btn btn-secondary" (click)="cancel()">انصراف</button>
+    </div>
+  </div>
+
+  <div class="card empty-card" *ngIf="addressesService.count() === 0 && !formOpen()">
+    <p class="text-muted">هنوز آدرسی ثبت نکرده‌اید.</p>
+    <button type="button" class="btn btn-primary" (click)="startAdd()">افزودن آدرس</button>
+  </div>
+
+  <div class="addresses-list" *ngIf="addressesService.count() > 0">
+    <div class="card elev-sm address-card" *ngFor="let address of addressesService.addresses()">
+      <div class="address-head">
+        <div class="address-title">
+          <strong>{{ address.title }}</strong>
+          <span class="tag tag-accent" *ngIf="address.isDefault">پیش‌فرض</span>
+        </div>
+        <div class="address-actions">
+          <button type="button" class="btn btn-ghost" *ngIf="!address.isDefault" (click)="setDefault(address)">
+            پیش‌فرض کن
+          </button>
+          <button type="button" class="btn btn-ghost" (click)="startEdit(address)">ویرایش</button>
+          <button type="button" class="btn btn-ghost danger" (click)="remove(address)">حذف</button>
+        </div>
+      </div>
+
+      <p class="card-body">{{ address.city }} — {{ address.fullAddress }}</p>
+      <div class="address-meta">
+        <span>{{ address.recipient }}</span>
+        <span dir="ltr" *ngIf="address.phone">{{ address.phone }}</span>
+        <span dir="ltr" *ngIf="address.postalCode">کد پستی: {{ address.postalCode }}</span>
+      </div>
+    </div>
+  </div>
+
+  <a routerLink="/profile" class="back-link">بازگشت به حساب کاربری</a>
+</div>

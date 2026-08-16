@@ -22,6 +22,7 @@
 }
 
 .sidebar-card {
+  align-items: center;
   text-align: center;
 
   h4 {
@@ -29,7 +30,21 @@
   }
 
   .card-body {
-    margin: 0 0 var(--space-4);
+    margin: 0;
+  }
+}
+
+.avatar-btn {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+  line-height: 0;
+
+  &:hover .avatar-overlay {
+    opacity: 1;
   }
 }
 
@@ -38,7 +53,42 @@
   height: 88px;
   border-radius: 50%;
   object-fit: cover;
-  margin: 0 auto var(--space-2);
+  display: block;
+}
+
+.avatar-empty {
+  display: grid;
+  place-items: center;
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-600);
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-neutral-900) 45%, transparent);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.file-input {
+  display: none;
+}
+
+.remove-avatar {
+  font-size: 12px;
+}
+
+// Phone numbers are Latin digits inside an RTL page — isolate them so
+// the bidi algorithm doesn't reorder the groups.
+.phone-text,
+.ltr-field {
+  unicode-bidi: isolate;
+  text-align: right;
 }
 
 .side-nav {
@@ -46,19 +96,17 @@
   flex-direction: column;
   gap: var(--space-1);
   text-align: right;
+  width: 100%;
 
   .nav-item {
     padding: var(--space-2);
     color: var(--color-text);
     text-decoration: none;
     border-radius: var(--radius-md);
-    cursor: default;
-  }
-
-  a.nav-item {
     cursor: pointer;
 
     &:hover {
+      background: color-mix(in srgb, var(--color-text) 6%, transparent);
       color: var(--color-accent-700);
     }
   }
@@ -68,15 +116,11 @@
     font-weight: 700;
     background: var(--color-accent-100);
   }
-
-  .nav-item.logout {
-    color: var(--color-accent-700);
-  }
 }
 
 .main-col {
   flex: 1 1 400px;
-  min-width: 260px;
+  min-width: 0;
 }
 
 .account-card {
@@ -93,17 +137,43 @@
   gap: var(--space-4);
 }
 
-.save-btn {
+.save-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   margin-top: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .saved-note {
-  margin-inline-start: var(--space-2);
   font-size: 13px;
+  color: var(--color-accent-2-800);
 }
 
-.orders-card h3 {
-  margin: 0;
+.error-note {
+  margin: var(--space-2) 0 0;
+  font-size: 13px;
+  color: var(--color-accent-800);
+}
+
+.orders-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+
+  h3 {
+    margin: 0;
+  }
+
+  .view-all {
+    font-size: 13px;
+    color: var(--color-accent-700);
+  }
+}
+
+.order-id {
+  font-weight: 700;
 }
 
 .order-total {
@@ -111,11 +181,13 @@
   font-weight: 700;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .sidebar {
     flex: 1 1 100%;
   }
+}
 
+@media (max-width: 560px) {
   .fields-grid {
     grid-template-columns: 1fr;
   }

@@ -3,16 +3,41 @@
 
     <aside class="sidebar">
       <div class="card elev-sm sidebar-card">
-        <img class="washed avatar" [src]="user.avatar" [alt]="user.name" />
-        <h4>{{ user.name }}</h4>
-        <p class="card-body">{{ user.phone }}</p>
+        <button
+          type="button"
+          class="avatar-btn"
+          (click)="avatarInput.click()"
+          aria-label="تغییر تصویر پروفایل"
+        >
+          <img class="washed avatar" *ngIf="draft().avatar" [src]="draft().avatar" alt="تصویر پروفایل" />
+          <span class="avatar avatar-empty" *ngIf="!draft().avatar">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+          </span>
+          <span class="avatar-overlay">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          </span>
+        </button>
+        <input
+          #avatarInput
+          type="file"
+          accept="image/*"
+          class="file-input"
+          (change)="onAvatarSelected($event)"
+        />
+        <button type="button" class="btn btn-ghost remove-avatar" *ngIf="draft().avatar" (click)="removeAvatar()">
+          حذف تصویر
+        </button>
+
+        <h4>{{ draft().name || 'کاربر مهمان' }}</h4>
+        <p class="card-body phone-text" *ngIf="draft().phone" dir="ltr">{{ draft().phone }}</p>
+
         <div class="hr"></div>
+
         <nav class="side-nav">
           <a class="nav-item active">اطلاعات حساب</a>
-          <span class="nav-item">سفارش‌های من</span>
+          <a class="nav-item" routerLink="/orders">سفارش‌های من</a>
           <a class="nav-item" routerLink="/liked">علاقه‌مندی‌ها</a>
-          <span class="nav-item">آدرس‌ها</span>
-          <span class="nav-item logout">خروج از حساب</span>
+          <a class="nav-item" routerLink="/addresses">آدرس‌ها</a>
         </nav>
       </div>
     </aside>
@@ -25,34 +50,75 @@
         <div class="fields-grid">
           <label class="field">
             <span>نام و نام خانوادگی</span>
-            <input class="input" [(ngModel)]="user.name" name="name" />
+            <input
+              class="input"
+              [ngModel]="draft().name"
+              (ngModelChange)="onField('name', $event)"
+              name="name"
+            />
           </label>
+
           <label class="field">
             <span>شماره موبایل</span>
-            <input class="input" [(ngModel)]="user.phone" name="phone" />
+            <input
+              class="input ltr-field"
+              type="tel"
+              inputmode="tel"
+              dir="ltr"
+              placeholder="09123456789"
+              [ngModel]="draft().phone"
+              (ngModelChange)="onField('phone', $event)"
+              name="phone"
+            />
           </label>
+
           <label class="field">
             <span>ایمیل</span>
-            <input class="input" [(ngModel)]="user.email" name="email" />
+            <input
+              class="input ltr-field"
+              type="email"
+              inputmode="email"
+              dir="ltr"
+              placeholder="you@example.com"
+              [ngModel]="draft().email"
+              (ngModelChange)="onField('email', $event)"
+              name="email"
+            />
           </label>
-          <label class="field">
+
+          <div class="field">
             <span>تاریخ تولد</span>
-            <input class="input" [(ngModel)]="user.birthdate" name="birthdate" />
-          </label>
+            <app-jalali-date-picker
+              [ngModel]="draft().birthdate"
+              (ngModelChange)="onField('birthdate', $event)"
+              name="birthdate"
+            ></app-jalali-date-picker>
+          </div>
         </div>
 
-        <button type="button" class="btn btn-primary save-btn" (click)="save()">ذخیره تغییرات</button>
-        <span class="saved-note text-muted" *ngIf="saved">تغییرات ذخیره شد.</span>
+        <p class="error-note" *ngIf="error()">{{ error() }}</p>
+
+        <div class="save-row">
+          <button type="button" class="btn btn-primary" (click)="save()">ذخیره تغییرات</button>
+          <span class="saved-note" *ngIf="saved()">تغییرات ذخیره شد.</span>
+        </div>
       </div>
 
       <div class="card elev-sm orders-card">
-        <h3>آخرین سفارش‌ها</h3>
+        <div class="orders-head">
+          <h3>آخرین سفارش‌ها</h3>
+          <a routerLink="/orders" class="view-all" *ngIf="ordersService.count() > 0">مشاهده همه</a>
+        </div>
         <div class="hr"></div>
 
-        <table class="table">
-          <tr *ngFor="let order of orders">
-            <td>{{ order.id }}</td>
-            <td>{{ order.date }}</td>
+        <p class="text-muted" *ngIf="ordersService.count() === 0">
+          هنوز سفارشی ثبت نکرده‌اید.
+        </p>
+
+        <table class="table" *ngIf="ordersService.count() > 0">
+          <tr *ngFor="let order of ordersService.recent()">
+            <td dir="ltr" class="order-id">{{ order.id }}</td>
+            <td dir="ltr">{{ order.date }}</td>
             <td>{{ order.itemsCount }} کالا</td>
             <td class="order-total">{{ order.total }} تومان</td>
             <td><span class="tag tag-accent-2">{{ order.status }}</span></td>

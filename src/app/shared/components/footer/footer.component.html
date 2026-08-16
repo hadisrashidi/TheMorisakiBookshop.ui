@@ -3,11 +3,11 @@
     <div class="col">
       <h4>اطلاعات تماس</h4>
       <p>تهران، شریعتی</p>
-      <p>09193757648</p>
+      <p><a class="phone-link" [href]="'tel:' + phone" dir="ltr">{{ phone }}</a></p>
       <div class="social">
-        <span class="tag tag-outline">اینستاگرام</span>
-        <span class="tag tag-outline">تلگرام</span>
-        <span class="tag tag-outline">واتساپ</span>
+        <a class="tag tag-outline" [href]="instagramUrl" target="_blank" rel="noopener noreferrer">اینستاگرام</a>
+        <a class="tag tag-outline" [href]="telegramUrl" target="_blank" rel="noopener noreferrer">تلگرام</a>
+        <a class="tag tag-outline" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">واتساپ</a>
       </div>
     </div>
 

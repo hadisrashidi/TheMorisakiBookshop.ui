@@ -1,46 +1,77 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ProfileService, UserProfile } from '../../shared/services/profile.service';
+import { OrdersService } from '../../shared/services/orders.service';
+import { JalaliDatePickerComponent } from '../../shared/components/jalali-date-picker/jalali-date-picker.component';
 
-interface Order {
-  id: string;
-  date: string;
-  itemsCount: number;
-  total: string;
-  status: string;
-}
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 
-// No auth exists yet (see the API's Program.cs note on Management
-// endpoints), so this page has nothing real to load — it's a static
-// placeholder matching the approved design, ready to be wired to a real
-// account once login exists.
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, JalaliDatePickerComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent {
 
-  user = {
-    name: 'حدیث رشیدی',
-    phone: '0919 375 7648',
-    email: 'hadis@example.com',
-    birthdate: '1372/05/12',
-    avatar: 'https://picsum.photos/seed/profile-avatar/160/160'
-  };
+  private profileService = inject(ProfileService);
+  ordersService = inject(OrdersService);
 
-  orders: Order[] = [
-    { id: '#10234', date: '1403/04/12', itemsCount: 3, total: '615,000', status: 'تحویل شده' },
-    { id: '#10198', date: '1403/03/02', itemsCount: 1, total: '150,000', status: 'در حال ارسال' },
-    { id: '#10122', date: '1403/01/20', itemsCount: 2, total: '310,000', status: 'تحویل شده' },
-  ];
+  // Edited copy — only written back to the service on save, so navigating
+  // away without saving discards the edits.
+  draft = signal<UserProfile>({ ...this.profileService.profile() });
 
-  saved = false;
+  saved = signal(false);
+  error = signal('');
+
+  onField(field: keyof UserProfile, value: string) {
+    this.draft.update(d => ({ ...d, [field]: value }));
+    this.saved.set(false);
+  }
+
+  onAvatarSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.error.set('لطفاً یک فایل تصویری انتخاب کنید.');
+      return;
+    }
+
+    if (file.size > MAX_AVATAR_BYTES) {
+      this.error.set('حجم تصویر باید کمتر از ۲ مگابایت باشد.');
+      return;
+    }
+
+    // Read as a data URL so it survives in localStorage — there's no
+    // upload endpoint to POST the file to yet.
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.error.set('');
+      this.draft.update(d => ({ ...d, avatar: String(reader.result ?? '') }));
+      this.saved.set(false);
+    };
+    reader.onerror = () => this.error.set('خواندن تصویر ناموفق بود.');
+    reader.readAsDataURL(file);
+
+    // Allows re-picking the same file straight after.
+    input.value = '';
+  }
+
+  removeAvatar() {
+    this.draft.update(d => ({ ...d, avatar: '' }));
+    this.saved.set(false);
+  }
 
   save() {
-    this.saved = true;
+    this.profileService.save(this.draft());
+    this.saved.set(true);
+    this.error.set('');
   }
 }
