@@ -27,11 +27,15 @@
 }
 
 .bio-main {
-  flex: 1;
-  min-width: 220px;
+  flex: 1 1 260px;
+  min-width: 0;
 
   h2 {
     margin: 0 0 var(--space-1);
+  }
+
+  .card-body {
+    line-height: 1.8;
   }
 }
 
@@ -39,10 +43,13 @@
   display: flex;
   gap: var(--space-2);
   margin-top: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .seg {
   margin-bottom: var(--space-4);
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .books-grid {
@@ -52,9 +59,35 @@
   margin-bottom: var(--space-8);
 }
 
-.books-grid a {
+.book-card {
+  position: relative;
   color: inherit;
   text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-title {
+    margin: 0;
+  }
+}
+
+.like-btn {
+  position: absolute;
+  top: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  background: var(--color-bg);
+  color: var(--color-accent-700);
+
+  &:hover {
+    background: var(--color-accent-100);
+  }
 }
 
 .cover {
@@ -62,6 +95,13 @@
   aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: var(--radius-md);
+}
+
+.book-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .book-price {
@@ -74,7 +114,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  max-width: 640px;
+  max-width: 720px;
   margin-bottom: var(--space-8);
 }
 
@@ -83,6 +123,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--space-2);
   }
 
   .reviewer {
@@ -96,13 +137,15 @@
 
 .similar-scroll {
   display: flex;
+  flex-wrap: nowrap;
   gap: var(--space-6);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   padding-bottom: var(--space-2);
 }
 
 .similar-author {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   width: 110px;
   text-align: center;
   color: inherit;
@@ -114,16 +157,46 @@
     border-radius: 50%;
     object-fit: cover;
     margin: 0 auto var(--space-2);
+    transition: transform 0.15s ease;
   }
 
   p {
     margin: 0;
     font-size: 13px;
   }
+
+  &:hover {
+    color: var(--color-accent-700);
+
+    img {
+      transform: scale(1.04);
+    }
+  }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
+  .books-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
   .books-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bio-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .tag-row {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .books-grid {
+    grid-template-columns: 1fr;
   }
 }

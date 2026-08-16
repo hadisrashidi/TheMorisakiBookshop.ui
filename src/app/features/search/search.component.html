@@ -8,7 +8,7 @@
         <label class="radio square" *ngFor="let genre of availableGenres">
           <input
             type="checkbox"
-            [checked]="selectedGenres.has(genre)"
+            [checked]="selectedGenres().includes(genre)"
             (change)="toggleGenre(genre)"
           />
           <span class="dot"></span>
@@ -21,7 +21,7 @@
         <label class="radio square" *ngFor="let language of availableLanguages">
           <input
             type="checkbox"
-            [checked]="selectedLanguages.has(language)"
+            [checked]="selectedLanguages().includes(language)"
             (change)="toggleLanguage(language)"
           />
           <span class="dot"></span>
@@ -32,75 +32,106 @@
 
         <h6>وضعیت موجودی</h6>
         <label class="radio">
-          <input type="radio" name="stock" [checked]="stockFilter === 'all'" (change)="stockFilter = 'all'" />
+          <input type="radio" name="stock" [checked]="stockFilter() === 'all'" (change)="setStockFilter('all')" />
           <span class="dot"></span>
           همه
         </label>
         <label class="radio">
-          <input type="radio" name="stock" [checked]="stockFilter === 'inStock'" (change)="stockFilter = 'inStock'" />
+          <input type="radio" name="stock" [checked]="stockFilter() === 'inStock'" (change)="setStockFilter('inStock')" />
           <span class="dot"></span>
           فقط موجود
         </label>
 
-        <button type="button" class="btn btn-secondary btn-block" (click)="clearFilters()">پاک کردن فیلترها</button>
+        <button
+          type="button"
+          class="btn btn-secondary btn-block"
+          [disabled]="!hasActiveFilters()"
+          (click)="clearFilters()"
+        >پاک کردن فیلترها</button>
       </div>
     </aside>
 
     <div class="results-col">
       <div class="results-head">
         <div>
-          <h3>نتایج جستجو برای «{{ query }}»</h3>
-          <span class="text-muted result-count">{{ results.length }} نتیجه</span>
+          <h3 *ngIf="query()">نتایج جستجو برای «{{ query() }}»</h3>
+          <h3 *ngIf="!query()">همه کتاب‌ها</h3>
+          <span class="text-muted result-count">{{ results().length }} نتیجه</span>
         </div>
 
-        <div class="seg">
-          <label class="seg-opt" [class.active]="sort === ''">
-            <input type="radio" name="sort" [checked]="sort === ''" (change)="setSort('')" />
+        <div class="seg sort-seg">
+          <label class="seg-opt" [class.active]="sort() === ''">
+            <input type="radio" name="sort" [checked]="sort() === ''" (change)="setSort('')" />
             پرفروش‌ترین
           </label>
-          <label class="seg-opt" [class.active]="sort === 'price_asc'">
-            <input type="radio" name="sort" [checked]="sort === 'price_asc'" (change)="setSort('price_asc')" />
+          <label class="seg-opt" [class.active]="sort() === 'price_asc'">
+            <input type="radio" name="sort" [checked]="sort() === 'price_asc'" (change)="setSort('price_asc')" />
             ارزان‌ترین
           </label>
-          <label class="seg-opt" [class.active]="sort === 'newest'">
-            <input type="radio" name="sort" [checked]="sort === 'newest'" (change)="setSort('newest')" />
+          <label class="seg-opt" [class.active]="sort() === 'newest'">
+            <input type="radio" name="sort" [checked]="sort() === 'newest'" (change)="setSort('newest')" />
             جدیدترین
           </label>
         </div>
       </div>
 
-      <div class="results-grid" *ngIf="!loading; else loadingTpl">
-        <a
-          class="card elev-sm"
-          *ngFor="let book of pagedResults()"
-          [routerLink]="['/books', book.id]"
-        >
-          <img class="washed cover" [src]="book.image" [alt]="book.title" />
-          <p class="card-title">{{ book.title }}</p>
-          <p class="card-body">{{ authorName(book.authorId) }}</p>
-          <div class="result-foot">
-            <span class="price">{{ book.price }} تومان</span>
-            <span class="tag tag-accent-2">موجود</span>
-          </div>
-        </a>
+      <p class="text-muted" *ngIf="loading()">در حال جستجو...</p>
 
-        <p class="text-muted" *ngIf="results.length === 0">کتابی با این مشخصات پیدا نشد.</p>
-      </div>
+      <ng-container *ngIf="!loading()">
+        <div class="empty-state card" *ngIf="results().length === 0">
+          <p>کتابی با این مشخصات پیدا نشد.</p>
+          <button type="button" class="btn btn-secondary" *ngIf="hasActiveFilters()" (click)="clearFilters()">
+            پاک کردن فیلترها
+          </button>
+        </div>
 
-      <ng-template #loadingTpl>
-        <p class="text-muted">در حال جستجو...</p>
-      </ng-template>
+        <div class="results-grid" *ngIf="results().length > 0">
+          <a
+            class="card elev-sm book-card"
+            *ngFor="let book of pagedResults()"
+            [routerLink]="['/books', book.id]"
+          >
+            <button
+              type="button"
+              class="btn btn-icon like-btn"
+              [class.liked]="book.id !== undefined && likedService.isLiked(book.id)"
+              (click)="toggleLiked($event, book)"
+              [attr.aria-label]="(book.id !== undefined && likedService.isLiked(book.id)) ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="(book.id !== undefined && likedService.isLiked(book.id)) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
 
-      <div class="pagination" *ngIf="pageCount() > 1">
-        <button
-          type="button"
-          class="btn btn-icon"
-          *ngFor="let p of pageNumbers()"
-          [class.btn-primary]="p === page()"
-          [class.btn-secondary]="p !== page()"
-          (click)="goToPage(p)"
-        >{{ p }}</button>
-      </div>
+            <img class="washed cover" [src]="book.image" [alt]="book.title" />
+            <p class="card-title clamp-2">{{ book.title }}</p>
+            <p class="card-body">{{ authorName(book.authorId) }}</p>
+            <div class="result-foot">
+              <span class="price">{{ book.price }} تومان</span>
+              <span class="tag" [class.tag-accent-2]="book.inStock" [class.tag-neutral]="!book.inStock">
+                {{ book.inStock ? 'موجود' : 'ناموجود' }}
+              </span>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary add-btn"
+              [disabled]="!book.inStock"
+              (click)="addToCart($event, book)"
+            >
+              افزودن به سبد
+            </button>
+          </a>
+        </div>
+
+        <div class="pagination" *ngIf="pageCount() > 1">
+          <button
+            type="button"
+            class="btn btn-icon"
+            *ngFor="let p of pageNumbers()"
+            [class.btn-primary]="p === page()"
+            [class.btn-secondary]="p !== page()"
+            (click)="goToPage(p)"
+          >{{ p }}</button>
+        </div>
+      </ng-container>
     </div>
 
   </div>

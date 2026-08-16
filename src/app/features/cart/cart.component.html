@@ -1,60 +1,80 @@
 <div class="page">
-  <h2>سبد خرید</h2>
 
-  <p class="text-muted" *ngIf="cartService.items().length === 0">سبد خرید شما خالی است.</p>
-
-  <div class="layout" *ngIf="cartService.items().length > 0">
-
-    <div class="items-col">
-      <div class="card elev-sm item-row" *ngFor="let item of cartService.items()">
-        <img class="washed thumb" [src]="item.image" [alt]="item.title" (click)="goToBookDetail(item.id)" />
-
-        <div class="item-info">
-          <p class="card-title">{{ item.title }}</p>
-        </div>
-
-        <div class="seg qty-seg">
-          <button type="button" class="seg-opt" (click)="decrease(item.id, item.quantity)">−</button>
-          <span class="seg-opt qty-count">{{ item.quantity }}</span>
-          <button type="button" class="seg-opt" (click)="increase(item.id, item.quantity)">+</button>
-        </div>
-
-        <span class="line-price">{{ item.price }} تومان</span>
-
-        <button type="button" class="btn btn-icon" aria-label="حذف" (click)="remove(item.id)">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
-        </button>
-      </div>
+  <div class="card elev-sm success-card" *ngIf="placedOrderNumber(); else cartView">
+    <div class="success-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
     </div>
-
-    <div class="summary-col">
-      <div class="card elev-sm summary-card">
-        <h4>خلاصه سفارش</h4>
-        <div class="hr"></div>
-
-        <div class="summary-row">
-          <span>قیمت کالاها</span>
-          <span>{{ cartService.subtotal() }} تومان</span>
-        </div>
-        <div class="summary-row" *ngIf="cartService.discount() > 0">
-          <span>تخفیف</span>
-          <span class="discount">{{ cartService.discount() }} تومان</span>
-        </div>
-        <div class="summary-row">
-          <span>هزینه ارسال</span>
-          <span>{{ cartService.shipping() > 0 ? (cartService.shipping() + ' تومان') : 'رایگان' }}</span>
-        </div>
-
-        <div class="hr"></div>
-
-        <div class="summary-row total-row">
-          <span>مبلغ قابل پرداخت</span>
-          <span>{{ cartService.total() }} تومان</span>
-        </div>
-
-        <button type="button" class="btn btn-primary btn-block" disabled title="به‌زودی">ادامه فرایند خرید</button>
-      </div>
+    <h2>سفارش شما ثبت شد</h2>
+    <p class="text-muted">شماره سفارش: {{ placedOrderNumber() }}</p>
+    <p class="text-muted small-note">این یک ثبت سفارش نمایشی است؛ درگاه پرداخت هنوز راه‌اندازی نشده است.</p>
+    <div class="success-actions">
+      <button type="button" class="btn btn-primary" (click)="continueShopping()">بازگشت به فروشگاه</button>
+      <a routerLink="/profile" class="btn btn-secondary">سفارش‌های من</a>
     </div>
-
   </div>
+
+  <ng-template #cartView>
+    <h2>سبد خرید</h2>
+
+    <div class="card empty-card" *ngIf="cartService.items().length === 0">
+      <p class="text-muted">سبد خرید شما خالی است.</p>
+      <a routerLink="/search" class="btn btn-primary">مشاهده کتاب‌ها</a>
+    </div>
+
+    <div class="layout" *ngIf="cartService.items().length > 0">
+
+      <div class="items-col">
+        <div class="card elev-sm item-row" *ngFor="let item of cartService.items()">
+          <img class="washed thumb" [src]="item.image" [alt]="item.title" (click)="goToBookDetail(item.id)" />
+
+          <div class="item-info">
+            <p class="card-title">{{ item.title }}</p>
+            <span class="unit-price text-muted">{{ item.price }} تومان</span>
+          </div>
+
+          <div class="seg qty-seg">
+            <button type="button" class="seg-opt" (click)="decrease(item.id, item.quantity)" aria-label="کاهش تعداد">−</button>
+            <span class="seg-opt qty-count">{{ item.quantity }}</span>
+            <button type="button" class="seg-opt" (click)="increase(item.id, item.quantity)" aria-label="افزایش تعداد">+</button>
+          </div>
+
+          <span class="line-price">{{ item.price }} تومان</span>
+
+          <button type="button" class="btn btn-icon remove-btn" aria-label="حذف" (click)="remove(item.id)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="summary-col">
+        <div class="card elev-sm summary-card">
+          <h4>خلاصه سفارش</h4>
+          <div class="hr"></div>
+
+          <div class="summary-row">
+            <span>قیمت کالاها</span>
+            <span>{{ cartService.subtotal() }} تومان</span>
+          </div>
+          <div class="summary-row" *ngIf="cartService.discount() > 0">
+            <span>تخفیف</span>
+            <span class="discount">{{ cartService.discount() }} تومان</span>
+          </div>
+          <div class="summary-row">
+            <span>هزینه ارسال</span>
+            <span>{{ cartService.shipping() > 0 ? (cartService.shipping() + ' تومان') : 'رایگان' }}</span>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="summary-row total-row">
+            <span>مبلغ قابل پرداخت</span>
+            <span>{{ cartService.total() }} تومان</span>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-block" (click)="checkout()">ادامه فرایند خرید</button>
+        </div>
+      </div>
+
+    </div>
+  </ng-template>
 </div>

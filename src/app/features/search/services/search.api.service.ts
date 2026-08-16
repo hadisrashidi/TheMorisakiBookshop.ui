@@ -8,6 +8,7 @@ export interface SearchFilters {
   genres?: string[];
   languages?: string[];
   sort?: 'price_asc' | 'newest' | '';
+  inStockOnly?: boolean;
 }
 
 @Injectable({
@@ -29,6 +30,9 @@ export class SearchApiService {
     }
     if (filters.sort) {
       params = params.set('sort', filters.sort);
+    }
+    if (filters.inStockOnly) {
+      params = params.set('inStockOnly', 'true');
     }
 
     return this.http.get<Book[]>(apiUrl, { params });

@@ -9,7 +9,7 @@
   margin: 0 auto;
   padding: var(--space-8) var(--space-4);
 
-  h2 {
+  > h2 {
     margin: 0 0 var(--space-6);
   }
 }
@@ -23,7 +23,7 @@
 
 .items-col {
   flex: 1 1 400px;
-  min-width: 260px;
+  min-width: 0;
 }
 
 .item-row {
@@ -43,11 +43,16 @@
 }
 
 .item-info {
-  flex: 1;
+  flex: 1 1 140px;
+  min-width: 0;
 
   .card-title {
-    margin: 0;
+    margin: 0 0 2px;
   }
+}
+
+.unit-price {
+  font-size: 12px;
 }
 
 .qty-seg {
@@ -59,12 +64,13 @@
     border: none;
     background: transparent;
     font-family: var(--font-body);
+    font-size: 14px;
   }
 
   .qty-count {
     cursor: default;
-    min-width: 24px;
-    text-align: center;
+    min-width: 28px;
+    justify-content: center;
   }
 }
 
@@ -72,14 +78,25 @@
   color: var(--color-accent-700);
   font-weight: 700;
   font-size: 15px;
-  width: 100px;
+  width: 110px;
   text-align: left;
   flex-shrink: 0;
+}
+
+.remove-btn {
+  color: var(--color-neutral-500);
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--color-accent-700);
+  }
 }
 
 .summary-col {
   flex: 0 0 300px;
   min-width: 240px;
+  position: sticky;
+  top: var(--space-4);
 }
 
 .summary-card {
@@ -93,6 +110,7 @@
 .summary-row {
   display: flex;
   justify-content: space-between;
+  gap: var(--space-2);
   font-size: 14px;
   padding: 2px 0;
 }
@@ -110,17 +128,74 @@
   }
 }
 
-@media (max-width: 640px) {
-  .items-col,
-  .summary-col {
-    flex: 1 1 100%;
+.empty-card {
+  align-items: flex-start;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  padding: var(--space-8) var(--space-4);
+
+  p {
+    margin: 0;
+  }
+}
+
+.success-card {
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  background: var(--color-surface);
+
+  h2 {
+    margin: 0;
   }
 
+  p {
+    margin: 0;
+  }
+}
+
+.success-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-accent-2-100);
+  color: var(--color-accent-2-800);
+  margin-bottom: var(--space-2);
+}
+
+.small-note {
+  font-size: 12px;
+}
+
+.success-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .summary-col {
+    flex: 1 1 100%;
+    position: static;
+  }
+}
+
+@media (max-width: 560px) {
   .item-row {
     flex-wrap: wrap;
   }
 
+  .item-info {
+    flex-basis: calc(100% - 64px - var(--space-4));
+  }
+
   .line-price {
     width: auto;
+    text-align: start;
   }
 }
