@@ -68,6 +68,10 @@
             <input type="radio" name="sort" [checked]="sort() === 'price_asc'" (change)="setSort('price_asc')" />
             ارزان‌ترین
           </label>
+          <label class="seg-opt" [class.active]="sort() === 'price_desc'">
+            <input type="radio" name="sort" [checked]="sort() === 'price_desc'" (change)="setSort('price_desc')" />
+            گران‌ترین
+          </label>
           <label class="seg-opt" [class.active]="sort() === 'newest'">
             <input type="radio" name="sort" [checked]="sort() === 'newest'" (change)="setSort('newest')" />
             جدیدترین

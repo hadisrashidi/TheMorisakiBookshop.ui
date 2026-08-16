@@ -7,7 +7,7 @@ import { Book } from '../../home/models/book.model';
 export interface SearchFilters {
   genres?: string[];
   languages?: string[];
-  sort?: 'price_asc' | 'newest' | '';
+  sort?: 'price_asc' | 'price_desc' | 'newest' | '';
   inStockOnly?: boolean;
 }
 

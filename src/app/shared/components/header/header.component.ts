@@ -1,11 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, computed, inject } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { filter, map, startWith } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { CartService } from '../../services/cart.service';
 import { LikedService } from '../../services/liked.service';
+
+const SEARCH_DEBOUNCE_MS = 400;
 
 @Component({
   selector: 'app-header',
@@ -44,12 +47,50 @@ export class HeaderComponent {
   isCartPage = computed(() => this.currentUrl().startsWith('/cart'));
   isProfilePage = computed(() => this.currentUrl().startsWith('/profile'));
 
+  // Typing searches on its own after a short pause; Enter just skips the
+  // wait. Clearing the box searches for "" — which the API treats as
+  // "no query", so the page falls back to the full catalogue.
+  private typed$ = new Subject<string>();
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+
+    this.typed$
+      .pipe(
+        debounceTime(SEARCH_DEBOUNCE_MS),
+        distinctUntilChanged(),
+        takeUntilDestroyed(destroyRef)
+      )
+      .subscribe(query => this.runSearch(query));
+
+    // Keep the box in step with the URL, so arriving via a category link
+    // or the browser's back button shows the query actually in effect.
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(destroyRef)
+      )
+      .subscribe(() => {
+        const q = this.router.parseUrl(this.router.url).queryParams['q'] ?? '';
+        if (q !== this.searchQuery) {
+          this.searchQuery = q;
+        }
+      });
+  }
+
+  onSearchInput(value: string) {
+    this.searchQuery = value;
+    this.typed$.next(value.trim());
+  }
+
   search() {
-    const query = this.searchQuery.trim();
-    if (!query) {
-      return;
-    }
-    this.router.navigate(['/search'], { queryParams: { q: query } });
+    this.runSearch(this.searchQuery.trim());
+  }
+
+  private runSearch(query: string) {
+    this.router.navigate(['/search'], {
+      queryParams: query ? { q: query } : {}
+    });
   }
 
   goToCart() {
