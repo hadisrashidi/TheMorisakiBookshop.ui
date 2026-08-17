@@ -7,11 +7,12 @@ import { Author } from './models/author.model';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -102,11 +103,7 @@ export class HomeComponent implements OnInit {
   toggleLiked(event: Event, book: Book) {
     event.preventDefault();
     event.stopPropagation();
-    const wasLiked = this.isLiked(book);
     this.likedService.toggle(book, this.authorName(book.authorId));
-    wasLiked
-      ? this.toast.info('از علاقه‌مندی‌ها حذف شد.')
-      : this.toast.success('به علاقه‌مندی‌ها اضافه شد.', { label: 'مشاهده', route: '/liked' });
   }
 
   isLiked(book: Book): boolean {

@@ -4,11 +4,12 @@ import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../shared/services/cart.service';
 import { OrdersService } from '../../shared/services/orders.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
 })

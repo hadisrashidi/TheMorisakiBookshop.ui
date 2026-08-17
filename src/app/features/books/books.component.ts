@@ -10,11 +10,12 @@ import { LikedService } from '../../shared/services/liked.service';
 import { AuthorsApiService } from '../authors/services/authors.api.service';
 import { ReviewsApiService } from '../../shared/services/reviews.api.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 @Component({
   selector: 'app-books',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './books.component.html',
   styleUrl: './books.component.scss'
 })
@@ -115,11 +116,7 @@ export class BooksComponent implements OnInit {
   }
 
   toggleLiked() {
-    const wasLiked = this.isLiked;
     this.likedService.toggle(this.book, this.author?.name);
-    wasLiked
-      ? this.toast.info('از علاقه‌مندی‌ها حذف شد.')
-      : this.toast.success('به علاقه‌مندی‌ها اضافه شد.', { label: 'مشاهده', route: '/liked' });
   }
 
   get isLiked(): boolean {
