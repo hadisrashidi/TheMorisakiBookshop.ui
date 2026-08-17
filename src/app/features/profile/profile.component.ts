@@ -29,12 +29,22 @@ export class ProfileComponent {
   // away without saving discards the edits.
   draft = signal<UserProfile>({ ...this.profileService.profile() });
 
-  saved = signal(false);
-  error = signal('');
+  // The page opens as a read-only summary; the fields only accept input
+  // after "اصلاح مشخصات", which is also when the button becomes "ذخیره تغییرات".
+  editing = signal(false);
+
+  startEdit() {
+    this.draft.set({ ...this.profileService.profile() });
+    this.editing.set(true);
+  }
+
+  cancelEdit() {
+    this.draft.set({ ...this.profileService.profile() });
+    this.editing.set(false);
+  }
 
   onField(field: keyof UserProfile, value: string) {
     this.draft.update(d => ({ ...d, [field]: value }));
-    this.saved.set(false);
   }
 
   onAvatarSelected(event: Event) {
@@ -45,13 +55,11 @@ export class ProfileComponent {
     }
 
     if (!file.type.startsWith('image/')) {
-      this.error.set('لطفاً یک فایل تصویری انتخاب کنید.');
       this.toast.error('لطفاً یک فایل تصویری انتخاب کنید.');
       return;
     }
 
     if (file.size > MAX_AVATAR_BYTES) {
-      this.error.set('حجم تصویر باید کمتر از ۲ مگابایت باشد.');
       this.toast.warning('حجم تصویر باید کمتر از ۲ مگابایت باشد.');
       return;
     }
@@ -60,14 +68,9 @@ export class ProfileComponent {
     // upload endpoint to POST the file to yet.
     const reader = new FileReader();
     reader.onload = () => {
-      this.error.set('');
       this.draft.update(d => ({ ...d, avatar: String(reader.result ?? '') }));
-      this.saved.set(false);
-    };
-    reader.onerror = () => {
-      this.error.set('خواندن تصویر ناموفق بود.');
-      this.toast.error('خواندن تصویر ناموفق بود.');
-    };
+      };
+    reader.onerror = () => this.toast.error('خواندن تصویر ناموفق بود.');
     reader.readAsDataURL(file);
 
     // Allows re-picking the same file straight after.
@@ -76,13 +79,11 @@ export class ProfileComponent {
 
   removeAvatar() {
     this.draft.update(d => ({ ...d, avatar: '' }));
-    this.saved.set(false);
   }
 
   save() {
     this.profileService.save(this.draft());
-    this.saved.set(true);
-    this.error.set('');
+    this.editing.set(false);
     this.toast.success('تغییرات ذخیره شد.');
   }
 

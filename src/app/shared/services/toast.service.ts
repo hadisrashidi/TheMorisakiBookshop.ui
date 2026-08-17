@@ -2,10 +2,17 @@ import { Injectable, signal } from '@angular/core';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
+/** Optional inline link, e.g. "به سبد خرید اضافه شد. [مشاهده سبد]". */
+export interface ToastAction {
+  label: string;
+  route: string;
+}
+
 export interface Toast {
   id: number;
   type: ToastType;
   message: string;
+  action?: ToastAction;
 }
 
 const DEFAULT_DURATION_MS = 3500;
@@ -21,25 +28,25 @@ export class ToastService {
   private toastsSignal = signal<Toast[]>([]);
   toasts = this.toastsSignal.asReadonly();
 
-  success(message: string, duration?: number) {
-    this.show('success', message, duration);
+  success(message: string, action?: ToastAction, duration?: number) {
+    this.show('success', message, action, duration);
   }
 
-  error(message: string, duration?: number) {
+  error(message: string, action?: ToastAction, duration?: number) {
     // Errors linger a little longer — they usually need reading.
-    this.show('error', message, duration ?? 5000);
+    this.show('error', message, action, duration ?? 5000);
   }
 
-  warning(message: string, duration?: number) {
-    this.show('warning', message, duration ?? 4500);
+  warning(message: string, action?: ToastAction, duration?: number) {
+    this.show('warning', message, action, duration ?? 4500);
   }
 
-  info(message: string, duration?: number) {
-    this.show('info', message, duration);
+  info(message: string, action?: ToastAction, duration?: number) {
+    this.show('info', message, action, duration);
   }
 
-  show(type: ToastType, message: string, duration = DEFAULT_DURATION_MS) {
-    const toast: Toast = { id: this.nextId++, type, message };
+  show(type: ToastType, message: string, action?: ToastAction, duration = DEFAULT_DURATION_MS) {
+    const toast: Toast = { id: this.nextId++, type, message, action };
     this.toastsSignal.update(list => [...list, toast]);
 
     const timer = setTimeout(() => this.dismiss(toast.id), duration);

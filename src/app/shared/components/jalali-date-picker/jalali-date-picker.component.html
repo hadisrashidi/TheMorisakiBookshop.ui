@@ -6,10 +6,17 @@
     placeholder="۱۳۷۲/۰۵/۱۲"
     dir="ltr"
     [value]="text()"
+    [readonly]="readOnly"
     (input)="onTextInput($any($event.target).value)"
-    (focus)="open.set(true)"
+    (focus)="readOnly || open.set(true)"
   />
-  <button type="button" class="calendar-btn" (click)="toggle()" aria-label="انتخاب تاریخ">
+  <button
+    type="button"
+    class="calendar-btn"
+    *ngIf="!readOnly"
+    (click)="toggle()"
+    aria-label="انتخاب تاریخ"
+  >
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
   </button>
 

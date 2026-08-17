@@ -79,7 +79,13 @@
         </div>
       </div>
 
-      <p class="text-muted" *ngIf="loading()">در حال جستجو...</p>
+      <div class="results-grid" *ngIf="loading()">
+        <div class="card elev-sm" *ngFor="let s of skeletonCards" aria-hidden="true">
+          <div class="skeleton skeleton-cover"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line short"></div>
+        </div>
+      </div>
 
       <ng-container *ngIf="!loading()">
         <div class="empty-state card" *ngIf="results().length === 0">

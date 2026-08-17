@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, forwardRef, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, forwardRef, inject, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   JALALI_MONTHS,
@@ -29,6 +29,11 @@ import {
 export class JalaliDatePickerComponent implements ControlValueAccessor {
 
   private host = inject(ElementRef<HTMLElement>);
+
+  // Display-only mode: the text stays visible but can't be typed into and
+  // the calendar won't open. Used by the profile page before the user
+  // presses "اصلاح مشخصات".
+  @Input() readOnly = false;
 
   readonly months = JALALI_MONTHS;
   readonly weekdays = JALALI_WEEKDAYS;
@@ -82,6 +87,9 @@ export class JalaliDatePickerComponent implements ControlValueAccessor {
   }
 
   toggle() {
+    if (this.readOnly) {
+      return;
+    }
     this.open.update(v => !v);
     if (this.open()) {
       const current = this.selected() ?? todayJalali();
@@ -95,6 +103,9 @@ export class JalaliDatePickerComponent implements ControlValueAccessor {
   // way in. An unparseable string is kept as-is so the field doesn't
   // fight the user mid-edit.
   onTextInput(value: string) {
+    if (this.readOnly) {
+      return;
+    }
     this.text.set(value);
     const parsed = parseJalali(value);
     this.selected.set(parsed);

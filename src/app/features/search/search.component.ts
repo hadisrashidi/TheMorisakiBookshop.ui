@@ -7,6 +7,7 @@ import { SearchApiService, SearchFilters } from './services/search.api.service';
 import { HomeApiService } from '../home/services/home.api.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 const PAGE_SIZE = 9;
 
@@ -25,6 +26,7 @@ export class SearchComponent implements OnInit {
   private homeApiService = inject(HomeApiService);
   private cartService = inject(CartService);
   likedService = inject(LikedService);
+  private toast = inject(ToastService);
 
   private authorNames = signal(new Map<number, string>());
 
@@ -42,6 +44,9 @@ export class SearchComponent implements OnInit {
   selectedLanguages = signal<string[]>([]);
   stockFilter = signal<'all' | 'inStock'>('all');
   sort = signal<'price_asc' | 'price_desc' | 'newest' | ''>('');
+
+  // Repeats skeleton cards while a search is in flight.
+  readonly skeletonCards = Array.from({ length: 6 });
 
   page = signal(1);
   pageCount = computed(() => Math.max(1, Math.ceil(this.results().length / PAGE_SIZE)));
@@ -147,11 +152,16 @@ export class SearchComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     this.cartService.addToCart(book);
+    this.toast.success('به سبد خرید اضافه شد.', { label: 'مشاهده سبد', route: '/cart' });
   }
 
   toggleLiked(event: Event, book: Book) {
     event.preventDefault();
     event.stopPropagation();
+    const wasLiked = book.id !== undefined && this.likedService.isLiked(book.id);
     this.likedService.toggle(book, this.authorName(book.authorId));
+    wasLiked
+      ? this.toast.info('از علاقه‌مندی‌ها حذف شد.')
+      : this.toast.success('به علاقه‌مندی‌ها اضافه شد.', { label: 'مشاهده', route: '/liked' });
   }
 }
