@@ -1,6 +1,24 @@
 <div class="page">
 
-  <div class="hero">
+  <!-- Placeholder shaped like the hero below, so a slow detail request
+       shows the page's layout instead of an empty screen. -->
+  <div class="hero" *ngIf="loadingBook()" aria-hidden="true">
+    <div class="main-col hero-skeleton">
+      <div class="skeleton skeleton-line title"></div>
+      <div class="skeleton skeleton-line short"></div>
+      <div class="skeleton skeleton-block specs"></div>
+      <div class="skeleton skeleton-line medium"></div>
+      <div class="skeleton skeleton-block actions"></div>
+    </div>
+    <div class="cover-col">
+      <div class="skeleton skeleton-cover"></div>
+    </div>
+    <div class="side-col hero-skeleton">
+      <div class="skeleton skeleton-block related"></div>
+    </div>
+  </div>
+
+  <div class="hero" *ngIf="!loadingBook()">
     <div class="main-col">
       <h2>{{ book.title }}</h2>
       <a
@@ -45,10 +63,6 @@
         </button>
       </div>
 
-      <div class="added-note" *ngIf="addedToCart">
-        <span>به سبد خرید اضافه شد.</span>
-        <a routerLink="/cart">مشاهده سبد</a>
-      </div>
     </div>
 
     <div class="cover-col">
@@ -73,7 +87,7 @@
     </div>
   </div>
 
-  <div class="tabs-section">
+  <div class="tabs-section" *ngIf="!loadingBook()">
     <div class="seg">
       <label class="seg-opt" [class.active]="tab === 'description'">
         <input type="radio" name="tabs" [checked]="tab === 'description'" (change)="tab = 'description'" />

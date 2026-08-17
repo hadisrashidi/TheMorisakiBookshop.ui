@@ -309,6 +309,74 @@
   color: color-mix(in srgb, var(--color-text) 55%, transparent);
 }
 
+// — loading skeletons —
+// Placeholder blocks shaped like the content they stand in for, so a slow
+// page shows its layout instead of an empty screen or a bare spinner.
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-neutral-200);
+  border-radius: var(--radius-sm);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-neutral-100) 85%, transparent),
+      transparent
+    );
+    animation: skeleton-sweep 1.3s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+.skeleton-cover {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+
+  &.short {
+    width: 45%;
+  }
+
+  &.medium {
+    width: 70%;
+  }
+}
+
+.skeleton-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+}
+
+// Larger slab for a table, a button row, a side panel. The consuming
+// component sets the height it needs.
+.skeleton-block {
+  width: 100%;
+  border-radius: var(--radius-md);
+}
+
 // Every content photograph goes through this wrapper — desaturated,
 // lower-contrast, so it sits back into the warm page instead of on top.
 // The background keeps the slot from flashing bare page colour while the

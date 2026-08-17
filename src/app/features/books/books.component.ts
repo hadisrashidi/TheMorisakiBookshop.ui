@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { BooksApiService } from './services/books.api.service';
 import { Book } from '../home/models/book.model';
@@ -9,6 +9,7 @@ import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { AuthorsApiService } from '../authors/services/authors.api.service';
 import { ReviewsApiService } from '../../shared/services/reviews.api.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-books',
@@ -25,6 +26,7 @@ export class BooksComponent implements OnInit {
   private reviewsApiService = inject(ReviewsApiService);
   cartService = inject(CartService);
   likedService = inject(LikedService);
+  private toast = inject(ToastService);
 
   book: Book = new Book();
   author: Author | null = null;
@@ -32,7 +34,7 @@ export class BooksComponent implements OnInit {
   similarBooks: Book[] = [];
   reviews: Review[] = [];
   tab: 'description' | 'reviews' = 'description';
-  addedToCart = false;
+  loadingBook = signal(true);
 
   ngOnInit(): void {
     // paramMap (not snapshot) — navigating between books via the related
@@ -45,6 +47,7 @@ export class BooksComponent implements OnInit {
       }
 
       this.resetForNavigation();
+      this.loadingBook.set(true);
       this.getBookDetails(id);
       this.getRelatedBooks(id);
       this.getSimilarBooks(id);
@@ -60,18 +63,21 @@ export class BooksComponent implements OnInit {
     this.similarBooks = [];
     this.reviews = [];
     this.tab = 'description';
-    this.addedToCart = false;
   }
 
   getBookDetails(id: number) {
     this.booksApiService.getBookById(id).subscribe({
       next: (data) => {
         this.book = data;
+        this.loadingBook.set(false);
         if (data.authorId !== undefined) {
           this.getAuthor(data.authorId);
         }
       },
-      error: (err) => console.error('Error loading book', err)
+      error: (err) => {
+        console.error('Error loading book', err);
+        this.loadingBook.set(false);
+      }
     });
   }
 
@@ -105,11 +111,15 @@ export class BooksComponent implements OnInit {
 
   addToCart() {
     this.cartService.addToCart(this.book);
-    this.addedToCart = true;
+    this.toast.success('به سبد خرید اضافه شد.', { label: 'مشاهده سبد', route: '/cart' });
   }
 
   toggleLiked() {
+    const wasLiked = this.isLiked;
     this.likedService.toggle(this.book, this.author?.name);
+    wasLiked
+      ? this.toast.info('از علاقه‌مندی‌ها حذف شد.')
+      : this.toast.success('به علاقه‌مندی‌ها اضافه شد.', { label: 'مشاهده', route: '/liked' });
   }
 
   get isLiked(): boolean {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, computed, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs
 import { CartService } from '../../services/cart.service';
 import { LikedService } from '../../services/liked.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 const SEARCH_DEBOUNCE_MS = 400;
 
@@ -24,6 +25,8 @@ export class HeaderComponent {
   private cartService = inject(CartService);
   private likedService = inject(LikedService);
   auth = inject(AuthService);
+  private toast = inject(ToastService);
+  private host = inject(ElementRef<HTMLElement>);
 
   searchQuery = '';
   cartCount = this.cartService.totalCount;
@@ -49,8 +52,36 @@ export class HeaderComponent {
   isCartPage = computed(() => this.currentUrl().startsWith('/cart'));
   isProfilePage = computed(() => this.currentUrl().startsWith('/profile'));
 
-  // Signed out, the person icon goes to login instead of the account page.
-  accountLink = computed(() => (this.auth.isLoggedIn() ? '/profile' : '/login'));
+  // Signed out, the person icon is a plain link to login. Signed in, it
+  // opens a small account menu instead.
+  accountMenuOpen = signal(false);
+
+  toggleAccountMenu() {
+    this.accountMenuOpen.update(v => !v);
+  }
+
+  closeAccountMenu() {
+    this.accountMenuOpen.set(false);
+  }
+
+  logout() {
+    this.auth.logout();
+    this.closeAccountMenu();
+    this.toast.info('از حساب خود خارج شدید.');
+    this.router.navigate(['/']);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.accountMenuOpen() && !this.host.nativeElement.contains(event.target as Node)) {
+      this.closeAccountMenu();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.closeAccountMenu();
+  }
 
   // Typing searches on its own after a short pause; Enter just skips the
   // wait. Clearing the box searches for "" — which the API treats as

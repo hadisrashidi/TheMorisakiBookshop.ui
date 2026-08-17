@@ -9,6 +9,7 @@ import { BooksApiService } from '../books/services/books.api.service';
 import { ReviewsApiService } from '../../shared/services/reviews.api.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-author-detail',
@@ -25,6 +26,7 @@ export class AuthorDetailComponent implements OnInit {
   private reviewsApiService = inject(ReviewsApiService);
   private cartService = inject(CartService);
   likedService = inject(LikedService);
+  private toast = inject(ToastService);
 
   author: Author | null = null;
   books: Book[] = [];
@@ -75,12 +77,17 @@ export class AuthorDetailComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     this.cartService.addToCart(book);
+    this.toast.success('به سبد خرید اضافه شد.', { label: 'مشاهده سبد', route: '/cart' });
   }
 
   toggleLiked(event: Event, book: Book) {
     event.preventDefault();
     event.stopPropagation();
+    const wasLiked = this.isLiked(book);
     this.likedService.toggle(book, this.author?.name);
+    wasLiked
+      ? this.toast.info('از علاقه‌مندی‌ها حذف شد.')
+      : this.toast.success('به علاقه‌مندی‌ها اضافه شد.', { label: 'مشاهده', route: '/liked' });
   }
 
   isLiked(book: Book): boolean {
