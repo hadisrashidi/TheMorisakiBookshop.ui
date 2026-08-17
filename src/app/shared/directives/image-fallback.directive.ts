@@ -1,6 +1,6 @@
 import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 
-const FALLBACK_SRC = '/cover-placeholder.svg';
+const FALLBACK_SRC = '/cover-placeholder.png';
 
 // Every content image in the app carries the .washed class, so this hooks
 // them all without touching a single template. If a cover or portrait
