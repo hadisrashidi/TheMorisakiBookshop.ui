@@ -3,6 +3,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../shared/services/cart.service';
 import { OrdersService } from '../../shared/services/orders.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-cart',
@@ -15,6 +16,7 @@ export class CartComponent {
 
   private router = inject(Router);
   private ordersService = inject(OrdersService);
+  private toast = inject(ToastService);
   cartService = inject(CartService);
 
   // There's no payment gateway yet, so "checkout" records the order
@@ -36,6 +38,7 @@ export class CartComponent {
 
   remove(id: number) {
     this.cartService.removeFromCart(id);
+    this.toast.info('کالا از سبد خرید حذف شد.');
   }
 
   checkout() {
@@ -52,6 +55,7 @@ export class CartComponent {
 
     this.placedOrderNumber.set(order.id);
     this.cartService.clear();
+    this.toast.success(`سفارش ${order.id} با موفقیت ثبت شد.`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 

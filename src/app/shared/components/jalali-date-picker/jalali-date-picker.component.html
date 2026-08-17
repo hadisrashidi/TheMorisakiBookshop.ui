@@ -16,7 +16,27 @@
   <div class="calendar card elev-md" *ngIf="open()">
     <div class="cal-head">
       <button type="button" class="nav-btn" (click)="prevMonth()" aria-label="ماه قبل">‹</button>
-      <span class="cal-title">{{ months[viewMonth() - 1] }} {{ viewYear() }}</span>
+
+      <div class="cal-selects">
+        <select
+          class="cal-select"
+          aria-label="ماه"
+          [value]="viewMonth()"
+          (change)="setMonth($any($event.target).value)"
+        >
+          <option *ngFor="let m of months; let i = index" [value]="i + 1">{{ m }}</option>
+        </select>
+
+        <select
+          class="cal-select"
+          aria-label="سال"
+          [value]="viewYear()"
+          (change)="setYear($any($event.target).value)"
+        >
+          <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+        </select>
+      </div>
+
       <button type="button" class="nav-btn" (click)="nextMonth()" aria-label="ماه بعد">›</button>
     </div>
 
@@ -36,5 +56,7 @@
         (click)="pick(day)"
       >{{ day }}</button>
     </div>
+
+    <button type="button" class="today-btn" (click)="jumpToToday()">امروز</button>
   </div>
 </div>

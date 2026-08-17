@@ -1,0 +1,53 @@
+@use '../../shared/styles/organic-components';
+
+:host {
+  display: block;
+}
+
+.auth-page {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.auth-card {
+  h2 {
+    margin: 0;
+  }
+}
+
+.auth-intro {
+  margin: 0 0 var(--space-2);
+  font-size: 13px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+// Emails and passwords are Latin — isolate so the RTL page doesn't
+// reorder them.
+.ltr-field {
+  unicode-bidi: isolate;
+  text-align: right;
+}
+
+.error-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-accent-800);
+}
+
+.auth-switch {
+  margin: var(--space-4) 0 0;
+  font-size: 13px;
+  text-align: center;
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+
+  a {
+    color: var(--color-accent-700);
+    font-weight: 600;
+  }
+}

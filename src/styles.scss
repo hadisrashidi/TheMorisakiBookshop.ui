@@ -121,6 +121,5 @@ a:hover {
   }
 }
 
-.site-main {
-  min-height: 60vh;
-}
+// Height is handled by the layout's sticky-footer flex column, not by a
+// fixed min-height here (that left a gap under short pages).

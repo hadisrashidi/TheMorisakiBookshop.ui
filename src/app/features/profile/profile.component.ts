@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ProfileService, UserProfile } from '../../shared/services/profile.service';
 import { OrdersService } from '../../shared/services/orders.service';
 import { JalaliDatePickerComponent } from '../../shared/components/jalali-date-picker/jalali-date-picker.component';
+import { ToastService } from '../../shared/services/toast.service';
+import { AuthService } from '../../shared/services/auth.service';
 
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 
@@ -19,6 +21,9 @@ export class ProfileComponent {
 
   private profileService = inject(ProfileService);
   ordersService = inject(OrdersService);
+  private toast = inject(ToastService);
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
   // Edited copy — only written back to the service on save, so navigating
   // away without saving discards the edits.
@@ -41,11 +46,13 @@ export class ProfileComponent {
 
     if (!file.type.startsWith('image/')) {
       this.error.set('لطفاً یک فایل تصویری انتخاب کنید.');
+      this.toast.error('لطفاً یک فایل تصویری انتخاب کنید.');
       return;
     }
 
     if (file.size > MAX_AVATAR_BYTES) {
       this.error.set('حجم تصویر باید کمتر از ۲ مگابایت باشد.');
+      this.toast.warning('حجم تصویر باید کمتر از ۲ مگابایت باشد.');
       return;
     }
 
@@ -57,7 +64,10 @@ export class ProfileComponent {
       this.draft.update(d => ({ ...d, avatar: String(reader.result ?? '') }));
       this.saved.set(false);
     };
-    reader.onerror = () => this.error.set('خواندن تصویر ناموفق بود.');
+    reader.onerror = () => {
+      this.error.set('خواندن تصویر ناموفق بود.');
+      this.toast.error('خواندن تصویر ناموفق بود.');
+    };
     reader.readAsDataURL(file);
 
     // Allows re-picking the same file straight after.
@@ -73,5 +83,12 @@ export class ProfileComponent {
     this.profileService.save(this.draft());
     this.saved.set(true);
     this.error.set('');
+    this.toast.success('تغییرات ذخیره شد.');
+  }
+
+  logout() {
+    this.auth.logout();
+    this.toast.info('از حساب خود خارج شدید.');
+    this.router.navigate(['/']);
   }
 }

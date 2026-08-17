@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { CartService } from '../../services/cart.service';
 import { LikedService } from '../../services/liked.service';
+import { AuthService } from '../../services/auth.service';
 
 const SEARCH_DEBOUNCE_MS = 400;
 
@@ -22,6 +23,7 @@ export class HeaderComponent {
   private router = inject(Router);
   private cartService = inject(CartService);
   private likedService = inject(LikedService);
+  auth = inject(AuthService);
 
   searchQuery = '';
   cartCount = this.cartService.totalCount;
@@ -46,6 +48,9 @@ export class HeaderComponent {
   isLikedPage = computed(() => this.currentUrl().startsWith('/liked'));
   isCartPage = computed(() => this.currentUrl().startsWith('/cart'));
   isProfilePage = computed(() => this.currentUrl().startsWith('/profile'));
+
+  // Signed out, the person icon goes to login instead of the account page.
+  accountLink = computed(() => (this.auth.isLoggedIn() ? '/profile' : '/login'));
 
   // Typing searches on its own after a short pause; Enter just skips the
   // wait. Clearing the box searches for "" — which the API treats as
