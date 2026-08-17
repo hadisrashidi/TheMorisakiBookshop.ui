@@ -116,6 +116,18 @@
     font-weight: 700;
     background: var(--color-accent-100);
   }
+
+  button.nav-item {
+    border: none;
+    background: transparent;
+    font: inherit;
+    text-align: inherit;
+    width: 100%;
+  }
+
+  .nav-item.logout {
+    color: var(--color-accent-800);
+  }
 }
 
 .main-col {

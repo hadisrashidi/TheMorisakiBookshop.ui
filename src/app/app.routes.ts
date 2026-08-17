@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './core/components/layout/layout.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -37,17 +38,31 @@ export const routes: Routes = [
           import('./features/liked/liked.component').then(m => m.LikedComponent),
       },
       {
+        path: 'login',
+        loadComponent: () =>
+          import('./features/auth/login.component').then(m => m.LoginComponent),
+      },
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('./features/auth/register.component').then(m => m.RegisterComponent),
+      },
+      // Account pages require a signed-in user.
+      {
         path: 'profile',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/profile/profile.component').then(m => m.ProfileComponent),
       },
       {
         path: 'orders',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/orders/orders.component').then(m => m.OrdersComponent),
       },
       {
         path: 'addresses',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/addresses/addresses.component').then(m => m.AddressesComponent),
       },
@@ -56,17 +71,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/faq/faq.component').then(m => m.FaqComponent),
       },
+      { path: '**', redirectTo: '' },
     ]
   }
 ];
-
-// {
-//   path: '',
-//   component: MainLayoutComponent,
-//   children: [...]
-// },
-// {
-//   path: 'auth',
-//   component: AuthLayoutComponent,
-//   children: [...]
-// }

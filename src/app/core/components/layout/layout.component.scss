@@ -1,0 +1,18 @@
+// Sticky footer: the layout fills at least the viewport and <main> takes
+// the slack, so the footer sits at the bottom on short pages instead of
+// leaving a gap, and is pushed down normally on long ones.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  // dvh accounts for mobile browser chrome, where 100vh overshoots.
+  min-height: 100dvh;
+}
+
+.site-main {
+  flex: 1 0 auto;
+}
+
+app-footer {
+  flex-shrink: 0;
+}

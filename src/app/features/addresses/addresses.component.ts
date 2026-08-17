@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AddressesService } from '../../shared/services/addresses.service';
 import { Address } from '../../shared/models/address.model';
+import { ToastService } from '../../shared/services/toast.service';
 
 type AddressDraft = Omit<Address, 'id'>;
 
@@ -27,6 +28,7 @@ const EMPTY_DRAFT: AddressDraft = {
 export class AddressesComponent {
 
   addressesService = inject(AddressesService);
+  private toast = inject(ToastService);
 
   formOpen = signal(false);
   editingId = signal<string | null>(null);
@@ -63,14 +65,17 @@ export class AddressesComponent {
     const d = this.draft();
     if (!d.title.trim() || !d.recipient.trim() || !d.city.trim() || !d.fullAddress.trim()) {
       this.error.set('عنوان، نام گیرنده، شهر و نشانی الزامی است.');
+      this.toast.warning('عنوان، نام گیرنده، شهر و نشانی الزامی است.');
       return;
     }
 
     const id = this.editingId();
     if (id) {
       this.addressesService.update(id, d);
+      this.toast.success('آدرس ویرایش شد.');
     } else {
       this.addressesService.add(d);
+      this.toast.success('آدرس جدید ذخیره شد.');
     }
 
     this.formOpen.set(false);
@@ -80,9 +85,11 @@ export class AddressesComponent {
 
   remove(address: Address) {
     this.addressesService.remove(address.id);
+    this.toast.info(`آدرس «${address.title}» حذف شد.`);
   }
 
   setDefault(address: Address) {
     this.addressesService.setDefault(address.id);
+    this.toast.success('آدرس پیش‌فرض تغییر کرد.');
   }
 }

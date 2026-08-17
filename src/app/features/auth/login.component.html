@@ -1,0 +1,46 @@
+<div class="auth-page">
+  <div class="card elev-md auth-card">
+    <h2>ورود به حساب</h2>
+    <p class="text-muted auth-intro">برای دیدن سفارش‌ها و علاقه‌مندی‌ها وارد شوید.</p>
+
+    <form (ngSubmit)="submit()">
+      <label class="field">
+        <span>ایمیل</span>
+        <input
+          class="input ltr-field"
+          type="email"
+          dir="ltr"
+          autocomplete="email"
+          placeholder="you@example.com"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          name="email"
+        />
+      </label>
+
+      <label class="field">
+        <span>رمز عبور</span>
+        <input
+          class="input ltr-field"
+          type="password"
+          dir="ltr"
+          autocomplete="current-password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          name="password"
+        />
+      </label>
+
+      <p class="error-note" *ngIf="error()">{{ error() }}</p>
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
+        {{ submitting() ? 'در حال ورود...' : 'ورود' }}
+      </button>
+    </form>
+
+    <p class="auth-switch">
+      حساب ندارید؟
+      <a routerLink="/register">ثبت‌نام کنید</a>
+    </p>
+  </div>
+</div>

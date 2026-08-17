@@ -33,6 +33,17 @@ export class JalaliDatePickerComponent implements ControlValueAccessor {
   readonly months = JALALI_MONTHS;
   readonly weekdays = JALALI_WEEKDAYS;
 
+  // Birth dates are decades back, so paging month-by-month is useless —
+  // the header offers direct year and month selection instead.
+  readonly years: number[] = (() => {
+    const thisYear = todayJalali().jy;
+    const list: number[] = [];
+    for (let y = thisYear; y >= thisYear - 110; y -= 1) {
+      list.push(y);
+    }
+    return list;
+  })();
+
   open = signal(false);
   text = signal('');
   selected = signal<JalaliDate | null>(null);
@@ -116,6 +127,23 @@ export class JalaliDatePickerComponent implements ControlValueAccessor {
     }
     this.viewMonth.set(m);
     this.viewYear.set(y);
+    this.rebuildGrid();
+  }
+
+  setYear(value: string) {
+    this.viewYear.set(Number(value));
+    this.rebuildGrid();
+  }
+
+  setMonth(value: string) {
+    this.viewMonth.set(Number(value));
+    this.rebuildGrid();
+  }
+
+  jumpToToday() {
+    const t = todayJalali();
+    this.viewYear.set(t.jy);
+    this.viewMonth.set(t.jm);
     this.rebuildGrid();
   }
 

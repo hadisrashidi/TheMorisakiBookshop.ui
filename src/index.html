@@ -7,11 +7,55 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <style>
+    /* Inline so it paints with the first byte, before any stylesheet. */
+    body { margin: 0; background: #f5ead8; }
+    .app-boot {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+    }
+    .app-boot-spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid rgba(32, 30, 29, 0.15);
+      border-top-color: #c67139;
+      border-radius: 50%;
+      animation: app-boot-spin 0.8s linear infinite;
+    }
+    @keyframes app-boot-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .app-boot-spinner { animation-duration: 2s; }
+    }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!--
+    Loaded non-blocking on purpose. A plain <link rel="stylesheet"> to
+    Google Fonts blocks first paint until it resolves, and fonts.googleapis.com
+    is often slow or unreachable from Iran — which meant the page sat blank
+    for many seconds on refresh. Swapping media print→all after load lets the
+    page paint immediately in the Tahoma fallback and upgrade when the webfont
+    arrives. For full independence, self-host Vazirmatn and drop this entirely.
+  -->
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap"
+    media="print"
+    onload="this.media='all'"
+  >
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap">
+  </noscript>
 </head>
 <body>
-  <app-root></app-root>
+  <app-root>
+    <!-- Shown until Angular boots, so a refresh never looks like a blank page. -->
+    <div class="app-boot" aria-label="در حال بارگذاری">
+      <div class="app-boot-spinner"></div>
+    </div>
+  </app-root>
 </body>
 </html>
