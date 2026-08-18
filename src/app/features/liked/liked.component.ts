@@ -6,11 +6,12 @@ import { CartService } from '../../shared/services/cart.service';
 import { LikedItem } from '../../shared/models/liked-item.model';
 import { Book } from '../home/models/book.model';
 import { ToastService } from '../../shared/services/toast.service';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 @Component({
   selector: 'app-liked',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './liked.component.html',
   styleUrl: './liked.component.scss'
 })
@@ -24,7 +25,6 @@ export class LikedComponent {
     event.preventDefault();
     event.stopPropagation();
     this.likedService.remove(id);
-    this.toast.info('از علاقه‌مندی‌ها حذف شد.');
   }
 
   addToCart(event: Event, item: LikedItem) {

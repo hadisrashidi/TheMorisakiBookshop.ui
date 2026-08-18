@@ -10,11 +10,12 @@ import { ReviewsApiService } from '../../shared/services/reviews.api.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 @Component({
   selector: 'app-author-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './author-detail.component.html',
   styleUrl: './author-detail.component.scss'
 })
@@ -83,11 +84,7 @@ export class AuthorDetailComponent implements OnInit {
   toggleLiked(event: Event, book: Book) {
     event.preventDefault();
     event.stopPropagation();
-    const wasLiked = this.isLiked(book);
     this.likedService.toggle(book, this.author?.name);
-    wasLiked
-      ? this.toast.info('از علاقه‌مندی‌ها حذف شد.')
-      : this.toast.success('به علاقه‌مندی‌ها اضافه شد.', { label: 'مشاهده', route: '/liked' });
   }
 
   isLiked(book: Book): boolean {

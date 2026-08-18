@@ -29,26 +29,14 @@
       .app-boot-spinner { animation-duration: 2s; }
     }
   </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
   <!--
-    Loaded non-blocking on purpose. A plain <link rel="stylesheet"> to
-    Google Fonts blocks first paint until it resolves, and fonts.googleapis.com
-    is often slow or unreachable from Iran — which meant the page sat blank
-    for many seconds on refresh. Swapping media print→all after load lets the
-    page paint immediately in the Tahoma fallback and upgrade when the webfont
-    arrives. For full independence, self-host Vazirmatn and drop this entirely.
+    Caprasimo, Figtree and Vazirmatn are self-hosted (see the @fontsource
+    entries in angular.json). They used to come from fonts.googleapis.com,
+    but that host is unreachable from Iran and the request hangs rather
+    than failing fast: the browser kept the tab spinner turning long after
+    the page was usable. Serving the woff2 from our own origin removes the
+    third-party request entirely — nothing here depends on an outside host.
   -->
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap"
-    media="print"
-    onload="this.media='all'"
-  >
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap">
-  </noscript>
 </head>
 <body>
   <app-root>

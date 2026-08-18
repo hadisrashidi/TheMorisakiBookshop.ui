@@ -7,13 +7,14 @@ import { OrdersService } from '../../shared/services/orders.service';
 import { JalaliDatePickerComponent } from '../../shared/components/jalali-date-picker/jalali-date-picker.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { AuthService } from '../../shared/services/auth.service';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, JalaliDatePickerComponent],
+  imports: [CommonModule, FormsModule, RouterLink, JalaliDatePickerComponent, ImageFallbackDirective],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -90,6 +91,6 @@ export class ProfileComponent {
   logout() {
     this.auth.logout();
     this.toast.info('از حساب خود خارج شدید.');
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 }

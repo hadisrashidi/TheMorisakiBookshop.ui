@@ -32,6 +32,15 @@
               }
             ],
             "styles": [
+              "node_modules/@fontsource/caprasimo/latin-400.css",
+              "node_modules/@fontsource/figtree/latin-400.css",
+              "node_modules/@fontsource/figtree/latin-500.css",
+              "node_modules/@fontsource/figtree/latin-600.css",
+              "node_modules/@fontsource/figtree/latin-700.css",
+              "node_modules/@fontsource/vazirmatn/arabic-400.css",
+              "node_modules/@fontsource/vazirmatn/arabic-500.css",
+              "node_modules/@fontsource/vazirmatn/arabic-600.css",
+              "node_modules/@fontsource/vazirmatn/arabic-700.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -91,6 +100,15 @@
               }
             ],
             "styles": [
+              "node_modules/@fontsource/caprasimo/latin-400.css",
+              "node_modules/@fontsource/figtree/latin-400.css",
+              "node_modules/@fontsource/figtree/latin-500.css",
+              "node_modules/@fontsource/figtree/latin-600.css",
+              "node_modules/@fontsource/figtree/latin-700.css",
+              "node_modules/@fontsource/vazirmatn/arabic-400.css",
+              "node_modules/@fontsource/vazirmatn/arabic-500.css",
+              "node_modules/@fontsource/vazirmatn/arabic-600.css",
+              "node_modules/@fontsource/vazirmatn/arabic-700.css",
               "src/styles.scss"
             ],
             "scripts": []

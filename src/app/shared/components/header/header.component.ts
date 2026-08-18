@@ -68,7 +68,7 @@ export class HeaderComponent {
     this.auth.logout();
     this.closeAccountMenu();
     this.toast.info('از حساب خود خارج شدید.');
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 
   @HostListener('document:click', ['$event'])

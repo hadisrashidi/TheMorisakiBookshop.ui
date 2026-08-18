@@ -8,13 +8,14 @@ import { HomeApiService } from '../home/services/home.api.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 const PAGE_SIZE = 9;
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ImageFallbackDirective],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -158,10 +159,6 @@ export class SearchComponent implements OnInit {
   toggleLiked(event: Event, book: Book) {
     event.preventDefault();
     event.stopPropagation();
-    const wasLiked = book.id !== undefined && this.likedService.isLiked(book.id);
     this.likedService.toggle(book, this.authorName(book.authorId));
-    wasLiked
-      ? this.toast.info('از علاقه‌مندی‌ها حذف شد.')
-      : this.toast.success('به علاقه‌مندی‌ها اضافه شد.', { label: 'مشاهده', route: '/liked' });
   }
 }
