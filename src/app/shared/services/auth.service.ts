@@ -81,6 +81,37 @@ export class AuthService {
     }
   }
 
+  /**
+   * Sets a new password for a locally-registered account.
+   *
+   * ⚠️ There is no verification step, because there is no backend to send
+   * a reset link from — anyone using this browser can reset any account
+   * stored in it. That is no weaker than the rest of this service (the
+   * whole account store is readable and editable from devtools), and it
+   * keeps a forgotten password from locking you out of your own data.
+   * When a real auth API lands, this must be replaced by an emailed,
+   * expiring, single-use token.
+   */
+  async resetPassword(email: string, newPassword: string): Promise<{ ok: boolean; error?: string }> {
+    const normalisedEmail = email.trim().toLowerCase();
+    const accounts = this.loadAccounts();
+    const account = accounts.find(a => a.email === normalisedEmail);
+
+    if (!account) {
+      return { ok: false, error: 'حسابی با این ایمیل پیدا نشد.' };
+    }
+
+    account.passwordHash = await this.hash(newPassword);
+    this.saveAccounts(accounts);
+    this.startSession(account);
+    return { ok: true };
+  }
+
+  /** Emails registered in this browser, to jog the memory on the reset form. */
+  knownEmails(): string[] {
+    return this.loadAccounts().map(a => a.email);
+  }
+
   private startSession(account: StoredAccount) {
     const summary: AccountSummary = { email: account.email, name: account.name };
     this.currentSignal.set(summary);

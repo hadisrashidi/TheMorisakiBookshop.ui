@@ -40,6 +40,42 @@ form {
   color: var(--color-accent-800);
 }
 
+.forgot-link {
+  margin-top: var(--space-2);
+  font-size: 13px;
+}
+
+.reset-note {
+  line-height: 1.8;
+}
+
+.known-emails {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: calc(var(--space-2) * -0.5);
+  font-size: 12px;
+}
+
+.known-email {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  unicode-bidi: isolate;
+
+  &:hover {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+}
+
+.no-accounts {
+  margin: 0;
+  font-size: 12px;
+}
+
 .auth-switch {
   margin: var(--space-4) 0 0;
   font-size: 13px;
