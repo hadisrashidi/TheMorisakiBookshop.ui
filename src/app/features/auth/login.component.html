@@ -3,7 +3,7 @@
     <h2>ورود به حساب</h2>
     <p class="text-muted auth-intro">برای دیدن سفارش‌ها و علاقه‌مندی‌ها وارد شوید.</p>
 
-    <form (ngSubmit)="submit()">
+    <form (ngSubmit)="submit()" *ngIf="!resetting()">
       <label class="field">
         <span>ایمیل</span>
         <input
@@ -35,6 +35,84 @@
 
       <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
         {{ submitting() ? 'در حال ورود...' : 'ورود' }}
+      </button>
+
+      <button type="button" class="btn btn-ghost btn-block forgot-link" (click)="openReset()">
+        رمز عبور را فراموش کرده‌اید؟
+      </button>
+    </form>
+
+    <!-- Local reset: accounts live in this browser, so there is no link to
+         email. See the warning on AuthService.resetPassword. -->
+    <form (ngSubmit)="submitReset()" *ngIf="resetting()">
+      <p class="text-muted auth-intro reset-note">
+        حساب‌ها روی همین مرورگر ذخیره می‌شوند، پس ایمیلی فرستاده نمی‌شود؛
+        رمز تازه را همین‌جا تعیین کنید.
+      </p>
+
+      <label class="field">
+        <span>ایمیل حساب</span>
+        <input
+          class="input ltr-field"
+          type="email"
+          dir="ltr"
+          autocomplete="email"
+          placeholder="you@example.com"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          name="resetEmail"
+        />
+      </label>
+
+      <div class="known-emails" *ngIf="knownEmails().length > 0">
+        <span class="text-muted">حساب‌های این مرورگر:</span>
+        <button
+          type="button"
+          class="tag tag-accent known-email"
+          *ngFor="let known of knownEmails()"
+          dir="ltr"
+          (click)="useEmail(known)"
+        >{{ known }}</button>
+      </div>
+
+      <p class="text-muted no-accounts" *ngIf="knownEmails().length === 0">
+        هنوز حسابی روی این مرورگر ثبت نشده است.
+      </p>
+
+      <label class="field">
+        <span>رمز عبور تازه</span>
+        <input
+          class="input ltr-field"
+          type="password"
+          dir="ltr"
+          autocomplete="new-password"
+          [ngModel]="newPassword()"
+          (ngModelChange)="newPassword.set($event)"
+          name="newPassword"
+        />
+      </label>
+
+      <label class="field">
+        <span>تکرار رمز عبور</span>
+        <input
+          class="input ltr-field"
+          type="password"
+          dir="ltr"
+          autocomplete="new-password"
+          [ngModel]="confirmPassword()"
+          (ngModelChange)="confirmPassword.set($event)"
+          name="confirmPassword"
+        />
+      </label>
+
+      <p class="error-note" *ngIf="error()">{{ error() }}</p>
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
+        {{ submitting() ? 'در حال ذخیره...' : 'تعیین رمز تازه و ورود' }}
+      </button>
+
+      <button type="button" class="btn btn-ghost btn-block forgot-link" (click)="closeReset()">
+        بازگشت به ورود
       </button>
     </form>
 
