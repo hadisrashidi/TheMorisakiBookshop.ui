@@ -23,7 +23,7 @@
 ## From the API repo
 <!-- API contract changes the UI must follow (she copies them from the API repo's BACKLOG). Remove when handled. -->
 - (pending, API task 1) All responses wrapped in `{ isSuccess, data, message, errors }`; not-found becomes HTTP 200 + `isSuccess: false`. Switch each service when it moves to `ApiHelperService`.
-- (expected) Book prices may become numbers instead of strings when the API moves to SQL Server.
+- (decided 2026-10-07) Book `price` / `oldPrice` become numbers (`DECIMAL(18,0)`) instead of strings when the API moves to SQL Server — update `Book` model and price formatting then.
 - (planned, API phases 2-4) New endpoint groups: auth (OTP, email+password), profile/addresses, cart, orders, payment. Contracts arrive here when each API task is designed. Full roadmap: API repo BACKLOG.
 
 ## For the API repo
