@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ApiCallModel } from '@core/models/api/api-call.model';
 import { ApiResponse } from '@core/models/api/api.response.model';
 import { ApiHelperService } from '@core/services/api/api-helper.service';
+import { BookFilters } from '../models/book-filters.model';
 import { BookSearchResult } from '../models/book-search-result.model';
 
 export interface SearchFilters {
@@ -61,5 +62,12 @@ export class SearchApiService {
     }
 
     return this.apiHelperService.get<BookSearchResult>(model);
+  }
+
+  /** Get the values the search filters offer (genres, languages, price range) from the catalog. */
+  getFilters(): Promise<ApiResponse<BookFilters>> {
+    const model = new ApiCallModel();
+    model.url = 'Books/GetSearchFilters';
+    return this.apiHelperService.get<BookFilters>(model);
   }
 }
