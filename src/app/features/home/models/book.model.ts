@@ -9,8 +9,9 @@ export class Book {
   image: string | undefined;
   description: string | undefined;
   inStock: boolean | undefined;
-  oldPrice: string | undefined;
-  price: string | undefined;
+  stock: number | undefined;
+  oldPrice: number | null | undefined;
+  price: number | undefined;
   authorId: number | undefined;
   genre: string | undefined;
   language: string | undefined;

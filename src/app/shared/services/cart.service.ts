@@ -59,8 +59,8 @@ export class CartService {
       id: book.id,
       title: book.title ?? '',
       image: book.image ?? '',
-      price: book.price ?? '0',
-      oldPrice: book.oldPrice || undefined,
+      price: String(book.price ?? 0),
+      oldPrice: book.oldPrice ? String(book.oldPrice) : undefined,
       quantity
     };
 

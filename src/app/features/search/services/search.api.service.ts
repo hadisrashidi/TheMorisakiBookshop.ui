@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { inject, Injectable } from '@angular/core';
+import { ApiCallModel } from '@core/models/api/api-call.model';
+import { ApiResponse } from '@core/models/api/api.response.model';
+import { ApiHelperService } from '@core/services/api/api-helper.service';
 import { Book } from '../../home/models/book.model';
 
 export interface SearchFilters {
@@ -15,26 +15,31 @@ export interface SearchFilters {
   providedIn: 'root'
 })
 export class SearchApiService {
+  private readonly apiHelperService = inject(ApiHelperService);
 
-  constructor(private http: HttpClient) { }
+  /**
+   * Search books by text with optional filters and sort.
+   * @param query - Text matched against title, genre and specs
+   * @param filters - Genres, languages, sort and in-stock filter
+   */
+  searchBooks(query: string, filters: SearchFilters = {}): Promise<ApiResponse<Book[]>> {
+    const model = new ApiCallModel();
+    model.url = 'Books/SearchBooks';
+    model.params = { q: query };
 
-  searchBooks(query: string, filters: SearchFilters = {}): Observable<Book[]> {
-    const apiUrl = environment.apiUrl + '/Books/SearchBooks';
-
-    let params = new HttpParams().set('q', query);
-    for (const genre of filters.genres ?? []) {
-      params = params.append('genres', genre);
+    if (filters.genres && filters.genres.length > 0) {
+      model.params['genres'] = filters.genres;
     }
-    for (const language of filters.languages ?? []) {
-      params = params.append('languages', language);
+    if (filters.languages && filters.languages.length > 0) {
+      model.params['languages'] = filters.languages;
     }
     if (filters.sort) {
-      params = params.set('sort', filters.sort);
+      model.params['sort'] = filters.sort;
     }
     if (filters.inStockOnly) {
-      params = params.set('inStockOnly', 'true');
+      model.params['inStockOnly'] = true;
     }
 
-    return this.http.get<Book[]>(apiUrl, { params });
+    return this.apiHelperService.get<Book[]>(model);
   }
 }

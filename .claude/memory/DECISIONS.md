@@ -1,4 +1,6 @@
 # Decisions
+- 2026-10-12: `ApiHelperService` never throws: HTTP errors and `isSuccess: false` come back as an `ApiResponse` with `isSuccess = false` and a toast (`showErrorAlert`, default on) — components only check `result.isSuccess && result.data`. Alert types (Swal/redirect) not built; only what is used.
+- 2026-10-12: Cart / liked / order models keep `price` as string for now (existing localStorage data), `Book.price` is a number — the conversion sits in `CartService.addToCart` / `LikedService.toggle`; revisit when cart moves to the API.
 <!-- active decisions only, newest on top: YYYY-MM-DD: WHAT — WHY. Superseded ones go to archive/decisions.md -->
 
 - 2026-10-07: Guest cart stays in localStorage and is merged into the server cart after login; login is only required at checkout.

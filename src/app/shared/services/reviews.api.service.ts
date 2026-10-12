@@ -1,23 +1,34 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { inject, Injectable } from '@angular/core';
+import { ApiCallModel } from '@core/models/api/api-call.model';
+import { ApiResponse } from '@core/models/api/api.response.model';
+import { ApiHelperService } from '@core/services/api/api-helper.service';
 import { Review } from '../models/review.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReviewsApiService {
+  private readonly apiHelperService = inject(ApiHelperService);
 
-  constructor(private http: HttpClient) { }
-
-  getByBookId(bookId: number): Observable<Review[]> {
-    const apiUrl = environment.apiUrl + `/Reviews/GetByBookId?bookId=${bookId}`;
-    return this.http.get<Review[]>(apiUrl);
+  /**
+   * Get the reviews of one book.
+   * @param bookId - Book id
+   */
+  getByBookId(bookId: number): Promise<ApiResponse<Review[]>> {
+    const model = new ApiCallModel();
+    model.url = 'Reviews/GetByBookId';
+    model.params = { bookId };
+    return this.apiHelperService.get<Review[]>(model);
   }
 
-  getByAuthorId(authorId: number): Observable<Review[]> {
-    const apiUrl = environment.apiUrl + `/Reviews/GetByAuthorId?authorId=${authorId}`;
-    return this.http.get<Review[]>(apiUrl);
+  /**
+   * Get the reviews of all books of one author.
+   * @param authorId - Author id
+   */
+  getByAuthorId(authorId: number): Promise<ApiResponse<Review[]>> {
+    const model = new ApiCallModel();
+    model.url = 'Reviews/GetByAuthorId';
+    model.params = { authorId };
+    return this.apiHelperService.get<Review[]>(model);
   }
 }

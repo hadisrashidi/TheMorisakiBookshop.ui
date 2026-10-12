@@ -36,7 +36,7 @@ export class LikedService {
       id: book.id,
       title: book.title ?? '',
       image: book.image ?? '',
-      price: book.price ?? '0',
+      price: String(book.price ?? 0),
       inStock: book.inStock ?? true,
       authorName
     };

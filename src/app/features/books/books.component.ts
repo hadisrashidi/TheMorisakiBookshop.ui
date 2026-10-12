@@ -66,48 +66,43 @@ export class BooksComponent implements OnInit {
     this.tab = 'description';
   }
 
-  getBookDetails(id: number) {
-    this.booksApiService.getBookById(id).subscribe({
-      next: (data) => {
-        this.book = data;
-        this.loadingBook.set(false);
-        if (data.authorId !== undefined) {
-          this.getAuthor(data.authorId);
-        }
-      },
-      error: (err) => {
-        console.error('Error loading book', err);
-        this.loadingBook.set(false);
+  async getBookDetails(id: number): Promise<void> {
+    const result = await this.booksApiService.getBookById(id);
+    if (result.isSuccess && result.data) {
+      this.book = result.data;
+      if (result.data.authorId !== undefined) {
+        this.getAuthor(result.data.authorId);
       }
-    });
+    }
+    this.loadingBook.set(false);
   }
 
-  getAuthor(authorId: number) {
-    this.authorsApiService.getAuthorById(authorId).subscribe({
-      next: (data) => (this.author = data),
-      error: (err) => console.error('Error loading author', err)
-    });
+  async getAuthor(authorId: number): Promise<void> {
+    const result = await this.authorsApiService.getAuthorById(authorId);
+    if (result.isSuccess && result.data) {
+      this.author = result.data;
+    }
   }
 
-  getRelatedBooks(id: number) {
-    this.booksApiService.getRelatedBooks(id).subscribe({
-      next: (data) => (this.relatedBooks = data),
-      error: (err) => console.error('Error loading related books', err)
-    });
+  async getRelatedBooks(id: number): Promise<void> {
+    const result = await this.booksApiService.getRelatedBooks(id);
+    if (result.isSuccess && result.data) {
+      this.relatedBooks = result.data;
+    }
   }
 
-  getSimilarBooks(id: number) {
-    this.booksApiService.getSimilarBooks(id).subscribe({
-      next: (data) => (this.similarBooks = data),
-      error: (err) => console.error('Error loading similar books', err)
-    });
+  async getSimilarBooks(id: number): Promise<void> {
+    const result = await this.booksApiService.getSimilarBooks(id);
+    if (result.isSuccess && result.data) {
+      this.similarBooks = result.data;
+    }
   }
 
-  getReviews(id: number) {
-    this.reviewsApiService.getByBookId(id).subscribe({
-      next: (data) => (this.reviews = data),
-      error: (err) => console.error('Error loading reviews', err)
-    });
+  async getReviews(id: number): Promise<void> {
+    const result = await this.reviewsApiService.getByBookId(id);
+    if (result.isSuccess && result.data) {
+      this.reviews = result.data;
+    }
   }
 
   addToCart() {

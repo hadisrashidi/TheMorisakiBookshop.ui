@@ -45,48 +45,33 @@ export class HomeComponent implements OnInit {
     this.getAuthors();
   }
 
-  getFeaturedBooks() {
-    this.homeApiService.getFeaturedBooks().subscribe({
-      next: (data) => {
-        this.featuredBooks = data;
-        this.loadingFeatured.set(false);
-      },
-      error: (err) => {
-        console.error('Error fetching featured books', err);
-        this.loadingFeatured.set(false);
-      }
-    });
+  async getFeaturedBooks(): Promise<void> {
+    const result = await this.homeApiService.getFeaturedBooks();
+    if (result.isSuccess && result.data) {
+      this.featuredBooks = result.data;
+    }
+    this.loadingFeatured.set(false);
   }
 
-  getNewBooks() {
-    this.homeApiService.getNewBooks().subscribe({
-      next: (data) => {
-        this.newBooks = data;
-        this.loadingNew.set(false);
-      },
-      error: (err) => {
-        console.error('Error fetching new books', err);
-        this.loadingNew.set(false);
-      }
-    });
+  async getNewBooks(): Promise<void> {
+    const result = await this.homeApiService.getNewBooks();
+    if (result.isSuccess && result.data) {
+      this.newBooks = result.data;
+    }
+    this.loadingNew.set(false);
   }
 
-  getAuthors() {
-    this.homeApiService.getAuthors().subscribe({
-      next: (data) => {
-        this.authors = data;
-        this.loadingAuthors.set(false);
-        for (const author of data) {
-          if (author.id !== undefined) {
-            this.authorNames.set(author.id, author.name ?? '');
-          }
+  async getAuthors(): Promise<void> {
+    const result = await this.homeApiService.getAuthors();
+    if (result.isSuccess && result.data) {
+      this.authors = result.data;
+      for (const author of result.data) {
+        if (author.id !== undefined) {
+          this.authorNames.set(author.id, author.name ?? '');
         }
-      },
-      error: (err) => {
-        console.error('Error fetching authors', err);
-        this.loadingAuthors.set(false);
       }
-    });
+    }
+    this.loadingAuthors.set(false);
   }
 
   authorName(authorId: number | undefined): string {
