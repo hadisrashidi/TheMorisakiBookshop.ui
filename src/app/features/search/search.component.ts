@@ -65,18 +65,7 @@ export class SearchComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    this.homeApiService.getAuthors().subscribe({
-      next: (authors) => {
-        const map = new Map<number, string>();
-        for (const author of authors) {
-          if (author.id !== undefined) {
-            map.set(author.id, author.name ?? '');
-          }
-        }
-        this.authorNames.set(map);
-      },
-      error: (err) => console.error('Error loading authors', err)
-    });
+    this.loadAuthors();
 
     this.route.queryParamMap.subscribe(params => {
       this.query.set(params.get('q') ?? '');
@@ -88,7 +77,22 @@ export class SearchComponent implements OnInit {
     return authorId !== undefined ? this.authorNames().get(authorId) ?? '' : '';
   }
 
-  search() {
+  async loadAuthors(): Promise<void> {
+    const result = await this.homeApiService.getAuthors();
+    if (!result.isSuccess || !result.data) {
+      return;
+    }
+
+    const map = new Map<number, string>();
+    for (const author of result.data) {
+      if (author.id !== undefined) {
+        map.set(author.id, author.name ?? '');
+      }
+    }
+    this.authorNames.set(map);
+  }
+
+  async search(): Promise<void> {
     this.loading.set(true);
     this.page.set(1);
 
@@ -99,17 +103,13 @@ export class SearchComponent implements OnInit {
       inStockOnly: this.stockFilter() === 'inStock'
     };
 
-    this.searchApiService.searchBooks(this.query(), filters).subscribe({
-      next: (data) => {
-        this.results.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error searching books', err);
-        this.results.set([]);
-        this.loading.set(false);
-      }
-    });
+    const result = await this.searchApiService.searchBooks(this.query(), filters);
+    if (result.isSuccess && result.data) {
+      this.results.set(result.data);
+    } else {
+      this.results.set([]);
+    }
+    this.loading.set(false);
   }
 
   toggleGenre(genre: string) {

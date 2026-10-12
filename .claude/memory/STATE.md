@@ -5,15 +5,21 @@ Onboarding: done (2026-10-07)
 ## Current state
 - Angular 19 (standalone components), TypeScript 5.7, SCSS, no UI library; fonts self-hosted via `@fontsource/*`. Persian (RTL) storefront.
 - Structure: `src/app/core/` (layout, `guards/auth.guard.ts`), `src/app/features/<feature>/` (addresses, auth, authors, books, cart, faq, home, liked, orders, profile, search), `src/app/shared/` (models, services, directives, `utils/jalali.ts`).
-- Talks to the API through `features/*/services/*.api.service.ts` and `shared/services/reviews.api.service.ts`. API base URL from `public/env/env.js` (`window.env.apiUrl`).
+- Talks to the API through `features/*/services/*.api.service.ts` and `shared/services/reviews.api.service.ts` → `core/services/api/api-helper.service.ts` (`ApiHelperService`, returns `Promise<ApiResponse<T>>`, never throws, toast on failure). API base URL from `src/environments/environment.ts` (`https://localhost:7106/api`); `public/env/env.js` is not used by any code. `@core/*` alias in `tsconfig.json`.
 - Auth, cart, liked, orders, addresses, profile are front-end only (localStorage), no API behind them.
 - Translations in `public/i18n/` (fa, en). Book covers / author images in `public/covers/`, `public/authors/`.
 - CI: `.github/workflows/build.yml`.
 
 ## Active work
-- Planning with her. No implementation until she says "start". Next after that: BACKLOG task 1.
+- API now answers from SQL Server; UI services moved to `ApiHelperService`. Waiting for her to check the pages in the browser. Next: BACKLOG task 3 rest (OnPush, @if/@for, inject, models to classes), then task 4 audit.
 
 ## Session log
+### 2026-10-12 — API envelope in the UI (web session, branch `claude/friendly-pascal-icidjv`)
+- Why: pages showed no books — services still expected raw arrays, the API sends `{ isSuccess, data, message, errors }`.
+- Did: built `ApiResponse<T>`, `ApiCallModel`, `ApiHelperService` (`src/app/core/`), `@core/*` alias; moved all 6 API services to `Promise<ApiResponse<T>>`; home, search, book, author components `await` them (no more `subscribe`); `Book.price/oldPrice` numbers + `stock`; cart/liked convert to string (their stored models stay strings).
+- Verified: `npm run build` ok. NOT verified in a browser / against the real API.
+- Not done on purpose: OnPush / `@if` / `@for` on the touched components — cannot test rendering here, risk of blank pages; stays in task 3.
+- Next: she tests the pages.
 <!-- newest on top, max 5 blocks, older ones go to archive/sessions.md -->
 ### 2026-10-07 — Onboarding + planning (web session, both repos, branch `claude/magical-wozniak-j0qmxf`)
 - Did: onboarding done; scope and roadmap agreed (master in API repo BACKLOG); UI BACKLOG tasks 4-8 added; decision logged.

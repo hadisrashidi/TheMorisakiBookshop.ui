@@ -50,28 +50,41 @@ export class AuthorDetailComponent implements OnInit {
       this.similarAuthors = [];
       this.tab = 'books';
 
-      this.authorsApiService.getAuthorById(id).subscribe({
-        next: (data) => (this.author = data),
-        error: (err) => console.error('Error loading author', err)
-      });
-
-      this.booksApiService.getBooksByAuthor(id).subscribe({
-        next: (data) => (this.books = data),
-        error: (err) => console.error('Error loading author books', err)
-      });
-
-      this.reviewsApiService.getByAuthorId(id).subscribe({
-        next: (data) => (this.reviews = data),
-        error: (err) => console.error('Error loading author reviews', err)
-      });
-
-      this.authorsApiService.getSimilarAuthors(id).subscribe({
-        next: (data) => (this.similarAuthors = data),
-        error: (err) => console.error('Error loading similar authors', err)
-      });
+      this.loadAuthor(id);
+      this.loadBooks(id);
+      this.loadReviews(id);
+      this.loadSimilarAuthors(id);
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+  }
+
+  private async loadAuthor(id: number): Promise<void> {
+    const result = await this.authorsApiService.getAuthorById(id);
+    if (result.isSuccess && result.data) {
+      this.author = result.data;
+    }
+  }
+
+  private async loadBooks(id: number): Promise<void> {
+    const result = await this.booksApiService.getBooksByAuthor(id);
+    if (result.isSuccess && result.data) {
+      this.books = result.data;
+    }
+  }
+
+  private async loadReviews(id: number): Promise<void> {
+    const result = await this.reviewsApiService.getByAuthorId(id);
+    if (result.isSuccess && result.data) {
+      this.reviews = result.data;
+    }
+  }
+
+  private async loadSimilarAuthors(id: number): Promise<void> {
+    const result = await this.authorsApiService.getSimilarAuthors(id);
+    if (result.isSuccess && result.data) {
+      this.similarAuthors = result.data;
+    }
   }
 
   addToCart(event: Event, book: Book) {
