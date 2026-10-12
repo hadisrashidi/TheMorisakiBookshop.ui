@@ -49,12 +49,10 @@ export class SearchComponent implements OnInit {
   // Repeats skeleton cards while a search is in flight.
   readonly skeletonCards = Array.from({ length: 6 });
 
+  // results() holds only the current page; totalCount is all matches (from the API).
   page = signal(1);
-  pageCount = computed(() => Math.max(1, Math.ceil(this.results().length / PAGE_SIZE)));
-  pagedResults = computed(() => {
-    const start = (this.page() - 1) * PAGE_SIZE;
-    return this.results().slice(start, start + PAGE_SIZE);
-  });
+  totalCount = signal(0);
+  pageCount = computed(() => Math.max(1, Math.ceil(this.totalCount() / PAGE_SIZE)));
   pageNumbers = computed(() => Array.from({ length: this.pageCount() }, (_, i) => i + 1));
 
   hasActiveFilters = computed(() =>
@@ -92,22 +90,31 @@ export class SearchComponent implements OnInit {
     this.authorNames.set(map);
   }
 
+  // A new query or filter always starts on page 1.
   async search(): Promise<void> {
-    this.loading.set(true);
     this.page.set(1);
+    await this.loadPage();
+  }
+
+  async loadPage(): Promise<void> {
+    this.loading.set(true);
 
     const filters: SearchFilters = {
       genres: this.selectedGenres(),
       languages: this.selectedLanguages(),
       sort: this.sort(),
-      inStockOnly: this.stockFilter() === 'inStock'
+      inStockOnly: this.stockFilter() === 'inStock',
+      page: this.page(),
+      pageSize: PAGE_SIZE
     };
 
     const result = await this.searchApiService.searchBooks(this.query(), filters);
     if (result.isSuccess && result.data) {
-      this.results.set(result.data);
+      this.results.set(result.data.items);
+      this.totalCount.set(result.data.totalCount);
     } else {
       this.results.set([]);
+      this.totalCount.set(0);
     }
     this.loading.set(false);
   }
@@ -146,6 +153,7 @@ export class SearchComponent implements OnInit {
 
   goToPage(page: number) {
     this.page.set(page);
+    this.loadPage();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 

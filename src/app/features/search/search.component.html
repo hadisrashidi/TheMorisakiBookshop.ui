@@ -56,7 +56,7 @@
         <div>
           <h3 *ngIf="query()">نتایج جستجو برای «{{ query() }}»</h3>
           <h3 *ngIf="!query()">همه کتاب‌ها</h3>
-          <span class="text-muted result-count">{{ results().length }} نتیجه</span>
+          <span class="text-muted result-count">{{ totalCount() }} نتیجه</span>
         </div>
 
         <div class="seg sort-seg">
@@ -98,7 +98,7 @@
         <div class="results-grid" *ngIf="results().length > 0">
           <a
             class="card elev-sm book-card"
-            *ngFor="let book of pagedResults()"
+            *ngFor="let book of results()"
             [routerLink]="['/books', book.id]"
           >
             <button

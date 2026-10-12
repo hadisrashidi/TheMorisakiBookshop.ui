@@ -2,13 +2,18 @@ import { inject, Injectable } from '@angular/core';
 import { ApiCallModel } from '@core/models/api/api-call.model';
 import { ApiResponse } from '@core/models/api/api.response.model';
 import { ApiHelperService } from '@core/services/api/api-helper.service';
-import { Book } from '../../home/models/book.model';
+import { BookSearchResult } from '../models/book-search-result.model';
 
 export interface SearchFilters {
   genres?: string[];
   languages?: string[];
   sort?: 'price_asc' | 'price_desc' | 'newest' | '';
   inStockOnly?: boolean;
+  authorId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  page?: number;
+  pageSize?: number;
 }
 
 @Injectable({
@@ -18,11 +23,11 @@ export class SearchApiService {
   private readonly apiHelperService = inject(ApiHelperService);
 
   /**
-   * Search books by text with optional filters and sort.
+   * Search books by text with optional filters, sort and paging (one page per call).
    * @param query - Text matched against title, genre and specs
-   * @param filters - Genres, languages, sort and in-stock filter
+   * @param filters - Genres, languages, author, price range, sort, in-stock filter, page and page size
    */
-  searchBooks(query: string, filters: SearchFilters = {}): Promise<ApiResponse<Book[]>> {
+  searchBooks(query: string, filters: SearchFilters = {}): Promise<ApiResponse<BookSearchResult>> {
     const model = new ApiCallModel();
     model.url = 'Books/SearchBooks';
     model.params = { q: query };
@@ -39,7 +44,22 @@ export class SearchApiService {
     if (filters.inStockOnly) {
       model.params['inStockOnly'] = true;
     }
+    if (filters.authorId !== undefined) {
+      model.params['authorId'] = filters.authorId;
+    }
+    if (filters.minPrice !== undefined) {
+      model.params['minPrice'] = filters.minPrice;
+    }
+    if (filters.maxPrice !== undefined) {
+      model.params['maxPrice'] = filters.maxPrice;
+    }
+    if (filters.page !== undefined) {
+      model.params['page'] = filters.page;
+    }
+    if (filters.pageSize !== undefined) {
+      model.params['pageSize'] = filters.pageSize;
+    }
 
-    return this.apiHelperService.get<Book[]>(model);
+    return this.apiHelperService.get<BookSearchResult>(model);
   }
 }
