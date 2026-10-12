@@ -11,7 +11,7 @@ Onboarding: done (2026-10-07)
 - CI: `.github/workflows/build.yml`.
 
 ## Active work
-- API now answers from SQL Server; UI services moved to `ApiHelperService`. Waiting for her to check the pages in the browser. Next: BACKLOG task 3 rest (OnPush, @if/@for, inject, models to classes), then task 4 audit.
+- API now answers from SQL Server; UI services moved to `ApiHelperService`. She confirmed the pages work (2026-10-12). Next: BACKLOG task 3 rest (OnPush, @if/@for, inject, models to classes), then task 4 audit.
 
 ## Session log
 ### 2026-10-12 — API envelope in the UI (web session, branch `claude/friendly-pascal-icidjv`)
@@ -19,7 +19,7 @@ Onboarding: done (2026-10-07)
 - Did: built `ApiResponse<T>`, `ApiCallModel`, `ApiHelperService` (`src/app/core/`), `@core/*` alias; moved all 6 API services to `Promise<ApiResponse<T>>`; home, search, book, author components `await` them (no more `subscribe`); `Book.price/oldPrice` numbers + `stock`; cart/liked convert to string (their stored models stay strings).
 - Verified: `npm run build` ok. NOT verified in a browser / against the real API.
 - Not done on purpose: OnPush / `@if` / `@for` on the touched components — cannot test rendering here, risk of blank pages; stays in task 3.
-- Next: she tests the pages.
+- Confirmed by her: everything works.
 <!-- newest on top, max 5 blocks, older ones go to archive/sessions.md -->
 ### 2026-10-07 — Onboarding + planning (web session, both repos, branch `claude/magical-wozniak-j0qmxf`)
 - Did: onboarding done; scope and roadmap agreed (master in API repo BACKLOG); UI BACKLOG tasks 4-8 added; decision logged.
