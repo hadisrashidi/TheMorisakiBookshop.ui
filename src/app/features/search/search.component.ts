@@ -31,11 +31,10 @@ export class SearchComponent implements OnInit {
 
   private authorNames = signal(new Map<number, string>());
 
-  // Real genres/languages in the current catalog — there's no facet
-  // endpoint yet, so this list is maintained by hand alongside the seed
-  // data rather than invented to match the original design mock.
-  readonly availableGenres = ['رمان', 'ادبیات داستانی', 'کلاسیک', 'جنایی', 'داستان کوتاه'];
-  readonly availableLanguages = ['فارسی', 'انگلیسی'];
+  // Filled from the API (Books/GetSearchFilters) so the lists always match the catalog.
+  availableGenres = signal<string[]>([]);
+  availableLanguages = signal<string[]>([]);
+  authorOptions = signal<{ id: number; name: string }[]>([]);
 
   query = signal('');
   results = signal<Book[]>([]);
@@ -43,6 +42,9 @@ export class SearchComponent implements OnInit {
 
   selectedGenres = signal<string[]>([]);
   selectedLanguages = signal<string[]>([]);
+  selectedAuthorId = signal<number | null>(null);
+  minPrice = signal<number | null>(null);
+  maxPrice = signal<number | null>(null);
   stockFilter = signal<'all' | 'inStock'>('all');
   sort = signal<'price_asc' | 'price_desc' | 'newest' | ''>('');
 
@@ -58,11 +60,15 @@ export class SearchComponent implements OnInit {
   hasActiveFilters = computed(() =>
     this.selectedGenres().length > 0 ||
     this.selectedLanguages().length > 0 ||
+    this.selectedAuthorId() !== null ||
+    this.minPrice() !== null ||
+    this.maxPrice() !== null ||
     this.stockFilter() !== 'all' ||
     this.sort() !== ''
   );
 
   ngOnInit(): void {
+    this.loadFilters();
     this.loadAuthors();
 
     this.route.queryParamMap.subscribe(params => {
@@ -73,6 +79,16 @@ export class SearchComponent implements OnInit {
 
   authorName(authorId: number | undefined): string {
     return authorId !== undefined ? this.authorNames().get(authorId) ?? '' : '';
+  }
+
+  async loadFilters(): Promise<void> {
+    const result = await this.searchApiService.getFilters();
+    if (!result.isSuccess || !result.data) {
+      return;
+    }
+
+    this.availableGenres.set(result.data.genres);
+    this.availableLanguages.set(result.data.languages);
   }
 
   async loadAuthors(): Promise<void> {
@@ -88,6 +104,9 @@ export class SearchComponent implements OnInit {
       }
     }
     this.authorNames.set(map);
+    this.authorOptions.set(result.data
+      .filter(author => author.id !== undefined)
+      .map(author => ({ id: author.id as number, name: author.name ?? '' })));
   }
 
   // A new query or filter always starts on page 1.
@@ -103,6 +122,9 @@ export class SearchComponent implements OnInit {
       genres: this.selectedGenres(),
       languages: this.selectedLanguages(),
       sort: this.sort(),
+      authorId: this.selectedAuthorId() ?? undefined,
+      minPrice: this.minPrice() ?? undefined,
+      maxPrice: this.maxPrice() ?? undefined,
       inStockOnly: this.stockFilter() === 'inStock',
       page: this.page(),
       pageSize: PAGE_SIZE
@@ -133,6 +155,17 @@ export class SearchComponent implements OnInit {
     this.search();
   }
 
+  setAuthor(value: string) {
+    this.selectedAuthorId.set(value === '' ? null : Number(value));
+    this.search();
+  }
+
+  setPriceRange(min: string, max: string) {
+    this.minPrice.set(min === '' ? null : Number(min));
+    this.maxPrice.set(max === '' ? null : Number(max));
+    this.search();
+  }
+
   setStockFilter(value: 'all' | 'inStock') {
     this.stockFilter.set(value);
     this.search();
@@ -146,6 +179,9 @@ export class SearchComponent implements OnInit {
   clearFilters() {
     this.selectedGenres.set([]);
     this.selectedLanguages.set([]);
+    this.selectedAuthorId.set(null);
+    this.minPrice.set(null);
+    this.maxPrice.set(null);
     this.stockFilter.set('all');
     this.sort.set('');
     this.search();

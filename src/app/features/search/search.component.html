@@ -5,7 +5,7 @@
       <div class="card filters-card">
 
         <h6>ژانر</h6>
-        <label class="radio square" *ngFor="let genre of availableGenres">
+        <label class="radio square" *ngFor="let genre of availableGenres()">
           <input
             type="checkbox"
             [checked]="selectedGenres().includes(genre)"
@@ -18,7 +18,7 @@
         <div class="hr"></div>
 
         <h6>زبان</h6>
-        <label class="radio square" *ngFor="let language of availableLanguages">
+        <label class="radio square" *ngFor="let language of availableLanguages()">
           <input
             type="checkbox"
             [checked]="selectedLanguages().includes(language)"
@@ -27,6 +27,24 @@
           <span class="dot"></span>
           {{ language }}
         </label>
+
+        <div class="hr"></div>
+
+        <h6>نویسنده</h6>
+        <select class="input" aria-label="نویسنده" [value]="selectedAuthorId() ?? ''" (change)="setAuthor($any($event.target).value)">
+          <option value="">همه نویسندگان</option>
+          <option *ngFor="let author of authorOptions()" [value]="author.id">{{ author.name }}</option>
+        </select>
+
+        <div class="hr"></div>
+
+        <h6>محدوده قیمت</h6>
+        <div class="price-range">
+          <input #minInput type="number" min="0" class="input" placeholder="از" aria-label="حداقل قیمت"
+                 [value]="minPrice() ?? ''" (change)="setPriceRange(minInput.value, maxInput.value)" />
+          <input #maxInput type="number" min="0" class="input" placeholder="تا" aria-label="حداکثر قیمت"
+                 [value]="maxPrice() ?? ''" (change)="setPriceRange(minInput.value, maxInput.value)" />
+        </div>
 
         <div class="hr"></div>
 
