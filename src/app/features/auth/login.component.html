@@ -39,6 +39,11 @@
             <p class="error-note">{{ error() }}</p>
           }
 
+        <label class="remember-row">
+          <input type="checkbox" [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)" name="rememberMe" />
+          <span>مرا به خاطر بسپار</span>
+        </label>
+
           <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
             {{ submitting() ? 'در حال بررسی...' : 'ورود' }}
           </button>
@@ -76,6 +81,11 @@
         @if (error()) {
           <p class="error-note">{{ error() }}</p>
         }
+
+        <label class="remember-row">
+          <input type="checkbox" [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)" name="rememberMe" />
+          <span>مرا به خاطر بسپار</span>
+        </label>
 
         <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
           {{ submitting() ? 'در حال ورود...' : 'ورود' }}

@@ -31,6 +31,7 @@ export class RegisterComponent {
   email = signal('');
   password = signal('');
   confirmPassword = signal('');
+  rememberMe = signal(false);
   submitting = signal(false);
   error = signal('');
 
@@ -71,7 +72,8 @@ export class RegisterComponent {
       mobile: this.mobile(),
       code,
       email,
-      password: this.password()
+      password: this.password(),
+      rememberMe: this.rememberMe()
     });
     this.submitting.set(false);
 
@@ -82,6 +84,6 @@ export class RegisterComponent {
 
     this.auth.startSession(result.data);
     this.toast.success('حساب شما ساخته شد. خوش آمدید!');
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/']);
   }
 }
