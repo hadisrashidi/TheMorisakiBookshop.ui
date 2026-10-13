@@ -65,7 +65,10 @@ export class ApiHelperService {
       }
     }
 
-    if (model.showErrorAlert) {
+    // 401: the auth interceptor already told the person to log in again.
+    const isUnauthorized = error instanceof HttpErrorResponse && error.status === 401;
+
+    if (model.showErrorAlert && !isUnauthorized) {
       this.toastService.error(result.message ?? UNEXPECTED_ERROR_MESSAGE);
     }
 

@@ -1,104 +1,104 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ApiResponse } from '@core/models/api/api.response.model';
 import { AuthService } from '../../shared/services/auth.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { normalizeDigits } from '../../shared/utils/digits';
+import { OtpRequestComponent } from './components/otp-request.component';
+import { AuthTokenResponseModel } from './models/auth-token.response.model';
+import { AuthApiService } from './services/auth.api.service';
+
+type LoginMode = 'otp' | 'password';
+
+const CODE_PATTERN = /^\d{6}$/;
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, OtpRequestComponent],
   templateUrl: './login.component.html',
-  styleUrl: './auth.component.scss'
+  styleUrl: './auth.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
+  private readonly authApiService = inject(AuthApiService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly toast = inject(ToastService);
 
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private toast = inject(ToastService);
-
-  email = signal('');
-  password = signal('');
+  mode = signal<LoginMode>('otp');
   submitting = signal(false);
   error = signal('');
 
-  // Forgotten-password panel, opened from the link under the form.
-  resetting = signal(false);
-  newPassword = signal('');
-  confirmPassword = signal('');
-  knownEmails = signal<string[]>([]);
+  // Login with SMS code
+  mobile = signal('');
+  codeIsSent = signal(false);
+  code = signal('');
 
-  openReset() {
-    this.error.set('');
-    this.newPassword.set('');
-    this.confirmPassword.set('');
-    this.knownEmails.set(this.auth.knownEmails());
-    this.resetting.set(true);
-  }
+  // Login with email + password
+  email = signal('');
+  password = signal('');
 
-  closeReset() {
-    this.resetting.set(false);
+  showMode(mode: LoginMode): void {
+    this.mode.set(mode);
     this.error.set('');
   }
 
-  useEmail(email: string) {
-    this.email.set(email);
+  onCodeSent(): void {
+    this.codeIsSent.set(true);
+    this.code.set('');
   }
 
-  async submitReset() {
-    this.error.set('');
+  onNumberChanged(): void {
+    this.codeIsSent.set(false);
+    this.code.set('');
+  }
 
-    if (!this.email().trim()) {
-      this.error.set('ایمیل حساب را وارد کنید.');
-      return;
-    }
-    if (this.newPassword().length < 6) {
-      this.error.set('رمز عبور باید حداقل ۶ نویسه باشد.');
-      return;
-    }
-    if (this.newPassword() !== this.confirmPassword()) {
-      this.error.set('رمز عبور و تکرار آن یکسان نیستند.');
+  async submitCode(): Promise<void> {
+    this.error.set('');
+    const code = normalizeDigits(this.code());
+
+    if (!CODE_PATTERN.test(code)) {
+      this.error.set('کد ۶ رقمی را وارد کنید.');
       return;
     }
 
     this.submitting.set(true);
-    const result = await this.auth.resetPassword(this.email(), this.newPassword());
+    const result = await this.authApiService.verifyOtp({ mobile: this.mobile(), code });
     this.submitting.set(false);
 
-    if (!result.ok) {
-      this.error.set(result.error ?? 'تغییر رمز ناموفق بود.');
-      this.toast.error(result.error ?? 'تغییر رمز ناموفق بود.');
-      return;
-    }
-
-    this.resetting.set(false);
-    this.toast.success('رمز عبور تغییر کرد. خوش آمدید!');
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/profile';
-    this.router.navigateByUrl(returnUrl);
+    this.finishLogin(result);
   }
 
-  async submit() {
+  async submitPassword(): Promise<void> {
     this.error.set('');
 
     if (!this.email().trim() || !this.password()) {
       this.error.set('ایمیل و رمز عبور را وارد کنید.');
-      this.toast.warning('ایمیل و رمز عبور را وارد کنید.');
       return;
     }
 
     this.submitting.set(true);
-    const result = await this.auth.login(this.email(), this.password());
+    const result = await this.authApiService.loginWithPassword({
+      email: this.email().trim(),
+      password: this.password()
+    });
     this.submitting.set(false);
 
-    if (!result.ok) {
-      this.error.set(result.error ?? 'ورود ناموفق بود.');
-      this.toast.error(result.error ?? 'ورود ناموفق بود.');
+    this.finishLogin(result);
+  }
+
+  // On failure ApiHelperService has already shown the reason as a toast.
+  private finishLogin(result: ApiResponse<AuthTokenResponseModel>): void {
+    if (!result.isSuccess || !result.data) {
       return;
     }
 
+    this.auth.startSession(result.data);
     this.toast.success('خوش آمدید!');
+
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/profile';
     this.router.navigateByUrl(returnUrl);
   }

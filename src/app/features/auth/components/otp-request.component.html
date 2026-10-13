@@ -1,0 +1,36 @@
+<label class="field">
+  <span>شماره موبایل</span>
+  <input
+    class="input ltr-field"
+    type="tel"
+    dir="ltr"
+    inputmode="numeric"
+    autocomplete="tel"
+    placeholder="09123456789"
+    maxlength="11"
+    [disabled]="sent()"
+    [ngModel]="mobile()"
+    (ngModelChange)="mobile.set($event)"
+    name="mobile"
+  />
+</label>
+
+@if (error()) {
+  <p class="error-note">{{ error() }}</p>
+}
+
+@if (!sent()) {
+  <button type="button" class="btn btn-primary btn-block" [disabled]="sending()" (click)="sendCode()">
+    {{ sending() ? 'در حال ارسال...' : 'ارسال کد' }}
+  </button>
+} @else {
+  <div class="resend-row">
+    <button type="button" class="btn btn-ghost" (click)="changeNumber()">تغییر شماره</button>
+
+    @if (secondsLeft() > 0) {
+      <span class="text-muted">ارسال دوباره تا {{ secondsLeft() }} ثانیه دیگر</span>
+    } @else {
+      <button type="button" class="btn btn-ghost" [disabled]="sending()" (click)="sendCode()">ارسال دوباره کد</button>
+    }
+  </div>
+}
