@@ -43,9 +43,9 @@ export const routes: Routes = [
           import('./features/auth/login.component').then(m => m.LoginComponent),
       },
       {
-        path: 'register',
+        path: 'reset-password',
         loadComponent: () =>
-          import('./features/auth/register.component').then(m => m.RegisterComponent),
+          import('./features/auth/reset-password.component').then(m => m.ResetPasswordComponent),
       },
       // Account pages require a signed-in user.
       {
@@ -53,6 +53,12 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () =>
           import('./features/profile/profile.component').then(m => m.ProfileComponent),
+      },
+      {
+        path: 'security',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/auth/account-security.component').then(m => m.AccountSecurityComponent),
       },
       {
         path: 'orders',

@@ -68,9 +68,12 @@
 
       <div class="account-menu card elev-md" *ngIf="accountMenuOpen()" role="menu">
         <ng-container *ngIf="auth.isLoggedIn(); else signedOutMenu">
-          <span class="account-name" *ngIf="auth.current()?.name">{{ auth.current()?.name }}</span>
+          <span class="account-name" dir="ltr">{{ auth.current()?.mobile }}</span>
           <a class="account-item" routerLink="/profile" role="menuitem" (click)="closeAccountMenu()">
             مشاهده پروفایل
+          </a>
+          <a class="account-item" routerLink="/security" role="menuitem" (click)="closeAccountMenu()">
+            ایمیل و رمز عبور
           </a>
           <button type="button" class="account-item logout" role="menuitem" (click)="logout()">
             خروج از حساب
@@ -80,10 +83,7 @@
         <ng-template #signedOutMenu>
           <span class="account-name">مهمان</span>
           <a class="account-item" routerLink="/login" role="menuitem" (click)="closeAccountMenu()">
-            ورود به حساب
-          </a>
-          <a class="account-item" routerLink="/register" role="menuitem" (click)="closeAccountMenu()">
-            ثبت‌نام
+            ورود / ثبت‌نام
           </a>
         </ng-template>
       </div>

@@ -1,163 +1,99 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { AuthTokenResponseModel } from '../../features/auth/models/auth-token.response.model';
+import { UserModel } from '../../features/auth/models/user.model';
 import { ProfileService } from './profile.service';
 
-export interface AccountSummary {
-  email: string;
-  name: string;
-}
+const SESSION_KEY = 'morisaki-auth';
 
-interface StoredAccount {
-  email: string;
-  name: string;
-  /** SHA-256 of the password. See the security note below. */
-  passwordHash: string;
-}
+// Keys of the old fake login (accounts + password hashes in the browser). Removed on start.
+const OLD_FAKE_AUTH_KEYS = ['morisaki-accounts', 'morisaki-session'];
 
-const ACCOUNTS_KEY = 'morisaki-accounts';
-const SESSION_KEY = 'morisaki-session';
-
-// ⚠️ Client-side only. There is no auth backend yet, so accounts live in
-// localStorage and "login" just compares a hash in the browser. Passwords
-// are hashed rather than stored in the clear, but this is NOT security —
-// anyone with devtools can read or edit the store. Replace every method
-// here with real API calls (and a server-issued token) before this goes
-// anywhere near production.
+/**
+ * Who is logged in. Only holds the session (token + user); the API calls
+ * live in AuthApiService. It does not use HttpClient, so the auth interceptor can read the token.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private readonly profileService = inject(ProfileService);
 
-  private platformId = inject(PLATFORM_ID);
-  private isBrowser = isPlatformBrowser(this.platformId);
-  private profileService = inject(ProfileService);
+  private readonly sessionSignal = signal<AuthTokenResponseModel | null>(this.loadSession());
 
-  private currentSignal = signal<AccountSummary | null>(this.loadSession());
+  readonly current = computed(() => this.sessionSignal()?.user ?? null);
+  readonly token = computed(() => this.sessionSignal()?.token ?? '');
+  readonly isLoggedIn = computed(() => this.sessionSignal() !== null);
+  readonly isAdmin = computed(() => this.current()?.role === 'Admin');
 
-  current = this.currentSignal.asReadonly();
-  isLoggedIn = computed(() => this.currentSignal() !== null);
+  /** Keeps the login the API just returned (OTP or password login). */
+  startSession(session: AuthTokenResponseModel): void {
+    this.sessionSignal.set(session);
+    this.saveSession(session);
 
-  async register(name: string, email: string, password: string): Promise<{ ok: boolean; error?: string }> {
-    const normalisedEmail = email.trim().toLowerCase();
-    const accounts = this.loadAccounts();
-
-    if (accounts.some(a => a.email === normalisedEmail)) {
-      return { ok: false, error: 'حسابی با این ایمیل قبلاً ثبت شده است.' };
-    }
-
-    const account: StoredAccount = {
-      email: normalisedEmail,
-      name: name.trim(),
-      passwordHash: await this.hash(password)
-    };
-
-    this.saveAccounts([...accounts, account]);
-    this.startSession(account);
-
-    // Seed the profile so the account page isn't blank after signing up.
+    // Fill the empty profile fields so the profile page is not blank after the first login.
     const profile = this.profileService.profile();
-    this.profileService.save({ ...profile, name: account.name, email: account.email });
-
-    return { ok: true };
+    const phone = profile.phone || session.user.mobile;
+    const email = profile.email || session.user.email || '';
+    this.profileService.save({ ...profile, phone, email });
   }
 
-  async login(email: string, password: string): Promise<{ ok: boolean; error?: string }> {
-    const normalisedEmail = email.trim().toLowerCase();
-    const account = this.loadAccounts().find(a => a.email === normalisedEmail);
+  /** Replaces the user data (e.g. after adding an email) but keeps the same token. */
+  updateUser(user: UserModel): void {
+    const session = this.sessionSignal();
 
-    if (!account || account.passwordHash !== (await this.hash(password))) {
-      // Deliberately vague — don't reveal whether the email exists.
-      return { ok: false, error: 'ایمیل یا رمز عبور نادرست است.' };
+    if (session === null) {
+      return;
     }
 
-    this.startSession(account);
-    return { ok: true };
+    const updated = { ...session, user };
+    this.sessionSignal.set(updated);
+    this.saveSession(updated);
   }
 
-  logout() {
-    this.currentSignal.set(null);
+  logout(): void {
+    this.sessionSignal.set(null);
+
     if (this.isBrowser) {
       localStorage.removeItem(SESSION_KEY);
     }
   }
 
-  /**
-   * Sets a new password for a locally-registered account.
-   *
-   * ⚠️ There is no verification step, because there is no backend to send
-   * a reset link from — anyone using this browser can reset any account
-   * stored in it. That is no weaker than the rest of this service (the
-   * whole account store is readable and editable from devtools), and it
-   * keeps a forgotten password from locking you out of your own data.
-   * When a real auth API lands, this must be replaced by an emailed,
-   * expiring, single-use token.
-   */
-  async resetPassword(email: string, newPassword: string): Promise<{ ok: boolean; error?: string }> {
-    const normalisedEmail = email.trim().toLowerCase();
-    const accounts = this.loadAccounts();
-    const account = accounts.find(a => a.email === normalisedEmail);
-
-    if (!account) {
-      return { ok: false, error: 'حسابی با این ایمیل پیدا نشد.' };
-    }
-
-    account.passwordHash = await this.hash(newPassword);
-    this.saveAccounts(accounts);
-    this.startSession(account);
-    return { ok: true };
-  }
-
-  /** Emails registered in this browser, to jog the memory on the reset form. */
-  knownEmails(): string[] {
-    return this.loadAccounts().map(a => a.email);
-  }
-
-  private startSession(account: StoredAccount) {
-    const summary: AccountSummary = { email: account.email, name: account.name };
-    this.currentSignal.set(summary);
-    if (this.isBrowser) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify(summary));
-    }
-  }
-
-  private async hash(value: string): Promise<string> {
-    // crypto.subtle needs a secure context; localhost counts, but fall
-    // back so a plain-http deploy doesn't crash the page.
-    if (!this.isBrowser || !globalThis.crypto?.subtle) {
-      return 'plain:' + value;
-    }
-    const bytes = new TextEncoder().encode(value);
-    const digest = await crypto.subtle.digest('SHA-256', bytes);
-    return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  private loadAccounts(): StoredAccount[] {
-    if (!this.isBrowser) {
-      return [];
-    }
-    try {
-      const raw = localStorage.getItem(ACCOUNTS_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveAccounts(accounts: StoredAccount[]) {
-    if (this.isBrowser) {
-      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
-    }
-  }
-
-  private loadSession(): AccountSummary | null {
+  private loadSession(): AuthTokenResponseModel | null {
     if (!this.isBrowser) {
       return null;
     }
+
+    for (const key of OLD_FAKE_AUTH_KEYS) {
+      localStorage.removeItem(key);
+    }
+
     try {
       const raw = localStorage.getItem(SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
+
+      if (!raw) {
+        return null;
+      }
+
+      const session: AuthTokenResponseModel = JSON.parse(raw);
+      const isExpired = new Date(session.expiresAt).getTime() <= Date.now();
+
+      if (!session.token || isExpired) {
+        localStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+
+      return session;
     } catch {
       return null;
+    }
+  }
+
+  private saveSession(session: AuthTokenResponseModel): void {
+    if (this.isBrowser) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     }
   }
 }

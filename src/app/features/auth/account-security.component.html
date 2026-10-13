@@ -1,20 +1,15 @@
 <div class="auth-page">
   <div class="card elev-md auth-card">
-    <h2>ساخت حساب</h2>
-    <p class="text-muted auth-intro">با ثبت‌نام، سفارش‌ها و علاقه‌مندی‌هایتان را دنبال کنید.</p>
+    <h2>ورود با ایمیل و رمز عبور</h2>
+    <p class="text-muted auth-intro">
+      @if (auth.current()?.hasPassword) {
+        برای حساب شما ایمیل و رمز ثبت شده است. می‌توانید آن‌ها را تغییر دهید.
+      } @else {
+        اگر ایمیل و رمز ثبت کنید، دفعه‌های بعد بدون کد پیامکی هم می‌توانید وارد شوید.
+      }
+    </p>
 
     <form (ngSubmit)="submit()">
-      <label class="field">
-        <span>نام و نام خانوادگی</span>
-        <input
-          class="input"
-          autocomplete="name"
-          [ngModel]="name()"
-          (ngModelChange)="name.set($event)"
-          name="name"
-        />
-      </label>
-
       <label class="field">
         <span>ایمیل</span>
         <input
@@ -49,22 +44,21 @@
           type="password"
           dir="ltr"
           autocomplete="new-password"
-          [ngModel]="confirm()"
-          (ngModelChange)="confirm.set($event)"
-          name="confirm"
+          [ngModel]="confirmPassword()"
+          (ngModelChange)="confirmPassword.set($event)"
+          name="confirmPassword"
         />
       </label>
 
-      <p class="error-note" *ngIf="error()">{{ error() }}</p>
+      @if (error()) {
+        <p class="error-note">{{ error() }}</p>
+      }
 
       <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
-        {{ submitting() ? 'در حال ثبت‌نام...' : 'ثبت‌نام' }}
+        {{ submitting() ? 'در حال ذخیره...' : 'ذخیره' }}
       </button>
     </form>
 
-    <p class="auth-switch">
-      قبلاً ثبت‌نام کرده‌اید؟
-      <a routerLink="/login">وارد شوید</a>
-    </p>
+    <p class="auth-switch"><a routerLink="/profile">بازگشت به پروفایل</a></p>
   </div>
 </div>
