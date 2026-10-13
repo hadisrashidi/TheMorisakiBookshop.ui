@@ -4,6 +4,7 @@ import { ApiResponse } from '@core/models/api/api.response.model';
 import { ApiHelperService } from '@core/services/api/api-helper.service';
 import { AuthTokenResponseModel } from '../models/auth-token.response.model';
 import { PasswordLoginRequestModel } from '../models/password-login.request.model';
+import { RegisterRequestModel } from '../models/register.request.model';
 import { RequestOtpRequestModel } from '../models/request-otp.request.model';
 import { ResetPasswordRequestModel } from '../models/reset-password.request.model';
 import { SetCredentialsRequestModel } from '../models/set-credentials.request.model';
@@ -33,6 +34,17 @@ export class AuthApiService {
   verifyOtp(data: VerifyOtpRequestModel): Promise<ApiResponse<AuthTokenResponseModel>> {
     const model = new ApiCallModel<VerifyOtpRequestModel>();
     model.url = 'Auth/VerifyOtp';
+    model.data = data;
+    return this.apiHelperService.post<AuthTokenResponseModel>(model);
+  }
+
+  /**
+   * Sign up: the code proves the mobile number, the account is created with email and password and logged in.
+   * @param data - Mobile number, code from requestOtp, email and password (at least 8 characters)
+   */
+  register(data: RegisterRequestModel): Promise<ApiResponse<AuthTokenResponseModel>> {
+    const model = new ApiCallModel<RegisterRequestModel>();
+    model.url = 'Auth/Register';
     model.data = data;
     return this.apiHelperService.post<AuthTokenResponseModel>(model);
   }

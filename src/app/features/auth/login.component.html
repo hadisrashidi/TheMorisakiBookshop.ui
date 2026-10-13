@@ -1,7 +1,7 @@
 <div class="auth-page">
   <div class="card elev-md auth-card">
-    <h2>ورود یا ثبت‌نام</h2>
-    <p class="text-muted auth-intro">با شماره موبایل وارد شوید؛ اگر حساب ندارید، همین‌جا ساخته می‌شود.</p>
+    <h2>ورود به حساب</h2>
+    <p class="text-muted auth-intro">با کد پیامکی یا با ایمیل و رمز عبور وارد شوید.</p>
 
     <div class="auth-tabs" role="tablist">
       <button type="button" role="tab" class="auth-tab" [class.active]="mode() === 'otp'"
@@ -82,8 +82,13 @@
         </button>
 
         <a class="btn btn-ghost btn-block forgot-link" routerLink="/reset-password">رمز عبور را فراموش کرده‌اید؟</a>
-        <p class="text-muted auth-intro">ورود با ایمیل فقط برای حساب‌هایی است که پس از ورود با پیامک، ایمیل و رمز ثبت کرده‌اند.</p>
+        <p class="text-muted auth-intro">ورود با ایمیل فقط برای حساب‌هایی است که ایمیل و رمز ثبت کرده‌اند. اگر نکرده‌اید، با کد پیامکی وارد شوید.</p>
       </form>
     }
+
+    <p class="auth-switch">
+      حساب ندارید؟
+      <a routerLink="/register">ثبت‌نام کنید</a>
+    </p>
   </div>
 </div>
