@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { PasswordFieldComponent } from '../../shared/components/password-field/password-field.component';
 import { AuthService } from '../../shared/services/auth.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { normalizeDigits } from '../../shared/utils/digits';
@@ -15,7 +16,7 @@ const MIN_NAME_LENGTH = 2;
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink, OtpRequestComponent],
+  imports: [FormsModule, RouterLink, OtpRequestComponent, PasswordFieldComponent],
   templateUrl: './register.component.html',
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

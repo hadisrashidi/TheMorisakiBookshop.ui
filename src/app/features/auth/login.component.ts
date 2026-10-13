@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiResponse } from '@core/models/api/api.response.model';
+import { PasswordFieldComponent } from '../../shared/components/password-field/password-field.component';
 import { AuthService } from '../../shared/services/auth.service';
+import { ProfileService } from '../../shared/services/profile.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { normalizeDigits } from '../../shared/utils/digits';
 import { OtpRequestComponent } from './components/otp-request.component';
@@ -16,7 +18,7 @@ const CODE_PATTERN = /^\d{6}$/;
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, OtpRequestComponent],
+  imports: [FormsModule, RouterLink, OtpRequestComponent, PasswordFieldComponent],
   templateUrl: './login.component.html',
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,6 +26,7 @@ const CODE_PATTERN = /^\d{6}$/;
 export class LoginComponent {
   private readonly authApiService = inject(AuthApiService);
   private readonly auth = inject(AuthService);
+  private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly toast = inject(ToastService);
@@ -71,7 +74,7 @@ export class LoginComponent {
     const result = await this.authApiService.verifyOtp({ mobile: this.mobile(), code, rememberMe: this.rememberMe() });
     this.submitting.set(false);
 
-    this.finishLogin(result);
+    await this.finishLogin(result);
   }
 
   async submitPassword(): Promise<void> {
@@ -94,17 +97,29 @@ export class LoginComponent {
       this.auth.saveLastEmail(this.email().trim(), this.rememberMe());
     }
 
-    this.finishLogin(result);
+    await this.finishLogin(result);
   }
 
   // On failure ApiHelperService has already shown the reason as a toast.
-  private finishLogin(result: ApiResponse<AuthTokenResponseModel>): void {
+  private async finishLogin(result: ApiResponse<AuthTokenResponseModel>): Promise<void> {
     if (!result.isSuccess || !result.data) {
       return;
     }
 
     this.auth.startSession(result.data);
-    const name = result.data.user.name;
+    let name = result.data.user.name;
+
+    // An account without a name takes the name the person already typed in the profile page.
+    // Done after startSession, so the interceptor sends the new token.
+    const profileName = this.profileService.profile().name.trim();
+    if (!name && profileName.length >= 2) {
+      const named = await this.authApiService.updateProfile({ name: profileName });
+      if (named.isSuccess && named.data) {
+        this.auth.updateUser(named.data);
+        name = named.data.name;
+      }
+    }
+
     this.toast.success(name ? `${name} عزیز، خوش آمدید!` : 'خوش آمدید!');
 
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';

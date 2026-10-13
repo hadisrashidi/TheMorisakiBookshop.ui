@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { PasswordFieldComponent } from '../../shared/components/password-field/password-field.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { normalizeDigits } from '../../shared/utils/digits';
 import { OtpRequestComponent } from './components/otp-request.component';
@@ -12,7 +13,7 @@ const MIN_PASSWORD_LENGTH = 8;
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [FormsModule, RouterLink, OtpRequestComponent],
+  imports: [FormsModule, RouterLink, OtpRequestComponent, PasswordFieldComponent],
   templateUrl: './reset-password.component.html',
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

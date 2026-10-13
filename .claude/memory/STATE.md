@@ -20,6 +20,7 @@ Onboarding: done (2026-10-07)
 - Follow-up: her email login failed (SMS-only account has no email) → added `/register` (mobile + code + email + password), login page links to it; API messages are Persian now. Mock-API smoke test of /register ok; build ok.
 - Follow-up 2: login/register go to `/` (home), "remember me" checkbox (login both tabs + register, sends `rememberMe`); mock-API smoke test ok, build ok.
 - Follow-up 3: name on the account (`/register` asks for it, profile save calls `Auth/UpdateProfile`), welcome toast with the name, menu shows the name, last email pre-filled; build ok, mock-API smoke test ok. Needs API script 0012.
+- Follow-up 4: eye button on all password fields (`PasswordFieldComponent`), login copies the local profile name to an unnamed account, menu hint "افزودن نام"; mock-API smoke test ok, build ok. Her report: still "خوش آمدید" without name = account has no name yet (needs API script 0012 + a name saved in profile).
 - Next: she tests with the real API.
 ### 2026-10-12 — Page audit (web session, branch `claude/vibrant-dijkstra-3beh1b`)
 - Did: read-only audit of routes, header, footer, home, search, book/author pages, cart, orders, auth, FAQ. Findings = BACKLOG tasks 9-14. No app code changed.
