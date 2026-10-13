@@ -32,7 +32,7 @@ export class LoginComponent {
   submitting = signal(false);
   error = signal('');
 
-  rememberMe = signal(false);
+  rememberMe = signal(this.auth.getLastEmail() !== '');
 
   // Login with SMS code
   mobile = signal('');
@@ -40,7 +40,7 @@ export class LoginComponent {
   code = signal('');
 
   // Login with email + password
-  email = signal('');
+  email = signal(this.auth.getLastEmail());
   password = signal('');
 
   showMode(mode: LoginMode): void {
@@ -90,6 +90,10 @@ export class LoginComponent {
     });
     this.submitting.set(false);
 
+    if (result.isSuccess) {
+      this.auth.saveLastEmail(this.email().trim(), this.rememberMe());
+    }
+
     this.finishLogin(result);
   }
 
@@ -100,7 +104,8 @@ export class LoginComponent {
     }
 
     this.auth.startSession(result.data);
-    this.toast.success('خوش آمدید!');
+    const name = result.data.user.name;
+    this.toast.success(name ? `${name} عزیز، خوش آمدید!` : 'خوش آمدید!');
 
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
     this.router.navigateByUrl(returnUrl);

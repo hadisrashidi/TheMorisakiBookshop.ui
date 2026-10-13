@@ -7,6 +7,7 @@ import { OrdersService } from '../../shared/services/orders.service';
 import { JalaliDatePickerComponent } from '../../shared/components/jalali-date-picker/jalali-date-picker.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { AuthService } from '../../shared/services/auth.service';
+import { AuthApiService } from '../auth/services/auth.api.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
@@ -24,6 +25,7 @@ export class ProfileComponent {
   ordersService = inject(OrdersService);
   private toast = inject(ToastService);
   private auth = inject(AuthService);
+  private authApiService = inject(AuthApiService);
   private router = inject(Router);
 
   // Edited copy — only written back to the service on save, so navigating
@@ -82,10 +84,27 @@ export class ProfileComponent {
     this.draft.update(d => ({ ...d, avatar: '' }));
   }
 
-  save() {
+  async save() {
     this.profileService.save(this.draft());
     this.editing.set(false);
+    await this.saveNameToAccount();
     this.toast.success('تغییرات ذخیره شد.');
+  }
+
+  // The name lives on the account too, so the header and the welcome message can show it.
+  private async saveNameToAccount() {
+    const user = this.auth.current();
+    const name = this.draft().name.trim();
+
+    if (!user || name.length < 2 || name === user.name) {
+      return;
+    }
+
+    const result = await this.authApiService.updateProfile({ name });
+
+    if (result.isSuccess && result.data) {
+      this.auth.updateUser(result.data);
+    }
   }
 
   logout() {

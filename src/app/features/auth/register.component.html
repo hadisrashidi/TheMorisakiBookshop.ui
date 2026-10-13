@@ -30,6 +30,17 @@
         </label>
 
         <label class="field">
+          <span>نام و نام خانوادگی</span>
+          <input
+            class="input"
+            autocomplete="name"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            name="name"
+          />
+        </label>
+
+        <label class="field">
           <span>ایمیل</span>
           <input
             class="input ltr-field"

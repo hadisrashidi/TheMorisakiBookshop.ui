@@ -8,6 +8,8 @@ import { RegisterRequestModel } from '../models/register.request.model';
 import { RequestOtpRequestModel } from '../models/request-otp.request.model';
 import { ResetPasswordRequestModel } from '../models/reset-password.request.model';
 import { SetCredentialsRequestModel } from '../models/set-credentials.request.model';
+import { UpdateProfileRequestModel } from '../models/update-profile.request.model';
+import { UserModel } from '../models/user.model';
 import { VerifyOtpRequestModel } from '../models/verify-otp.request.model';
 
 @Injectable({
@@ -80,5 +82,16 @@ export class AuthApiService {
     model.url = 'Auth/ResetPassword';
     model.data = data;
     return this.apiHelperService.post<unknown>(model);
+  }
+
+  /**
+   * Change the name of the logged-in account (shown as "<name> عزیز خوش آمدید").
+   * @param data - The new name
+   */
+  updateProfile(data: UpdateProfileRequestModel): Promise<ApiResponse<UserModel>> {
+    const model = new ApiCallModel<UpdateProfileRequestModel>();
+    model.url = 'Auth/UpdateProfile';
+    model.data = data;
+    return this.apiHelperService.post<UserModel>(model);
   }
 }
