@@ -69,6 +69,11 @@
           />
         </label>
 
+        <label class="remember-row">
+          <input type="checkbox" [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)" name="rememberMe" />
+          <span>مرا به خاطر بسپار</span>
+        </label>
+
         @if (error()) {
           <p class="error-note">{{ error() }}</p>
         }

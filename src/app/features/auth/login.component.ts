@@ -32,6 +32,8 @@ export class LoginComponent {
   submitting = signal(false);
   error = signal('');
 
+  rememberMe = signal(false);
+
   // Login with SMS code
   mobile = signal('');
   codeIsSent = signal(false);
@@ -66,7 +68,7 @@ export class LoginComponent {
     }
 
     this.submitting.set(true);
-    const result = await this.authApiService.verifyOtp({ mobile: this.mobile(), code });
+    const result = await this.authApiService.verifyOtp({ mobile: this.mobile(), code, rememberMe: this.rememberMe() });
     this.submitting.set(false);
 
     this.finishLogin(result);
@@ -83,7 +85,8 @@ export class LoginComponent {
     this.submitting.set(true);
     const result = await this.authApiService.loginWithPassword({
       email: this.email().trim(),
-      password: this.password()
+      password: this.password(),
+      rememberMe: this.rememberMe()
     });
     this.submitting.set(false);
 
@@ -99,7 +102,7 @@ export class LoginComponent {
     this.auth.startSession(result.data);
     this.toast.success('خوش آمدید!');
 
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/profile';
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
     this.router.navigateByUrl(returnUrl);
   }
 }
