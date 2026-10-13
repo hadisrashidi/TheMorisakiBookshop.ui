@@ -5,6 +5,7 @@ import { UserModel } from '../../features/auth/models/user.model';
 import { ProfileService } from './profile.service';
 
 const SESSION_KEY = 'morisaki-auth';
+const LAST_EMAIL_KEY = 'morisaki-last-email';
 
 // Keys of the old fake login (accounts + password hashes in the browser). Removed on start.
 const OLD_FAKE_AUTH_KEYS = ['morisaki-accounts', 'morisaki-session'];
@@ -35,9 +36,10 @@ export class AuthService {
 
     // Fill the empty profile fields so the profile page is not blank after the first login.
     const profile = this.profileService.profile();
+    const name = profile.name || session.user.name || '';
     const phone = profile.phone || session.user.mobile;
     const email = profile.email || session.user.email || '';
-    this.profileService.save({ ...profile, phone, email });
+    this.profileService.save({ ...profile, name, phone, email });
   }
 
   /** Replaces the user data (e.g. after adding an email) but keeps the same token. */
@@ -51,6 +53,28 @@ export class AuthService {
     const updated = { ...session, user };
     this.sessionSignal.set(updated);
     this.saveSession(updated);
+  }
+
+  /** The email used at the last login with "remember me", to fill the email field next time. */
+  getLastEmail(): string {
+    if (!this.isBrowser) {
+      return '';
+    }
+
+    return localStorage.getItem(LAST_EMAIL_KEY) ?? '';
+  }
+
+  /** Remembers the email, or forgets it when remember is false. */
+  saveLastEmail(email: string, remember: boolean): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    if (remember) {
+      localStorage.setItem(LAST_EMAIL_KEY, email);
+    } else {
+      localStorage.removeItem(LAST_EMAIL_KEY);
+    }
   }
 
   logout(): void {

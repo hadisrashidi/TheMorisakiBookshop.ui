@@ -30,6 +30,17 @@
         </label>
 
         <label class="field">
+          <span>نام و نام خانوادگی</span>
+          <input
+            class="input"
+            autocomplete="name"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            name="name"
+          />
+        </label>
+
+        <label class="field">
           <span>ایمیل</span>
           <input
             class="input ltr-field"
@@ -43,31 +54,9 @@
           />
         </label>
 
-        <label class="field">
-          <span>رمز عبور</span>
-          <input
-            class="input ltr-field"
-            type="password"
-            dir="ltr"
-            autocomplete="new-password"
-            [ngModel]="password()"
-            (ngModelChange)="password.set($event)"
-            name="password"
-          />
-        </label>
+        <app-password-field label="رمز عبور" autocomplete="new-password" name="password" [(value)]="password" />
 
-        <label class="field">
-          <span>تکرار رمز عبور</span>
-          <input
-            class="input ltr-field"
-            type="password"
-            dir="ltr"
-            autocomplete="new-password"
-            [ngModel]="confirmPassword()"
-            (ngModelChange)="confirmPassword.set($event)"
-            name="confirmPassword"
-          />
-        </label>
+        <app-password-field label="تکرار رمز عبور" autocomplete="new-password" name="confirmPassword" [(value)]="confirmPassword" />
 
         <label class="remember-row">
           <input type="checkbox" [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)" name="rememberMe" />

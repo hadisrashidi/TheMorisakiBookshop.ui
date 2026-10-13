@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { PasswordFieldComponent } from '../../shared/components/password-field/password-field.component';
 import { AuthService } from '../../shared/services/auth.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { AuthApiService } from './services/auth.api.service';
@@ -12,7 +13,7 @@ const MIN_PASSWORD_LENGTH = 8;
 @Component({
   selector: 'app-account-security',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, PasswordFieldComponent],
   templateUrl: './account-security.component.html',
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

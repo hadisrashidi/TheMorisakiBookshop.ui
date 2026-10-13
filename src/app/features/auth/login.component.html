@@ -57,7 +57,7 @@
             class="input ltr-field"
             type="email"
             dir="ltr"
-            autocomplete="email"
+            autocomplete="username"
             placeholder="you@example.com"
             [ngModel]="email()"
             (ngModelChange)="email.set($event)"
@@ -65,18 +65,7 @@
           />
         </label>
 
-        <label class="field">
-          <span>رمز عبور</span>
-          <input
-            class="input ltr-field"
-            type="password"
-            dir="ltr"
-            autocomplete="current-password"
-            [ngModel]="password()"
-            (ngModelChange)="password.set($event)"
-            name="password"
-          />
-        </label>
+        <app-password-field label="رمز عبور" autocomplete="current-password" name="password" [(value)]="password" />
 
         @if (error()) {
           <p class="error-note">{{ error() }}</p>

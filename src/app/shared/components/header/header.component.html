@@ -68,7 +68,10 @@
 
       <div class="account-menu card elev-md" *ngIf="accountMenuOpen()" role="menu">
         <ng-container *ngIf="auth.isLoggedIn(); else signedOutMenu">
-          <span class="account-name" dir="ltr">{{ auth.current()?.mobile }}</span>
+          <span class="account-name">{{ auth.current()?.name || auth.current()?.mobile }}</span>
+          <a class="account-item" routerLink="/profile" role="menuitem" *ngIf="!auth.current()?.name" (click)="closeAccountMenu()">
+            افزودن نام
+          </a>
           <a class="account-item" routerLink="/profile" role="menuitem" (click)="closeAccountMenu()">
             مشاهده پروفایل
           </a>
