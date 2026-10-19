@@ -9,6 +9,8 @@ export class Book {
   image: string | undefined;
   description: string | undefined;
   inStock: boolean | undefined;
+  /** false = hidden from the shop; only the admin panel receives hidden books. */
+  isActive?: boolean;
   stock: number | undefined;
   oldPrice: number | null | undefined;
   price: number | undefined;

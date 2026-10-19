@@ -32,7 +32,7 @@
           *ngFor="let line of order.lines"
           [routerLink]="['/books', line.id]"
         >
-          <img class="washed thumb" [src]="line.image" [alt]="line.title" />
+          <img class="washed thumb" [src]="line.image | apiImage" [alt]="line.title" />
           <div class="line-text">
             <p class="line-title">{{ line.title }}</p>
             <span class="text-muted">{{ line.quantity }} × {{ line.price }} تومان</span>

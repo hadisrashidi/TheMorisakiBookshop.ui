@@ -11,11 +11,12 @@ import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
+import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
 @Component({
   selector: 'app-author-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './author-detail.component.html',
   styleUrl: './author-detail.component.scss'
 })

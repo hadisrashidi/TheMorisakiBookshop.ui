@@ -5,11 +5,12 @@ import { CartService } from '../../shared/services/cart.service';
 import { OrdersService } from '../../shared/services/orders.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
+import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
 })

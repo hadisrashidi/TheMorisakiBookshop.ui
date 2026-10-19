@@ -1,0 +1,12 @@
+@use './admin-page';
+
+.spec-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.add-spec {
+  margin-top: var(--space-2);
+}

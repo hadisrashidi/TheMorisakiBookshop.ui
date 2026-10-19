@@ -7,11 +7,12 @@ import { LikedItem } from '../../shared/models/liked-item.model';
 import { Book } from '../home/models/book.model';
 import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
+import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
 @Component({
   selector: 'app-liked',
   standalone: true,
-  imports: [CommonModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './liked.component.html',
   styleUrl: './liked.component.scss'
 })

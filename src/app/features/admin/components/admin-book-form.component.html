@@ -1,0 +1,117 @@
+<div class="admin-page">
+  <app-admin-nav />
+
+  <div class="admin-head">
+    <h2>{{ bookId === null ? 'افزودن کتاب' : 'ویرایش کتاب' }}</h2>
+    <a class="btn btn-ghost" routerLink="/admin/books">بازگشت به فهرست</a>
+  </div>
+
+  @if (loading()) {
+    <p class="text-muted">در حال بارگذاری...</p>
+  } @else {
+    <form #bookForm="ngForm" class="card elev-sm" (ngSubmit)="save()">
+      <div class="form-grid">
+        <label class="field field--wide">
+          <span>عنوان کتاب</span>
+          <input class="input" type="text" name="title" maxlength="200" required [(ngModel)]="model().title" />
+        </label>
+
+        <label class="field">
+          <span>نویسنده</span>
+          <select class="input" name="authorId" required [(ngModel)]="model().authorId">
+            <option [ngValue]="null" disabled>انتخاب نویسنده</option>
+            @for (author of authors(); track author.id) {
+              <option [ngValue]="author.id">{{ author.name }}</option>
+            }
+          </select>
+          <p class="text-muted hint">نویسنده‌ی جدید را از بخش «نویسندگان» اضافه کنید.</p>
+        </label>
+
+        <label class="field">
+          <span>موجودی</span>
+          <input class="input" type="number" min="0" name="stock" required [(ngModel)]="model().stock" />
+        </label>
+
+        <label class="field">
+          <span>قیمت (تومان)</span>
+          <input class="input" type="number" min="0" name="price" required [(ngModel)]="model().price" />
+        </label>
+
+        <label class="field">
+          <span>قیمت قبل از تخفیف (اختیاری)</span>
+          <input class="input" type="number" min="0" name="oldPrice" [(ngModel)]="model().oldPrice" />
+        </label>
+
+        <label class="field">
+          <span>ژانر</span>
+          <input class="input" type="text" name="genre" maxlength="50" list="genre-options" [(ngModel)]="model().genre" />
+          <datalist id="genre-options">
+            @for (genre of genres(); track genre) {
+              <option [value]="genre"></option>
+            }
+          </datalist>
+        </label>
+
+        <label class="field">
+          <span>زبان</span>
+          <input class="input" type="text" name="language" maxlength="50" list="language-options" [(ngModel)]="model().language" />
+          <datalist id="language-options">
+            @for (language of languages(); track language) {
+              <option [value]="language"></option>
+            }
+          </datalist>
+        </label>
+
+        <div class="field--wide">
+          <app-admin-image-field label="تصویر جلد" folder="covers" [(value)]="model().image" />
+        </div>
+
+        <label class="field field--wide">
+          <span>توضیحات</span>
+          <textarea class="textarea" name="description" [(ngModel)]="model().description"></textarea>
+        </label>
+      </div>
+
+      <div class="hr"></div>
+
+      <h4>مشخصات کتاب</h4>
+      <p class="text-muted hint">مثلاً «تعداد صفحات: ۳۲۰». ردیف‌هایی که نیمه‌پر باشند ذخیره نمی‌شوند.</p>
+
+      @for (spec of model().specs; track spec; let index = $index) {
+        <div class="spec-row">
+          <input
+            class="input"
+            type="text"
+            maxlength="100"
+            placeholder="عنوان"
+            [name]="'spec-label-' + index"
+            [attr.aria-label]="'عنوان مشخصات ' + (index + 1)"
+            [(ngModel)]="spec.label"
+          />
+          <input
+            class="input"
+            type="text"
+            maxlength="200"
+            placeholder="مقدار"
+            [name]="'spec-value-' + index"
+            [attr.aria-label]="'مقدار مشخصات ' + (index + 1)"
+            [(ngModel)]="spec.value"
+          />
+          <button type="button" class="btn btn-ghost" (click)="removeSpec(index)">حذف</button>
+        </div>
+      }
+
+      <button type="button" class="btn btn-secondary add-spec" (click)="addSpec()">افزودن ردیف</button>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="bookForm.invalid || !model().image || saving()">
+          {{ saving() ? 'در حال ذخیره...' : 'ذخیره' }}
+        </button>
+        <a class="btn btn-secondary" routerLink="/admin/books">انصراف</a>
+        @if (!model().image) {
+          <span class="text-muted hint">برای ذخیره، تصویر جلد را بارگذاری کنید.</span>
+        }
+      </div>
+    </form>
+  }
+</div>

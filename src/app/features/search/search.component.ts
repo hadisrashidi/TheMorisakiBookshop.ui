@@ -9,13 +9,14 @@ import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
+import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
 const PAGE_SIZE = 9;
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, CommonModule, FormsModule, RouterLink, ImageFallbackDirective],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './core/components/layout/layout.component';
+import { adminGuard } from './core/guards/admin.guard';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -76,6 +77,44 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () =>
           import('./features/addresses/addresses.component').then(m => m.AddressesComponent),
+      },
+      // Admin panel: books and authors. The API checks the Admin role again on every call.
+      {
+        path: 'admin',
+        canActivate: [adminGuard],
+        children: [
+          { path: '', redirectTo: 'books', pathMatch: 'full' },
+          {
+            path: 'books',
+            loadComponent: () =>
+              import('./features/admin/components/admin-books-list.component').then(m => m.AdminBooksListComponent),
+          },
+          {
+            path: 'books/new',
+            loadComponent: () =>
+              import('./features/admin/components/admin-book-form.component').then(m => m.AdminBookFormComponent),
+          },
+          {
+            path: 'books/:id',
+            loadComponent: () =>
+              import('./features/admin/components/admin-book-form.component').then(m => m.AdminBookFormComponent),
+          },
+          {
+            path: 'authors',
+            loadComponent: () =>
+              import('./features/admin/components/admin-authors-list.component').then(m => m.AdminAuthorsListComponent),
+          },
+          {
+            path: 'authors/new',
+            loadComponent: () =>
+              import('./features/admin/components/admin-author-form.component').then(m => m.AdminAuthorFormComponent),
+          },
+          {
+            path: 'authors/:id',
+            loadComponent: () =>
+              import('./features/admin/components/admin-author-form.component').then(m => m.AdminAuthorFormComponent),
+          },
+        ],
       },
       {
         path: 'faq',

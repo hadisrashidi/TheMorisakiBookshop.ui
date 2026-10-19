@@ -1,0 +1,99 @@
+<div class="admin-page">
+  <app-admin-nav />
+
+  <div class="admin-head">
+    <h2>مدیریت کتاب‌ها</h2>
+    <a class="btn btn-primary" routerLink="/admin/books/new">افزودن کتاب</a>
+  </div>
+
+  <form class="admin-toolbar" (ngSubmit)="search()">
+    <input
+      class="input"
+      type="search"
+      name="query"
+      placeholder="جستجو در عنوان، ژانر و مشخصات"
+      aria-label="جستجوی کتاب"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+    />
+    <button type="submit" class="btn btn-secondary">جستجو</button>
+  </form>
+
+  <div class="card elev-sm">
+    @if (loading()) {
+      <p class="text-muted">در حال بارگذاری...</p>
+    } @else if (rows().length === 0) {
+      <p class="text-muted">کتابی پیدا نشد.</p>
+    } @else {
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>عنوان</th>
+              <th>نویسنده</th>
+              <th>قیمت (تومان)</th>
+              <th>موجودی</th>
+              <th>وضعیت</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of rows(); track row.book.id) {
+              <tr>
+                <td><img class="washed thumb" [src]="row.book.image | apiImage" [alt]="row.book.title" /></td>
+                <td>{{ row.book.title }}</td>
+                <td>{{ row.authorName }}</td>
+                <td>{{ row.book.price | number }}</td>
+                <td>
+                  <div class="stock-cell">
+                    <input
+                      class="input stock-input"
+                      type="number"
+                      min="0"
+                      [name]="'stock-' + row.book.id"
+                      [attr.aria-label]="'موجودی ' + row.book.title"
+                      [(ngModel)]="row.stockDraft"
+                    />
+                    @if (row.stockDraft !== row.book.stock) {
+                      <button type="button" class="btn btn-primary" (click)="saveStock(row)">ثبت</button>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="tag" [class.tag-accent-2]="row.book.isActive" [class.tag-neutral]="!row.book.isActive">
+                    {{ row.book.isActive ? 'نمایش' : 'پنهان' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="cell-actions">
+                    <a class="btn btn-secondary" [routerLink]="['/admin/books', row.book.id]">ویرایش</a>
+                    <button type="button" class="btn btn-ghost" (click)="toggleActive(row)">
+                      {{ row.book.isActive ? 'پنهان کردن' : 'نمایش دادن' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-muted hint">{{ totalCount() }} کتاب</p>
+    }
+  </div>
+
+  @if (pageCount() > 1) {
+    <div class="pagination">
+      @for (pageNumber of pageNumbers(); track pageNumber) {
+        <button
+          type="button"
+          class="btn btn-icon"
+          [class.btn-primary]="pageNumber === page()"
+          [class.btn-secondary]="pageNumber !== page()"
+          (click)="goToPage(pageNumber)"
+        >{{ pageNumber }}</button>
+      }
+    </div>
+  }
+</div>

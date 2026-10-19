@@ -1,0 +1,25 @@
+<div class="image-field">
+  <span class="image-field__label">{{ label() }}</span>
+
+  <div class="image-field__body">
+    @if (value()) {
+      <img class="washed image-field__preview" [src]="value() | apiImage" alt="پیش‌نمایش تصویر" />
+    } @else {
+      <div class="image-field__preview image-field__preview--empty">بدون تصویر</div>
+    }
+
+    <div class="image-field__actions">
+      <label class="btn btn-secondary" [class.is-disabled]="uploading()">
+        {{ uploading() ? 'در حال بارگذاری...' : 'انتخاب تصویر' }}
+        <input
+          class="image-field__input"
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp"
+          [disabled]="uploading()"
+          (change)="onFileSelected($event)"
+        />
+      </label>
+      <p class="image-field__hint text-muted">jpg، png یا webp، حداکثر ۲ مگابایت</p>
+    </div>
+  </div>
+</div>

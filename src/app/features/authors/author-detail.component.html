@@ -1,7 +1,7 @@
 <div class="page" *ngIf="author">
 
   <div class="card elev-sm bio-card">
-    <img class="washed portrait" [src]="author.image" [alt]="author.name" />
+    <img class="washed portrait" [src]="author.image | apiImage" [alt]="author.name" />
     <div class="bio-main">
       <h2>{{ author.name }}</h2>
       <p class="card-body">{{ author.bio }}</p>
@@ -35,7 +35,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="isLiked(book) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
       </button>
 
-      <img class="washed cover" [src]="book.image" [alt]="book.title" />
+      <img class="washed cover" [src]="book.image | apiImage" [alt]="book.title" />
       <p class="card-title clamp-2">{{ book.title }}</p>
       <div class="book-foot">
         <span class="book-price">{{ book.price }} تومان</span>
@@ -73,7 +73,7 @@
         *ngFor="let similar of similarAuthors"
         [routerLink]="['/authors', similar.id]"
       >
-        <img class="washed" [src]="similar.image" [alt]="similar.name" />
+        <img class="washed" [src]="similar.image | apiImage" [alt]="similar.name" />
         <p>{{ similar.name }}</p>
       </a>
     </div>
