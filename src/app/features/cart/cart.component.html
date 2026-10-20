@@ -25,7 +25,7 @@
 
       <div class="items-col">
         <div class="card elev-sm item-row" *ngFor="let item of cartService.items()">
-          <img class="washed thumb" [src]="item.image" [alt]="item.title" (click)="goToBookDetail(item.id)" />
+          <img class="washed thumb" [src]="item.image | apiImage" [alt]="item.title" (click)="goToBookDetail(item.id)" />
 
           <div class="item-info">
             <p class="card-title">{{ item.title }}</p>

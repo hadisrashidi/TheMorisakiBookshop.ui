@@ -7,13 +7,19 @@ Onboarding: done (2026-10-07)
 - Structure: `src/app/core/` (layout, `guards/auth.guard.ts`), `src/app/features/<feature>/` (addresses, auth, authors, books, cart, faq, home, liked, orders, profile, search), `src/app/shared/` (models, services, directives, `utils/jalali.ts`).
 - Talks to the API through `features/*/services/*.api.service.ts` and `shared/services/reviews.api.service.ts` → `core/services/api/api-helper.service.ts` (`ApiHelperService`, returns `Promise<ApiResponse<T>>`, never throws, toast on failure). API base URL from `src/environments/environment.ts` (`https://localhost:7106/api`); `public/env/env.js` is not used by any code. `@core/*` alias in `tsconfig.json`.
 - Auth is real (API JWT login, 2026-10-13): `/login` (SMS code or email+password), `/register`, `/reset-password`, `/security`. Cart, liked, orders, addresses, profile are still front-end only (localStorage).
+- Admin panel: NOT here — separate repo `TheMorisakiBookshop.admin.ui` (with `TheMorisakiBookshop.admin.api`), moved out 2026-10-19.
+- Images: pipe `shared/pipes/api-image.pipe.ts` (`apiImage`) turns `/uploads/...` into the API origin URL; used on every book/author `<img>` of the shop.
 - Translations in `public/i18n/` (fa, en). Book covers / author images in `public/covers/`, `public/authors/`.
 - CI: `.github/workflows/build.yml`.
 
 ## Active work
-- Login screens built against the API auth endpoints (needs API scripts 0010-0011). Next: she tests it in the browser, then BACKLOG task 3 rest / 6.
+- Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-10-19 — Admin panel built here, then moved to its own repo (web session, branch `claude/loving-gauss-lh47dz`)
+- Did: `adminGuard`, `features/admin/` (models, 3 API services, nav tabs, image-upload field, books list, book form, authors list, author form), routes `/admin/**`, account-menu link for admins, `apiImage` pipe on all shop images (7 components), `Book.isActive`.
+- Verified: `npm run build` ok; Playwright against a MOCKED API: customer redirected from `/admin`, Bearer sent, list shows hidden status + uploaded cover URL on the API origin, stock save, hide, upload (multipart), create (empty spec row dropped), edit loads, author create, no console errors. NOT verified against the real API / database.
+- Follow-up (same day): she wanted a SEPARATE admin repo → everything admin (`features/admin`, `adminGuard`, `/admin` routes, header link, `Book.isActive`) moved to `TheMorisakiBookshop.admin.ui` and removed here. Kept: pipe `apiImage` (shop pages must show covers uploaded by the admin). `npm run build` ok.
 ### 2026-10-13 — Real login screens (web session, branch `claude/adoring-rubin-tb785m`, both repos)
 - Did: `AuthApiService`, auth models, `AuthService` rewritten as session only, `authInterceptor` (+ `ApiHelperService` skips the toast on 401), `/login` (SMS code | email+password tabs), `/reset-password`, `/security`, shared `OtpRequestComponent` (60 s resend timer), `normalizeDigits` (Persian digits). Removed register page and the fake auth (incl. the insecure reset). Header shows the mobile and links.
 - Verified: `npm run build` ok; Playwright smoke test with a MOCKED API: redirect to login, OTP login with Persian digits, Bearer header sent, 401 logs out. NOT verified against the real API.

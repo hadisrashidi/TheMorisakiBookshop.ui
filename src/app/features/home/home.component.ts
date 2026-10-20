@@ -8,11 +8,12 @@ import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
+import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

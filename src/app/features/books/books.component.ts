@@ -11,11 +11,12 @@ import { AuthorsApiService } from '../authors/services/authors.api.service';
 import { ReviewsApiService } from '../../shared/services/reviews.api.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
+import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
 @Component({
   selector: 'app-books',
   standalone: true,
-  imports: [CommonModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, CommonModule, RouterLink, ImageFallbackDirective],
   templateUrl: './books.component.html',
   styleUrl: './books.component.scss'
 })

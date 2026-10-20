@@ -66,7 +66,7 @@
     </div>
 
     <div class="cover-col">
-      <img class="washed cover" [src]="book.image" [alt]="book.title" />
+      <img class="washed cover" [src]="book.image | apiImage" [alt]="book.title" />
     </div>
 
     <div class="side-col" *ngIf="relatedBooks.length > 0">
@@ -77,7 +77,7 @@
           [routerLink]="['/books', item.id]"
           class="related-row"
         >
-          <img class="washed" [src]="item.image" [alt]="item.title" />
+          <img class="washed" [src]="item.image | apiImage" [alt]="item.title" />
           <div class="related-text">
             <p class="related-title">{{ item.title }}</p>
             <span class="related-price">{{ item.price }} تومان</span>
@@ -125,7 +125,7 @@
         *ngFor="let item of similarBooks"
         [routerLink]="['/books', item.id]"
       >
-        <img class="washed cover" [src]="item.image" [alt]="item.title" />
+        <img class="washed cover" [src]="item.image | apiImage" [alt]="item.title" />
         <p class="card-title clamp-2">{{ item.title }}</p>
         <span class="rec-price">{{ item.price }} تومان</span>
       </a>
