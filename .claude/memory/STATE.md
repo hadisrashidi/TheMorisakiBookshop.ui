@@ -13,7 +13,7 @@ Onboarding: done (2026-10-07)
 - CI: `.github/workflows/build.yml`.
 
 ## Active work
-- 2026-10-21: orders wired to the API (she runs API scripts 0015-0016 first). Admin orders screens: admin repos.
+- 2026-10-24: orders (checkout, `/orders`, profile summary) and the add-to-cart stock check work against the real API (she tested). Admin orders screens live in the admin repos.
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
