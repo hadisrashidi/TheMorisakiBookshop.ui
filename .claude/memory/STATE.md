@@ -6,16 +6,20 @@ Onboarding: done (2026-10-07)
 - Angular 19 (standalone components), TypeScript 5.7, SCSS, no UI library; fonts self-hosted via `@fontsource/*`. Persian (RTL) storefront.
 - Structure: `src/app/core/` (layout, `guards/auth.guard.ts`), `src/app/features/<feature>/` (addresses, auth, authors, books, cart, faq, home, liked, orders, profile, search), `src/app/shared/` (models, services, directives, `utils/jalali.ts`).
 - Talks to the API through `features/*/services/*.api.service.ts` and `shared/services/reviews.api.service.ts` → `core/services/api/api-helper.service.ts` (`ApiHelperService`, returns `Promise<ApiResponse<T>>`, never throws, toast on failure). API base URL from `src/environments/environment.ts` (`https://localhost:7106/api`); `public/env/env.js` is not used by any code. `@core/*` alias in `tsconfig.json`.
-- Auth is real (API JWT login, 2026-10-13): `/login` (SMS code or email+password), `/register`, `/reset-password`, `/security`. Cart, liked, orders, addresses, profile are still front-end only (localStorage).
+- Auth is real (API JWT login, 2026-10-13): `/login` (SMS code or email+password), `/register`, `/reset-password`, `/security`. Orders are real since 2026-10-21 (cart checkout -> `Orders/PlaceOrder`, `/orders` + profile summary read `Orders/GetMyOrders`; models `shared/models/*order*.model.ts`, `shared/services/orders.api.service.ts` + `orders.service.ts`). Cart, liked, addresses, profile are still front-end only (localStorage).
 - Admin panel: NOT here — separate repo `TheMorisakiBookshop.admin.ui` (with `TheMorisakiBookshop.admin.api`), moved out 2026-10-19.
 - Images: pipe `shared/pipes/api-image.pipe.ts` (`apiImage`) turns `/uploads/...` into the API origin URL; used on every book/author `<img>` of the shop.
 - Translations in `public/i18n/` (fa, en). Book covers / author images in `public/covers/`, `public/authors/`.
 - CI: `.github/workflows/build.yml`.
 
 ## Active work
+- 2026-10-21: orders wired to the API (she runs API scripts 0015-0016 first). Admin orders screens: admin repos.
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-10-21 — Checkout + orders page on the API (web session, branch `claude/gifted-curie-7qha13`, shop repos + admin repos)
+- Did: `OrdersApiService`, `OrdersService` (signal store, `load()`, `placeOrder()`), order models as classes (`OrderResponseModel`, `OrderLineResponseModel`, `PlaceOrderRequestModel`, `PlaceOrderLineRequestModel`), `utils/order-status.ts`; `CartComponent` (login + address check, `isPlacing`, OnPush, `@if/@for`), `OrdersComponent` (OnPush, loading state, recipient/address/tracking), profile summary loads orders. Old `order.model.ts` + fake localStorage orders removed.
+- Verified: `npm run build` ok; Playwright against a MOCKED API (payload has ids + quantities only and the Bearer token, thank-you card, cart emptied, old fake key removed, orders page + profile row with Jalali date and Persian status, stock failure keeps the cart, no address -> `/addresses`, logged out -> `/login?returnUrl=/cart`, no page errors). NOT verified against the real API / database.
 ### 2026-10-19 — Admin panel built here, then moved to its own repo (web session, branch `claude/loving-gauss-lh47dz`)
 - Did: `adminGuard`, `features/admin/` (models, 3 API services, nav tabs, image-upload field, books list, book form, authors list, author form), routes `/admin/**`, account-menu link for admins, `apiImage` pipe on all shop images (7 components), `Book.isActive`.
 - Verified: `npm run build` ok; Playwright against a MOCKED API: customer redirected from `/admin`, Bearer sent, list shows hidden status + uploaded cover URL on the API origin, stock save, hide, upload (multipart), create (empty spec row dropped), edit loads, author create, no console errors. NOT verified against the real API / database.
@@ -40,7 +44,3 @@ Onboarding: done (2026-10-07)
 - Not done on purpose: OnPush / `@if` / `@for` on the touched components — cannot test rendering here, risk of blank pages; stays in task 3.
 - Confirmed by her: everything works.
 <!-- newest on top, max 5 blocks, older ones go to archive/sessions.md -->
-### 2026-10-07 — Onboarding + planning (web session, both repos, branch `claude/magical-wozniak-j0qmxf`)
-- Did: onboarding done; scope and roadmap agreed (master in API repo BACKLOG); UI BACKLOG tasks 4-8 added; decision logged.
-- Result: memory only, no app code changed.
-- Next: she adds more tasks, then says "start" → task 1.

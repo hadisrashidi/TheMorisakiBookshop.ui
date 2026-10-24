@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OrdersService } from '../../shared/services/orders.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
@@ -8,24 +7,37 @@ import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [ApiImagePipe, CommonModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, RouterLink, ImageFallbackDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.scss'
 })
-export class OrdersComponent {
+export class OrdersComponent implements OnInit {
+  readonly ordersService = inject(OrdersService);
 
-  ordersService = inject(OrdersService);
+  isLoading = signal(true);
 
-  private expanded = signal<Set<string>>(new Set());
+  private readonly expanded = signal<Set<number>>(new Set());
 
-  isExpanded(id: string): boolean {
+  async ngOnInit() {
+    await this.ordersService.load();
+    this.isLoading.set(false);
+  }
+
+  isExpanded(id: number): boolean {
     return this.expanded().has(id);
   }
 
-  toggle(id: string) {
+  toggle(id: number) {
     this.expanded.update(set => {
       const next = new Set(set);
-      next.has(id) ? next.delete(id) : next.add(id);
+
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+
       return next;
     });
   }
