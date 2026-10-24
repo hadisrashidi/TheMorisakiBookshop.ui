@@ -1,30 +1,40 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Address } from '../../shared/models/address.model';
+import { PlaceOrderLineRequestModel } from '../../shared/models/place-order-line.request.model';
+import { PlaceOrderRequestModel } from '../../shared/models/place-order.request.model';
+import { AddressesService } from '../../shared/services/addresses.service';
+import { AuthService } from '../../shared/services/auth.service';
 import { CartService } from '../../shared/services/cart.service';
 import { OrdersService } from '../../shared/services/orders.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
+import { normalizeDigits } from '../../shared/utils/digits';
+
+const MAX_QUANTITY_PER_BOOK = 20;
+const MOBILE_PATTERN = /^09\d{9}$/;
+const POSTAL_CODE_PATTERN = /^(\d{10})?$/;
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [ApiImagePipe, CommonModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, RouterLink, ImageFallbackDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
 })
 export class CartComponent {
+  private readonly router = inject(Router);
+  private readonly ordersService = inject(OrdersService);
+  private readonly addressesService = inject(AddressesService);
+  private readonly authService = inject(AuthService);
+  private readonly toast = inject(ToastService);
+  readonly cartService = inject(CartService);
 
-  private router = inject(Router);
-  private ordersService = inject(OrdersService);
-  private toast = inject(ToastService);
-  cartService = inject(CartService);
-
-  // There's no payment gateway yet, so "checkout" records the order
-  // locally (so it shows up in order history) and empties the cart. Swap
-  // OrdersService for a real order POST once the backend grows one.
-  placedOrderNumber = signal<string | null>(null);
+  /** Order number after a successful checkout; the page then shows the thank-you card. */
+  placedOrderNumber = signal<number | null>(null);
+  isPlacing = signal(false);
 
   goToBookDetail(id: number) {
     this.router.navigate(['/books', id]);
@@ -43,26 +53,86 @@ export class CartComponent {
     this.toast.info('کالا از سبد خرید حذف شد.');
   }
 
-  checkout() {
-    if (this.cartService.items().length === 0) {
+  async checkout() {
+    if (this.cartService.items().length === 0 || this.isPlacing()) {
       return;
     }
 
-    const order = this.ordersService.placeOrder(this.cartService.items(), {
-      subtotal: this.cartService.subtotal(),
-      discount: this.cartService.discount(),
-      shipping: this.cartService.shipping(),
-      total: this.cartService.total()
-    });
+    if (!this.authService.isLoggedIn()) {
+      this.toast.info('برای ثبت سفارش وارد حساب خود شوید.');
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/cart' } });
+      return;
+    }
 
-    this.placedOrderNumber.set(order.id);
+    const request = this.buildOrderRequest();
+
+    if (!request) {
+      return;
+    }
+
+    this.isPlacing.set(true);
+    const result = await this.ordersService.placeOrder(request);
+    this.isPlacing.set(false);
+
+    // On failure the API message (for example "not enough stock") is already shown as a toast.
+    if (!result.isSuccess || result.data === undefined) {
+      return;
+    }
+
+    this.placedOrderNumber.set(result.data);
     this.cartService.clear();
-    this.toast.success(`سفارش ${order.id} با موفقیت ثبت شد.`);
+    this.toast.success(`سفارش ${result.data} ثبت شد.`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   continueShopping() {
     this.placedOrderNumber.set(null);
     this.router.navigate(['/']);
+  }
+
+  // Recipient = the default address (or the first one). Returns null after telling the person what is missing.
+  private buildOrderRequest(): PlaceOrderRequestModel | null {
+    const address = this.findCheckoutAddress();
+
+    if (!address) {
+      this.toast.info('برای ثبت سفارش یک آدرس اضافه کنید.');
+      this.router.navigate(['/addresses']);
+      return null;
+    }
+
+    const mobile = normalizeDigits(address.phone).trim();
+    const postalCode = normalizeDigits(address.postalCode).trim();
+
+    if (!MOBILE_PATTERN.test(mobile) || !POSTAL_CODE_PATTERN.test(postalCode)) {
+      this.toast.info('شماره موبایل یا کد پستی آدرس انتخاب‌شده درست نیست. آدرس را اصلاح کنید.');
+      this.router.navigate(['/addresses']);
+      return null;
+    }
+
+    const request = new PlaceOrderRequestModel();
+    request.recipientName = address.recipient;
+    request.recipientMobile = mobile;
+    request.address = `${address.city}، ${address.fullAddress}`;
+    request.postalCode = postalCode;
+
+    for (const item of this.cartService.items()) {
+      if (item.quantity > MAX_QUANTITY_PER_BOOK) {
+        this.toast.info(`از هر کتاب حداکثر ${MAX_QUANTITY_PER_BOOK} عدد می‌شود سفارش داد.`);
+        return null;
+      }
+
+      const line = new PlaceOrderLineRequestModel();
+      line.bookId = item.id;
+      line.quantity = item.quantity;
+      request.lines.push(line);
+    }
+
+    return request;
+  }
+
+  private findCheckoutAddress(): Address | undefined {
+    const addresses = this.addressesService.addresses();
+
+    return addresses.find(address => address.isDefault) ?? addresses[0];
   }
 }

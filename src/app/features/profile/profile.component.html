@@ -124,23 +124,27 @@
       <div class="card elev-sm orders-card">
         <div class="orders-head">
           <h3>آخرین سفارش‌ها</h3>
-          <a routerLink="/orders" class="view-all" *ngIf="ordersService.count() > 0">مشاهده همه</a>
+          @if (ordersService.count() > 0) {
+            <a routerLink="/orders" class="view-all">مشاهده همه</a>
+          }
         </div>
         <div class="hr"></div>
 
-        <p class="text-muted" *ngIf="ordersService.count() === 0">
-          هنوز سفارشی ثبت نکرده‌اید.
-        </p>
-
-        <table class="table" *ngIf="ordersService.count() > 0">
-          <tr *ngFor="let order of ordersService.recent()">
-            <td dir="ltr" class="order-id">{{ order.id }}</td>
-            <td dir="ltr">{{ order.date }}</td>
-            <td>{{ order.itemsCount }} کالا</td>
-            <td class="order-total">{{ order.total }} تومان</td>
-            <td><span class="tag tag-accent-2">{{ order.status }}</span></td>
-          </tr>
-        </table>
+        @if (ordersService.count() === 0) {
+          <p class="text-muted">هنوز سفارشی ثبت نکرده‌اید.</p>
+        } @else {
+          <table class="table">
+            @for (order of ordersService.recent(); track order.id) {
+              <tr>
+                <td dir="ltr" class="order-id">#{{ order.id }}</td>
+                <td dir="ltr">{{ order.date }}</td>
+                <td>{{ order.itemsCount }} کالا</td>
+                <td class="order-total">{{ order.total }} تومان</td>
+                <td><span class="tag tag-accent-2">{{ order.statusLabel }}</span></td>
+              </tr>
+            }
+          </table>
+        }
       </div>
     </div>
 

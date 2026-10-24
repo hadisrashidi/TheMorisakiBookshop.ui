@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ProfileService, UserProfile } from '../../shared/services/profile.service';
@@ -19,7 +19,7 @@ const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
 
   private profileService = inject(ProfileService);
   ordersService = inject(OrdersService);
@@ -27,6 +27,10 @@ export class ProfileComponent {
   private auth = inject(AuthService);
   private authApiService = inject(AuthApiService);
   private router = inject(Router);
+
+  ngOnInit() {
+    this.ordersService.load();
+  }
 
   // Edited copy — only written back to the service on save, so navigating
   // away without saving discards the edits.
