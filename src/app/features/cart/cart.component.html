@@ -38,7 +38,7 @@
           <div class="seg qty-seg">
             <button type="button" class="seg-opt" (click)="decrease(item.id, item.quantity)" aria-label="کاهش تعداد">−</button>
             <span class="seg-opt qty-count">{{ item.quantity }}</span>
-            <button type="button" class="seg-opt" (click)="increase(item.id, item.quantity)" aria-label="افزایش تعداد">+</button>
+            <button type="button" class="seg-opt" (click)="increase(item)" aria-label="افزایش تعداد">+</button>
           </div>
 
           <span class="line-price">{{ item.price }} تومان</span>

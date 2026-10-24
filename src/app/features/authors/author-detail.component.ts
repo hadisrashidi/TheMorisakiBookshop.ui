@@ -9,7 +9,6 @@ import { BooksApiService } from '../books/services/books.api.service';
 import { ReviewsApiService } from '../../shared/services/reviews.api.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
-import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
@@ -28,7 +27,6 @@ export class AuthorDetailComponent implements OnInit {
   private reviewsApiService = inject(ReviewsApiService);
   private cartService = inject(CartService);
   likedService = inject(LikedService);
-  private toast = inject(ToastService);
 
   author: Author | null = null;
   books: Book[] = [];
@@ -88,11 +86,10 @@ export class AuthorDetailComponent implements OnInit {
     }
   }
 
-  addToCart(event: Event, book: Book) {
+  async addToCart(event: Event, book: Book) {
     event.preventDefault();
     event.stopPropagation();
-    this.cartService.addToCart(book);
-    this.toast.success('به سبد خرید اضافه شد.', { label: 'مشاهده سبد', route: '/cart' });
+    await this.cartService.addCheckedToCart(book);
   }
 
   toggleLiked(event: Event, book: Book) {
