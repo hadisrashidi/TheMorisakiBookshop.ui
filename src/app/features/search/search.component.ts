@@ -7,7 +7,6 @@ import { SearchApiService, SearchFilters } from './services/search.api.service';
 import { HomeApiService } from '../home/services/home.api.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
-import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
@@ -28,7 +27,6 @@ export class SearchComponent implements OnInit {
   private homeApiService = inject(HomeApiService);
   private cartService = inject(CartService);
   likedService = inject(LikedService);
-  private toast = inject(ToastService);
 
   private authorNames = signal(new Map<number, string>());
 
@@ -194,11 +192,10 @@ export class SearchComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  addToCart(event: Event, book: Book) {
+  async addToCart(event: Event, book: Book) {
     event.preventDefault();
     event.stopPropagation();
-    this.cartService.addToCart(book);
-    this.toast.success('به سبد خرید اضافه شد.', { label: 'مشاهده سبد', route: '/cart' });
+    await this.cartService.addCheckedToCart(book);
   }
 
   toggleLiked(event: Event, book: Book) {

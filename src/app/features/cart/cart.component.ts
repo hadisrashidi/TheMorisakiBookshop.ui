@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Address } from '../../shared/models/address.model';
+import { CartItem } from '../../shared/models/cart-item.model';
 import { PlaceOrderLineRequestModel } from '../../shared/models/place-order-line.request.model';
 import { PlaceOrderRequestModel } from '../../shared/models/place-order.request.model';
 import { AddressesService } from '../../shared/services/addresses.service';
@@ -40,8 +41,13 @@ export class CartComponent {
     this.router.navigate(['/books', id]);
   }
 
-  increase(id: number, quantity: number) {
-    this.cartService.updateQuantity(id, quantity + 1);
+  increase(item: CartItem) {
+    if (item.stock !== undefined && item.quantity + 1 > item.stock) {
+      this.toast.warning(`فقط ${item.stock} عدد از این کتاب موجود است.`);
+      return;
+    }
+
+    this.cartService.updateQuantity(item.id, item.quantity + 1);
   }
 
   decrease(id: number, quantity: number) {

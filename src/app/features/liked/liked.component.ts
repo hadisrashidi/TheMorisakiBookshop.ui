@@ -5,7 +5,6 @@ import { LikedService } from '../../shared/services/liked.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedItem } from '../../shared/models/liked-item.model';
 import { Book } from '../home/models/book.model';
-import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
@@ -20,7 +19,6 @@ export class LikedComponent {
 
   likedService = inject(LikedService);
   private cartService = inject(CartService);
-  private toast = inject(ToastService);
 
   remove(event: Event, id: number) {
     event.preventDefault();
@@ -28,7 +26,7 @@ export class LikedComponent {
     this.likedService.remove(id);
   }
 
-  addToCart(event: Event, item: LikedItem) {
+  async addToCart(event: Event, item: LikedItem) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -46,7 +44,6 @@ export class LikedComponent {
       language: undefined,
       specs: undefined
     };
-    this.cartService.addToCart(book);
-    this.toast.success('به سبد خرید اضافه شد.', { label: 'مشاهده سبد', route: '/cart' });
+    await this.cartService.addCheckedToCart(book);
   }
 }

@@ -2,6 +2,8 @@ import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { CartItem } from '../models/cart-item.model';
 import { Book } from '../../features/home/models/book.model';
+import { BooksApiService } from '../../features/books/services/books.api.service';
+import { ToastService } from './toast.service';
 
 const STORAGE_KEY = 'morisaki-cart';
 
@@ -12,6 +14,8 @@ export class CartService {
 
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
+  private booksApiService = inject(BooksApiService);
+  private toast = inject(ToastService);
 
   private itemsSignal = signal<CartItem[]>(this.loadFromStorage());
 
@@ -51,7 +55,9 @@ export class CartService {
     const existing = items.find(item => item.id === book.id);
 
     if (existing) {
-      this.updateQuantity(existing.id, existing.quantity + quantity);
+      this.setItems(items.map(item => (
+        item.id === existing.id ? { ...item, quantity: existing.quantity + quantity, stock: book.stock } : item
+      )));
       return;
     }
 
@@ -61,10 +67,50 @@ export class CartService {
       image: book.image ?? '',
       price: String(book.price ?? 0),
       oldPrice: book.oldPrice ? String(book.oldPrice) : undefined,
-      quantity
+      quantity,
+      stock: book.stock
     };
 
     this.setItems([...items, newItem]);
+  }
+
+  /**
+   * Adds a book after checking its CURRENT stock on the server (the list on screen can be old),
+   * and tells the person why when it cannot be added.
+   * @returns true when the book is in the cart now
+   */
+  async addCheckedToCart(book: Book, quantity = 1): Promise<boolean> {
+    if (book.id === undefined) {
+      return false;
+    }
+
+    // On failure the API helper already showed the message (for example the book is hidden now).
+    const result = await this.booksApiService.getBookById(book.id);
+
+    if (!result.isSuccess || !result.data) {
+      return false;
+    }
+
+    const currentBook = result.data;
+    const stock = currentBook.stock ?? 0;
+
+    if (stock <= 0) {
+      this.toast.error('این کتاب فعلاً ناموجود است.');
+      return false;
+    }
+
+    const existing = this.itemsSignal().find(item => item.id === book.id);
+    const inCart = existing ? existing.quantity : 0;
+
+    if (inCart + quantity > stock) {
+      const inCartText = inCart > 0 ? ` و ${inCart} عدد در سبد شماست` : '';
+      this.toast.warning(`فقط ${stock} عدد از این کتاب موجود است${inCartText}.`);
+      return false;
+    }
+
+    this.addToCart(currentBook, quantity);
+    this.toast.success('به سبد خرید اضافه شد.', { label: 'مشاهده سبد', route: '/cart' });
+    return true;
   }
 
   removeFromCart(id: number) {

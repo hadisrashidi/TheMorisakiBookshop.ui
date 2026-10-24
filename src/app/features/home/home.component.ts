@@ -6,7 +6,6 @@ import { HomeApiService } from './services/home.api.service';
 import { Author } from './models/author.model';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
-import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
@@ -22,7 +21,6 @@ export class HomeComponent implements OnInit {
   private homeApiService = inject(HomeApiService);
   private cartService = inject(CartService);
   likedService = inject(LikedService);
-  private toast = inject(ToastService);
 
   featuredBooks: Book[] = [];
   newBooks: Book[] = [];
@@ -79,11 +77,10 @@ export class HomeComponent implements OnInit {
     return authorId !== undefined ? this.authorNames.get(authorId) ?? '' : '';
   }
 
-  addToCart(event: Event, book: Book) {
+  async addToCart(event: Event, book: Book) {
     event.preventDefault();
     event.stopPropagation();
-    this.cartService.addToCart(book);
-    this.toast.success('به سبد خرید اضافه شد.', { label: 'مشاهده سبد', route: '/cart' });
+    await this.cartService.addCheckedToCart(book);
   }
 
   toggleLiked(event: Event, book: Book) {

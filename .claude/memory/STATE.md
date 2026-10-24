@@ -13,10 +13,13 @@ Onboarding: done (2026-10-07)
 - CI: `.github/workflows/build.yml`.
 
 ## Active work
-- 2026-10-21: orders wired to the API (she runs API scripts 0015-0016 first). Admin orders screens: admin repos.
+- 2026-10-24: orders (checkout, `/orders`, profile summary) and the add-to-cart stock check work against the real API (she tested). Admin orders screens live in the admin repos.
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-10-24 — Stock check when adding to the cart (web session, branch `claude/gifted-curie-7qha13`)
+- Did: `CartService.addCheckedToCart` (fresh stock via `BooksApiService.getBookById`, error / warning toasts, success toast moved here); the 5 callers (home, search, author page, liked, book page) use it and lost their unused toast injection; `CartItem.stock`; cart page `+` stops at the stock.
+- Verified: `npm run build` ok; Playwright against a MOCKED API (list says in stock but real stock 2: 1st and 2nd add ok, 3rd refused with "only 2, 2 in your cart"; real stock 0 -> "ناموجود", cart stays empty, no page errors). NOT verified against the real API.
 ### 2026-10-21 — Checkout + orders page on the API (web session, branch `claude/gifted-curie-7qha13`, shop repos + admin repos)
 - Did: `OrdersApiService`, `OrdersService` (signal store, `load()`, `placeOrder()`), order models as classes (`OrderResponseModel`, `OrderLineResponseModel`, `PlaceOrderRequestModel`, `PlaceOrderLineRequestModel`), `utils/order-status.ts`; `CartComponent` (login + address check, `isPlacing`, OnPush, `@if/@for`), `OrdersComponent` (OnPush, loading state, recipient/address/tracking), profile summary loads orders. Old `order.model.ts` + fake localStorage orders removed.
 - Verified: `npm run build` ok; Playwright against a MOCKED API (payload has ids + quantities only and the Bearer token, thank-you card, cart emptied, old fake key removed, orders page + profile row with Jalali date and Persian status, stock failure keeps the cart, no address -> `/addresses`, logged out -> `/login?returnUrl=/cart`, no page errors). NOT verified against the real API / database.
@@ -37,10 +40,3 @@ Onboarding: done (2026-10-07)
 - Also: search uses server paging (`BookSearchResult` model, `search.api.service.ts`, `search.component.*`); `npm run build` ok. NOT verified in a browser — needs her to run API script 0008 first.
 - Then: search filters from `Books/GetSearchFilters`, author select, price range (`BookFilters` model); build ok, not browser-tested. Needs API script 0009.
 - Next: BACKLOG task 3 / 10-11.
-### 2026-10-12 — API envelope in the UI (web session, branch `claude/friendly-pascal-icidjv`)
-- Why: pages showed no books — services still expected raw arrays, the API sends `{ isSuccess, data, message, errors }`.
-- Did: built `ApiResponse<T>`, `ApiCallModel`, `ApiHelperService` (`src/app/core/`), `@core/*` alias; moved all 6 API services to `Promise<ApiResponse<T>>`; home, search, book, author components `await` them (no more `subscribe`); `Book.price/oldPrice` numbers + `stock`; cart/liked convert to string (their stored models stay strings).
-- Verified: `npm run build` ok. NOT verified in a browser / against the real API.
-- Not done on purpose: OnPush / `@if` / `@for` on the touched components — cannot test rendering here, risk of blank pages; stays in task 3.
-- Confirmed by her: everything works.
-<!-- newest on top, max 5 blocks, older ones go to archive/sessions.md -->
