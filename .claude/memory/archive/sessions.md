@@ -1,4 +1,9 @@
 # Archived sessions
+### 2026-10-12 — Page audit (web session, branch `claude/vibrant-dijkstra-3beh1b`)
+- Did: read-only audit of routes, header, footer, home, search, book/author pages, cart, orders, auth, FAQ. Findings = BACKLOG tasks 9-14. No app code changed.
+- Also: search uses server paging (`BookSearchResult` model, `search.api.service.ts`, `search.component.*`); `npm run build` ok. NOT verified in a browser — needs her to run API script 0008 first.
+- Then: search filters from `Books/GetSearchFilters`, author select, price range (`BookFilters` model); build ok, not browser-tested. Needs API script 0009.
+- Next: BACKLOG task 3 / 10-11.
 ### 2026-10-12 — API envelope in the UI (web session, branch `claude/friendly-pascal-icidjv`)
 - Why: pages showed no books — services still expected raw arrays, the API sends `{ isSuccess, data, message, errors }`.
 - Did: built `ApiResponse<T>`, `ApiCallModel`, `ApiHelperService` (`src/app/core/`), `@core/*` alias; moved all 6 API services to `Promise<ApiResponse<T>>`; home, search, book, author components `await` them (no more `subscribe`); `Book.price/oldPrice` numbers + `stock`; cart/liked convert to string (their stored models stay strings).

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { LikedService } from '../../shared/services/liked.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedItem } from '../../shared/models/liked-item.model';
@@ -19,11 +19,17 @@ export class LikedComponent {
 
   likedService = inject(LikedService);
   private cartService = inject(CartService);
+  private router = inject(Router);
 
   remove(event: Event, id: number) {
     event.preventDefault();
     event.stopPropagation();
     this.likedService.remove(id);
+
+    // The last book was removed: an empty favourites page has nothing to do, so go to the home page.
+    if (this.likedService.items().length === 0) {
+      this.router.navigate(['/']);
+    }
   }
 
   async addToCart(event: Event, item: LikedItem) {
