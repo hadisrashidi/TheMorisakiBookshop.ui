@@ -52,11 +52,13 @@ export class CartComponent {
 
   decrease(id: number, quantity: number) {
     this.cartService.updateQuantity(id, quantity - 1);
+    this.goHomeWhenCartIsEmpty();
   }
 
   remove(id: number) {
     this.cartService.removeFromCart(id);
     this.toast.info('کالا از سبد خرید حذف شد.');
+    this.goHomeWhenCartIsEmpty();
   }
 
   async checkout() {
@@ -94,6 +96,13 @@ export class CartComponent {
   continueShopping() {
     this.placedOrderNumber.set(null);
     this.router.navigate(['/']);
+  }
+
+  // The last book left the cart: an empty cart page has nothing to do, so go to the home page.
+  private goHomeWhenCartIsEmpty() {
+    if (this.cartService.items().length === 0) {
+      this.router.navigate(['/']);
+    }
   }
 
   // Recipient = the default address (or the first one). Returns null after telling the person what is missing.
