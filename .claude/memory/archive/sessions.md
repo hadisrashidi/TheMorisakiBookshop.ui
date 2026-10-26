@@ -1,4 +1,12 @@
 # Archived sessions
+### 2026-10-13 — Real login screens (web session, branch `claude/adoring-rubin-tb785m`, both repos)
+- Did: `AuthApiService`, auth models, `AuthService` rewritten as session only, `authInterceptor` (+ `ApiHelperService` skips the toast on 401), `/login` (SMS code | email+password tabs), `/reset-password`, `/security`, shared `OtpRequestComponent` (60 s resend timer), `normalizeDigits` (Persian digits). Removed register page and the fake auth (incl. the insecure reset). Header shows the mobile and links.
+- Verified: `npm run build` ok; Playwright smoke test with a MOCKED API: redirect to login, OTP login with Persian digits, Bearer header sent, 401 logs out. NOT verified against the real API.
+- Follow-up: her email login failed (SMS-only account has no email) → added `/register` (mobile + code + email + password), login page links to it; API messages are Persian now. Mock-API smoke test of /register ok; build ok.
+- Follow-up 2: login/register go to `/` (home), "remember me" checkbox (login both tabs + register, sends `rememberMe`); mock-API smoke test ok, build ok.
+- Follow-up 3: name on the account (`/register` asks for it, profile save calls `Auth/UpdateProfile`), welcome toast with the name, menu shows the name, last email pre-filled; build ok, mock-API smoke test ok. Needs API script 0012.
+- Follow-up 4: eye button on all password fields (`PasswordFieldComponent`), login copies the local profile name to an unnamed account, menu hint "افزودن نام"; mock-API smoke test ok, build ok. Her report: still "خوش آمدید" without name = account has no name yet (needs API script 0012 + a name saved in profile).
+- Next: she tests with the real API.
 ### 2026-10-12 — Page audit (web session, branch `claude/vibrant-dijkstra-3beh1b`)
 - Did: read-only audit of routes, header, footer, home, search, book/author pages, cart, orders, auth, FAQ. Findings = BACKLOG tasks 9-14. No app code changed.
 - Also: search uses server paging (`BookSearchResult` model, `search.api.service.ts`, `search.component.*`); `npm run build` ok. NOT verified in a browser — needs her to run API script 0008 first.

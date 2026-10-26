@@ -52,7 +52,7 @@
     <p class="error-note" *ngIf="error()">{{ error() }}</p>
 
     <div class="form-actions">
-      <button type="button" class="btn btn-primary" (click)="save()">ذخیره</button>
+      <button type="button" class="btn btn-primary" (click)="save()" [disabled]="isSaving()">ذخیره</button>
       <button type="button" class="btn btn-secondary" (click)="cancel()">انصراف</button>
     </div>
   </div>

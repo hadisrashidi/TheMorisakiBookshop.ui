@@ -1,60 +1,132 @@
-import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { PLATFORM_ID, Injectable, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Address } from '../models/address.model';
+import { AddressResponseModel } from '../models/address.response.model';
+import { SaveAddressRequestModel } from '../models/save-address.request.model';
+import { normalizeDigits } from '../utils/digits';
+import { AddressesApiService } from './addresses.api.service';
+import { AuthService } from './auth.service';
 
-const STORAGE_KEY = 'morisaki-addresses';
+// Key of the old browser-only addresses; they are uploaded once, then deleted.
+const OLD_LOCAL_ADDRESSES_KEY = 'morisaki-addresses';
 
+/**
+ * Addresses of the logged-in person, kept in memory for the addresses page and the checkout.
+ * They live on the server (so a new browser still has them); every change reloads the list.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class AddressesService {
+  private readonly addressesApiService = inject(AddressesApiService);
+  private readonly authService = inject(AuthService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  private platformId = inject(PLATFORM_ID);
-  private isBrowser = isPlatformBrowser(this.platformId);
+  private readonly addressesSignal = signal<AddressResponseModel[]>([]);
 
-  private addressesSignal = signal<Address[]>(this.loadFromStorage());
+  readonly addresses = this.addressesSignal.asReadonly();
+  readonly count = computed(() => this.addressesSignal().length);
 
-  addresses = this.addressesSignal.asReadonly();
-  count = computed(() => this.addressesSignal().length);
+  /** Loads the addresses from the API; without a login the list is empty. */
+  async load(): Promise<void> {
+    if (!this.authService.isLoggedIn()) {
+      this.addressesSignal.set([]);
+      return;
+    }
 
-  add(address: Omit<Address, 'id'>) {
-    const created: Address = { ...address, id: crypto.randomUUID() };
-    const list = [...this.addressesSignal(), created];
-    this.setAddresses(created.isDefault ? this.applyDefault(list, created.id) : list);
-  }
+    const result = await this.addressesApiService.getMyAddresses();
 
-  update(id: string, changes: Omit<Address, 'id'>) {
-    const list = this.addressesSignal().map(a => (a.id === id ? { ...changes, id } : a));
-    this.setAddresses(changes.isDefault ? this.applyDefault(list, id) : list);
-  }
+    if (!result.isSuccess || !result.data) {
+      return;
+    }
 
-  remove(id: string) {
-    this.setAddresses(this.addressesSignal().filter(a => a.id !== id));
-  }
+    this.addressesSignal.set(result.data);
 
-  setDefault(id: string) {
-    this.setAddresses(this.applyDefault(this.addressesSignal(), id));
-  }
-
-  // Exactly one address can be the default.
-  private applyDefault(list: Address[], id: string): Address[] {
-    return list.map(a => ({ ...a, isDefault: a.id === id }));
-  }
-
-  private setAddresses(addresses: Address[]) {
-    this.addressesSignal.set(addresses);
-    if (this.isBrowser) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(addresses));
+    if (result.data.length === 0) {
+      await this.uploadOldLocalAddresses();
     }
   }
 
-  private loadFromStorage(): Address[] {
+  /** @returns true when the server saved it */
+  async add(address: SaveAddressRequestModel): Promise<boolean> {
+    const result = await this.addressesApiService.addAddress(this.clean(address));
+
+    return this.reloadAfter(result.isSuccess);
+  }
+
+  async update(id: number, address: SaveAddressRequestModel): Promise<boolean> {
+    const result = await this.addressesApiService.updateAddress(id, this.clean(address));
+
+    return this.reloadAfter(result.isSuccess);
+  }
+
+  async remove(id: number): Promise<boolean> {
+    const result = await this.addressesApiService.deleteAddress(id);
+
+    return this.reloadAfter(result.isSuccess);
+  }
+
+  async setDefault(id: number): Promise<boolean> {
+    const result = await this.addressesApiService.setDefaultAddress(id);
+
+    return this.reloadAfter(result.isSuccess);
+  }
+
+  private async reloadAfter(isSuccess: boolean): Promise<boolean> {
+    if (isSuccess) {
+      await this.load();
+    }
+
+    return isSuccess;
+  }
+
+  // Persian digits in phone / postal code become 0-9, which is what the API accepts.
+  private clean(address: SaveAddressRequestModel): SaveAddressRequestModel {
+    const cleaned = new SaveAddressRequestModel();
+    Object.assign(cleaned, address);
+    cleaned.phone = normalizeDigits(address.phone).trim();
+    cleaned.postalCode = normalizeDigits(address.postalCode).trim();
+
+    return cleaned;
+  }
+
+  // One-time move of the addresses this browser saved before they lived on the server.
+  private async uploadOldLocalAddresses(): Promise<void> {
     if (!this.isBrowser) {
-      return [];
+      return;
     }
 
+    const oldAddresses = this.readOldLocalAddresses();
+
+    if (oldAddresses.length === 0) {
+      return;
+    }
+
+    let allUploaded = true;
+
+    for (const oldAddress of oldAddresses) {
+      const result = await this.addressesApiService.addAddress(this.clean(oldAddress));
+
+      if (!result.isSuccess) {
+        allUploaded = false;
+      }
+    }
+
+    // Kept in the browser when one failed, so nothing is lost.
+    if (allUploaded) {
+      localStorage.removeItem(OLD_LOCAL_ADDRESSES_KEY);
+    }
+
+    const reloaded = await this.addressesApiService.getMyAddresses();
+
+    if (reloaded.isSuccess && reloaded.data) {
+      this.addressesSignal.set(reloaded.data);
+    }
+  }
+
+  private readOldLocalAddresses(): SaveAddressRequestModel[] {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(OLD_LOCAL_ADDRESSES_KEY);
+
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];

@@ -1,22 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AddressesService } from '../../shared/services/addresses.service';
-import { Address } from '../../shared/models/address.model';
+import { AddressResponseModel } from '../../shared/models/address.response.model';
+import { SaveAddressRequestModel } from '../../shared/models/save-address.request.model';
 import { ToastService } from '../../shared/services/toast.service';
 
-type AddressDraft = Omit<Address, 'id'>;
-
-const EMPTY_DRAFT: AddressDraft = {
-  title: '',
-  recipient: '',
-  phone: '',
-  city: '',
-  fullAddress: '',
-  postalCode: '',
-  isDefault: false
-};
 
 @Component({
   selector: 'app-addresses',
@@ -25,28 +15,36 @@ const EMPTY_DRAFT: AddressDraft = {
   templateUrl: './addresses.component.html',
   styleUrl: './addresses.component.scss'
 })
-export class AddressesComponent {
+export class AddressesComponent implements OnInit {
 
   addressesService = inject(AddressesService);
   private toast = inject(ToastService);
 
   formOpen = signal(false);
-  editingId = signal<string | null>(null);
-  draft = signal<AddressDraft>({ ...EMPTY_DRAFT });
+  editingId = signal<number | null>(null);
+  draft = signal<SaveAddressRequestModel>(new SaveAddressRequestModel());
   error = signal('');
+  isSaving = signal(false);
+
+  async ngOnInit() {
+    await this.addressesService.load();
+  }
 
   startAdd() {
     this.editingId.set(null);
     // First address added becomes the default automatically.
-    this.draft.set({ ...EMPTY_DRAFT, isDefault: this.addressesService.count() === 0 });
+    const draft = new SaveAddressRequestModel();
+    draft.isDefault = this.addressesService.count() === 0;
+    this.draft.set(draft);
     this.error.set('');
     this.formOpen.set(true);
   }
 
-  startEdit(address: Address) {
-    const { id, ...rest } = address;
-    this.editingId.set(id);
-    this.draft.set({ ...rest });
+  startEdit(address: AddressResponseModel) {
+    const draft = new SaveAddressRequestModel();
+    Object.assign(draft, address);
+    this.editingId.set(address.id);
+    this.draft.set(draft);
     this.error.set('');
     this.formOpen.set(true);
   }
@@ -57,11 +55,11 @@ export class AddressesComponent {
     this.error.set('');
   }
 
-  onField(field: keyof AddressDraft, value: string | boolean) {
+  onField(field: keyof SaveAddressRequestModel, value: string | boolean) {
     this.draft.update(d => ({ ...d, [field]: value }));
   }
 
-  save() {
+  async save() {
     const d = this.draft();
     if (!d.title.trim() || !d.recipient.trim() || !d.city.trim() || !d.fullAddress.trim()) {
       this.error.set('عنوان، نام گیرنده، شهر و نشانی الزامی است.');
@@ -69,27 +67,37 @@ export class AddressesComponent {
       return;
     }
 
-    const id = this.editingId();
-    if (id) {
-      this.addressesService.update(id, d);
-      this.toast.success('آدرس ویرایش شد.');
-    } else {
-      this.addressesService.add(d);
-      this.toast.success('آدرس جدید ذخیره شد.');
+    if (this.isSaving()) {
+      return;
     }
 
+    const id = this.editingId();
+    this.isSaving.set(true);
+    const isSaved = id !== null
+      ? await this.addressesService.update(id, d)
+      : await this.addressesService.add(d);
+    this.isSaving.set(false);
+
+    // On failure the API message is already shown as a toast and the form stays open.
+    if (!isSaved) {
+      return;
+    }
+
+    this.toast.success(id !== null ? 'آدرس ویرایش شد.' : 'آدرس جدید ذخیره شد.');
     this.formOpen.set(false);
     this.editingId.set(null);
     this.error.set('');
   }
 
-  remove(address: Address) {
-    this.addressesService.remove(address.id);
-    this.toast.info(`آدرس «${address.title}» حذف شد.`);
+  async remove(address: AddressResponseModel) {
+    if (await this.addressesService.remove(address.id)) {
+      this.toast.info(`آدرس «${address.title}» حذف شد.`);
+    }
   }
 
-  setDefault(address: Address) {
-    this.addressesService.setDefault(address.id);
-    this.toast.success('آدرس پیش‌فرض تغییر کرد.');
+  async setDefault(address: AddressResponseModel) {
+    if (await this.addressesService.setDefault(address.id)) {
+      this.toast.success('آدرس پیش‌فرض تغییر کرد.');
+    }
   }
 }
