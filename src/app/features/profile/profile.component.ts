@@ -8,6 +8,7 @@ import { JalaliDatePickerComponent } from '../../shared/components/jalali-date-p
 import { ToastService } from '../../shared/services/toast.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { AuthApiService } from '../auth/services/auth.api.service';
+import { UpdateProfileRequestModel } from '../auth/models/update-profile.request.model';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
@@ -91,20 +92,31 @@ export class ProfileComponent implements OnInit {
   async save() {
     this.profileService.save(this.draft());
     this.editing.set(false);
-    await this.saveNameToAccount();
+    await this.saveProfileToAccount();
     this.toast.success('تغییرات ذخیره شد.');
   }
 
-  // The name lives on the account too, so the header and the welcome message can show it.
-  private async saveNameToAccount() {
+  // Name and birthdate live on the account (so they follow the person to another browser).
+  private async saveProfileToAccount() {
     const user = this.auth.current();
-    const name = this.draft().name.trim();
 
-    if (!user || name.length < 2 || name === user.name) {
+    if (!user) {
       return;
     }
 
-    const result = await this.authApiService.updateProfile({ name });
+    // The API needs a name of 2+ characters; a too-short typed name keeps the saved one.
+    const typedName = this.draft().name.trim();
+    const name = typedName.length >= 2 ? typedName : (user.name ?? '');
+    const birthdate = this.draft().birthdate;
+
+    if (name.length < 2 || (name === user.name && birthdate === (user.birthdate ?? ''))) {
+      return;
+    }
+
+    const request = new UpdateProfileRequestModel();
+    request.name = name;
+    request.birthdate = birthdate;
+    const result = await this.authApiService.updateProfile(request);
 
     if (result.isSuccess && result.data) {
       this.auth.updateUser(result.data);

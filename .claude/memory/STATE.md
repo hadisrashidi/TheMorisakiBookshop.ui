@@ -17,6 +17,9 @@ Onboarding: done (2026-10-07)
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-10-26 (3) — Birthdate on the account (web session, same branch, API + UI)
+- Did: `UserModel.birthdate`, `UpdateProfileRequestModel.birthdate`, `ProfileComponent.saveProfileToAccount` (name + birthdate), `AuthService.startSession` prefers the server birthdate, `LoginComponent.finishLogin` uploads a local birthdate once.
+- Verified: `npm run build` ok. NOT verified: browser test, real API (API scripts 0022-0023 never run).
 ### 2026-10-26 (2) — Server cart (web session, branch `claude/lucid-faraday-5ab9od`, API + UI)
 - Did: `CartApiService`, `CartService` (effect on login/logout: merge guest cart, load saved cart, empty on logout; each change saved with `Cart/SetQuantity`), models `CartItemResponseModel`, `SetCartQuantityRequestModel`, `MergeCartRequestModel`.
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0021 never run).
@@ -29,6 +32,3 @@ Onboarding: done (2026-10-07)
 ### 2026-10-24 — Stock check when adding to the cart (web session, branch `claude/gifted-curie-7qha13`)
 - Did: `CartService.addCheckedToCart` (fresh stock via `BooksApiService.getBookById`, error / warning toasts, success toast moved here); the 5 callers (home, search, author page, liked, book page) use it and lost their unused toast injection; `CartItem.stock`; cart page `+` stops at the stock.
 - Verified: `npm run build` ok; Playwright against a MOCKED API (list says in stock but real stock 2: 1st and 2nd add ok, 3rd refused with "only 2, 2 in your cart"; real stock 0 -> "ناموجود", cart stays empty, no page errors). NOT verified against the real API.
-### 2026-10-21 — Checkout + orders page on the API (web session, branch `claude/gifted-curie-7qha13`, shop repos + admin repos)
-- Did: `OrdersApiService`, `OrdersService` (signal store, `load()`, `placeOrder()`), order models as classes (`OrderResponseModel`, `OrderLineResponseModel`, `PlaceOrderRequestModel`, `PlaceOrderLineRequestModel`), `utils/order-status.ts`; `CartComponent` (login + address check, `isPlacing`, OnPush, `@if/@for`), `OrdersComponent` (OnPush, loading state, recipient/address/tracking), profile summary loads orders. Old `order.model.ts` + fake localStorage orders removed.
-- Verified: `npm run build` ok; Playwright against a MOCKED API (payload has ids + quantities only and the Bearer token, thank-you card, cart emptied, old fake key removed, orders page + profile row with Jalali date and Persian status, stock failure keeps the cart, no address -> `/addresses`, logged out -> `/login?returnUrl=/cart`, no page errors). NOT verified against the real API / database.

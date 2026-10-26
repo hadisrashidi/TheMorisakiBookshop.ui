@@ -9,6 +9,7 @@ import { ToastService } from '../../shared/services/toast.service';
 import { normalizeDigits } from '../../shared/utils/digits';
 import { OtpRequestComponent } from './components/otp-request.component';
 import { AuthTokenResponseModel } from './models/auth-token.response.model';
+import { UpdateProfileRequestModel } from './models/update-profile.request.model';
 import { AuthApiService } from './services/auth.api.service';
 
 type LoginMode = 'otp' | 'password';
@@ -109,12 +110,18 @@ export class LoginComponent {
     this.auth.startSession(result.data);
     let name = result.data.user.name;
 
-    // An account without a name takes the name the person already typed in the profile page.
+    // An account without a name (or birthdate) takes what the person already typed in the profile page.
     // Done after startSession, so the interceptor sends the new token.
-    const profileName = this.profileService.profile().name.trim();
-    if (!name && profileName.length >= 2) {
-      const named = await this.authApiService.updateProfile({ name: profileName });
-      if (named.isSuccess && named.data) {
+    const profile = this.profileService.profile();
+    const profileName = profile.name.trim();
+    const needsName = !name && profileName.length >= 2;
+    const needsBirthdate = !result.data.user.birthdate && profile.birthdate !== '';
+    if (needsName || needsBirthdate) {
+      const request = new UpdateProfileRequestModel();
+      request.name = name || profileName;
+      request.birthdate = result.data.user.birthdate || profile.birthdate;
+      const named = request.name.length >= 2 ? await this.authApiService.updateProfile(request) : null;
+      if (named && named.isSuccess && named.data) {
         this.auth.updateUser(named.data);
         name = named.data.name;
       }
