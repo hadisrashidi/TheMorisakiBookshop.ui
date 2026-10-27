@@ -10,7 +10,7 @@
    - Components into `features/<f>/components/` folders.
    - Test runner Karma → Vitest: only if she wants it.
 
-6. Cart and addresses move from localStorage to the API (phase 3: server cart merged after login = API task 15; addresses = API task 13); payment redirect/return page (phase 4). Checkout + orders page already use the API (2026-10-21). Until addresses are on the API, checkout reads the default address from localStorage.
+6. Payment redirect/return page (phase 4). Checkout, orders page, addresses and cart already use the API (cart 2026-10-26, needs API script 0021). Still local: liked books, profile details.
 7. Admin panel: moved to the repo `TheMorisakiBookshop.admin.ui` (books, authors, stock DONE 2026-10-19). Orders screens will be built THERE (phase 5).
 8. Polish for launch (phase 6): final header/footer, legal pages (terms, privacy, returns, shipping), error pages, SEO basics.
 10. Header: category sub-nav is 5 hard-coded genres sent as free text `q` (works, but breaks when a genre is renamed) → use the genre filter (now in the search page, task 9 done) with `genres=` instead of free text `q`; account menu has only profile + logout → add orders and addresses links.
@@ -19,6 +19,8 @@
 14. Cart: shipping is always 0 (API too, phase 4). Stock is checked when adding to the cart and at order time (API); a cart saved earlier is re-checked only at checkout. Book page has no way to write a review (list only) - needs an API endpoint, decide with her if wanted.
 
 ## From the API repo
+- (DONE in API + UI 2026-10-26, needs API script 0021) Cart: `GET Cart/GetMyCart`, `POST Cart/SetQuantity|MergeCart|ClearCart` (token needed). Used by `CartService` for logged-in people.
+- (DONE in API + UI 2026-10-26, needs API script 0020) Addresses: `GET Addresses/GetMyAddresses`, `POST Addresses/AddAddress|UpdateAddress?id|DeleteAddress?id|SetDefaultAddress?id` (token needed). Used by `/addresses` and the checkout.
 - (DONE in API + UI 2026-10-21, needs API scripts 0015-0016) Orders: `POST Orders/PlaceOrder` + `GET Orders/GetMyOrders` (token needed). Used by the cart checkout and `/orders`; status codes `PendingPayment|Paid|Packed|Shipped|Delivered|Cancelled` are shown in Persian by `shared/utils/order-status.ts`.
 - (2026-10-19) Admin endpoints are in the separate admin API repo; shop answers only active books. Needs API script 0013.
 - (DONE in API + UI 2026-10-12) `GET Books/GetSearchFilters` → `{ minPrice, maxPrice, genres[], languages[] }` from the catalog; search page uses it and has author select + price range.

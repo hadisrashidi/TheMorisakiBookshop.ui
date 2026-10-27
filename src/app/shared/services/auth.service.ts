@@ -39,7 +39,8 @@ export class AuthService {
     const name = profile.name || session.user.name || '';
     const phone = profile.phone || session.user.mobile;
     const email = profile.email || session.user.email || '';
-    this.profileService.save({ ...profile, name, phone, email });
+    const birthdate = session.user.birthdate || profile.birthdate;
+    this.profileService.save({ ...profile, name, phone, email, birthdate });
   }
 
   /** Replaces the user data (e.g. after adding an email) but keeps the same token. */

@@ -1,12 +1,21 @@
-import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, effect, inject, signal, untracked } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { CartItem } from '../models/cart-item.model';
+import { CartItemResponseModel } from '../models/cart-item.response.model';
+import { MergeCartRequestModel } from '../models/merge-cart.request.model';
+import { SetCartQuantityRequestModel } from '../models/set-cart-quantity.request.model';
 import { Book } from '../../features/home/models/book.model';
 import { BooksApiService } from '../../features/books/services/books.api.service';
+import { AuthService } from './auth.service';
+import { CartApiService } from './cart.api.service';
 import { ToastService } from './toast.service';
 
 const STORAGE_KEY = 'morisaki-cart';
 
+/**
+ * The cart. A guest's cart lives in the browser (localStorage); a logged-in person's cart lives on
+ * the server, so it follows them to another browser. At login the guest cart is added to the saved one.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -16,8 +25,11 @@ export class CartService {
   private isBrowser = isPlatformBrowser(this.platformId);
   private booksApiService = inject(BooksApiService);
   private toast = inject(ToastService);
+  private cartApiService = inject(CartApiService);
+  private authService = inject(AuthService);
 
   private itemsSignal = signal<CartItem[]>(this.loadFromStorage());
+  private wasLoggedIn = false;
 
   items = this.itemsSignal.asReadonly();
 
@@ -46,6 +58,14 @@ export class CartService {
 
   total = computed(() => this.totalPrice() + this.shipping());
 
+  constructor() {
+    // Runs at start and whenever the person logs in or out.
+    effect(() => {
+      const isLoggedIn = this.authService.isLoggedIn();
+      untracked(() => this.onLoginChanged(isLoggedIn));
+    });
+  }
+
   addToCart(book: Book, quantity = 1) {
     if (book.id === undefined) {
       return;
@@ -58,6 +78,7 @@ export class CartService {
       this.setItems(items.map(item => (
         item.id === existing.id ? { ...item, quantity: existing.quantity + quantity, stock: book.stock } : item
       )));
+      this.saveQuantityOnServer(existing.id, existing.quantity + quantity);
       return;
     }
 
@@ -72,6 +93,7 @@ export class CartService {
     };
 
     this.setItems([...items, newItem]);
+    this.saveQuantityOnServer(newItem.id, quantity);
   }
 
   /**
@@ -115,6 +137,7 @@ export class CartService {
 
   removeFromCart(id: number) {
     this.setItems(this.itemsSignal().filter(item => item.id !== id));
+    this.saveQuantityOnServer(id, 0);
   }
 
   updateQuantity(id: number, quantity: number) {
@@ -126,15 +149,104 @@ export class CartService {
     this.setItems(
       this.itemsSignal().map(item => (item.id === id ? { ...item, quantity } : item))
     );
+    this.saveQuantityOnServer(id, quantity);
   }
 
   clear() {
     this.setItems([]);
+
+    if (this.authService.isLoggedIn()) {
+      void this.cartApiService.clearCart();
+    }
   }
 
   private setItems(items: CartItem[]) {
     this.itemsSignal.set(items);
-    this.saveToStorage(items);
+
+    // A logged-in cart lives on the server, not in the browser.
+    if (!this.authService.isLoggedIn()) {
+      this.saveToStorage(items);
+    }
+  }
+
+  private onLoginChanged(isLoggedIn: boolean) {
+    if (isLoggedIn) {
+      this.wasLoggedIn = true;
+      void this.syncAfterLogin();
+      return;
+    }
+
+    // Logged out: the saved cart stays on the server, this browser starts with an empty one.
+    if (this.wasLoggedIn) {
+      this.wasLoggedIn = false;
+      this.itemsSignal.set([]);
+      this.saveToStorage([]);
+    }
+  }
+
+  // Adds the guest cart to the saved cart (once), then shows the saved cart.
+  private async syncAfterLogin(): Promise<void> {
+    const guestItems = this.loadFromStorage();
+
+    if (guestItems.length > 0) {
+      const request = new MergeCartRequestModel();
+
+      for (const item of guestItems) {
+        const line = new SetCartQuantityRequestModel();
+        line.bookId = item.id;
+        line.quantity = item.quantity;
+        request.lines.push(line);
+      }
+
+      const merged = await this.cartApiService.mergeCart(request);
+
+      // Kept in the browser when it failed, so the next start tries again.
+      if (merged.isSuccess) {
+        this.saveToStorage([]);
+      }
+    }
+
+    await this.loadFromServer();
+  }
+
+  private async loadFromServer(): Promise<void> {
+    const result = await this.cartApiService.getMyCart();
+
+    if (!result.isSuccess || !result.data) {
+      return;
+    }
+
+    this.itemsSignal.set(result.data.map(item => this.toCartItem(item)));
+  }
+
+  // The saved cart changes one book at a time; if the server refuses, show what the server has.
+  private async saveQuantityOnServer(bookId: number, quantity: number): Promise<void> {
+    if (!this.authService.isLoggedIn()) {
+      return;
+    }
+
+    const request = new SetCartQuantityRequestModel();
+    request.bookId = bookId;
+    request.quantity = quantity;
+
+    const result = await this.cartApiService.setQuantity(request);
+
+    if (!result.isSuccess) {
+      await this.loadFromServer();
+    }
+  }
+
+  // The cart page still works with prices as text (see DECISIONS 2026-10-12).
+  private toCartItem(item: CartItemResponseModel): CartItem {
+    return {
+      id: item.id,
+      title: item.title,
+      image: item.image,
+      price: String(item.price),
+      oldPrice: item.oldPrice !== null ? String(item.oldPrice) : undefined,
+      quantity: item.quantity,
+      stock: item.stock
+    };
   }
 
   private loadFromStorage(): CartItem[] {

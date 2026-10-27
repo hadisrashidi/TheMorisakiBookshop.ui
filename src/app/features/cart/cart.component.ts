@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Address } from '../../shared/models/address.model';
+import { AddressResponseModel } from '../../shared/models/address.response.model';
 import { CartItem } from '../../shared/models/cart-item.model';
 import { PlaceOrderLineRequestModel } from '../../shared/models/place-order-line.request.model';
 import { PlaceOrderRequestModel } from '../../shared/models/place-order.request.model';
@@ -72,6 +72,8 @@ export class CartComponent {
       return;
     }
 
+    // The addresses come from the server; make sure they are loaded before reading the default one.
+    await this.addressesService.load();
     const request = this.buildOrderRequest();
 
     if (!request) {
@@ -145,7 +147,7 @@ export class CartComponent {
     return request;
   }
 
-  private findCheckoutAddress(): Address | undefined {
+  private findCheckoutAddress(): AddressResponseModel | undefined {
     const addresses = this.addressesService.addresses();
 
     return addresses.find(address => address.isDefault) ?? addresses[0];
