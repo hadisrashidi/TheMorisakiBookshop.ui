@@ -10,6 +10,7 @@ import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { AuthorsApiService } from '../authors/services/authors.api.service';
 import { ReviewsApiService } from '../../shared/services/reviews.api.service';
+import { PageMetaService } from '../../shared/services/page-meta.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { SaveReviewRequestModel } from '../../shared/models/save-review.request.model';
@@ -30,6 +31,7 @@ export class BooksComponent implements OnInit {
   private authorsApiService = inject(AuthorsApiService);
   private reviewsApiService = inject(ReviewsApiService);
   private router = inject(Router);
+  private pageMetaService = inject(PageMetaService);
   private toastService = inject(ToastService);
   authService = inject(AuthService);
   cartService = inject(CartService);
@@ -84,6 +86,7 @@ export class BooksComponent implements OnInit {
     const result = await this.booksApiService.getBookById(id);
     if (result.isSuccess && result.data) {
       this.book = result.data;
+      this.pageMetaService.set(result.data.title ?? 'کتاب', result.data.description);
       if (result.data.authorId !== undefined) {
         this.getAuthor(result.data.authorId);
       }

@@ -1,0 +1,32 @@
+@use '../../shared/styles/organic-components';
+
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 560px;
+  margin: var(--space-8) auto;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+
+  h2 {
+    margin: 0 0 var(--space-2);
+  }
+}
+
+.code {
+  margin: 0;
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-accent-2);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}

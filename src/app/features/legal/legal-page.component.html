@@ -1,0 +1,10 @@
+<div class="page">
+  <h2>{{ page.title }}</h2>
+
+  @for (section of page.sections; track section.heading) {
+    <section class="card elev-sm section">
+      <h4>{{ section.heading }}</h4>
+      <p class="card-body">{{ section.text }}</p>
+    </section>
+  }
+</div>

@@ -1,4 +1,7 @@
 # Archived sessions
+### 2026-10-26 — Addresses on the API (web session, branch `claude/lucid-faraday-5ab9od`, API + UI)
+- Did: `AddressesApiService`, `AddressesService` rewritten (signal store, `load()`, one-time upload of old localStorage addresses), `AddressesComponent` (async save, `isSaving`, loads on init), `CartComponent` loads addresses before checkout; models `AddressResponseModel`, `SaveAddressRequestModel` (old `address.model.ts` removed).
+- Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0020 never run).
 ### 2026-10-25 — Empty cart / favourites go home (web session, branch `claude/gifted-curie-7qha13`)
 - Did: `CartComponent.goHomeWhenCartIsEmpty` (after remove / minus), `LikedComponent.remove` navigates home when the list is empty.
 - Verified: `npm run build` ok; Playwright (mock API): removing 1 of 2 stays, removing the last goes to `/`, minus on the last single copy goes to `/`, opening an empty cart stays, same for favourites, no page errors.

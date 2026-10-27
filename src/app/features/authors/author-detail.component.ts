@@ -7,6 +7,7 @@ import { Review } from '../../shared/models/review.model';
 import { AuthorsApiService } from './services/authors.api.service';
 import { BooksApiService } from '../books/services/books.api.service';
 import { ReviewsApiService } from '../../shared/services/reviews.api.service';
+import { PageMetaService } from '../../shared/services/page-meta.service';
 import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
@@ -22,6 +23,7 @@ import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 export class AuthorDetailComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
+  private pageMetaService = inject(PageMetaService);
   private authorsApiService = inject(AuthorsApiService);
   private booksApiService = inject(BooksApiService);
   private reviewsApiService = inject(ReviewsApiService);
@@ -62,6 +64,7 @@ export class AuthorDetailComponent implements OnInit {
     const result = await this.authorsApiService.getAuthorById(id);
     if (result.isSuccess && result.data) {
       this.author = result.data;
+      this.pageMetaService.set(result.data.name ?? 'نویسنده', result.data.bio);
     }
   }
 
