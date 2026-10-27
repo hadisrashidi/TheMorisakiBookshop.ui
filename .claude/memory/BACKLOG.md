@@ -12,8 +12,8 @@
 
 6. Payment redirect/return page (phase 4). Checkout, orders page, addresses and cart already use the API (cart 2026-10-26, needs API script 0021). Still local: liked books, profile details.
 7. Admin panel: moved to the repo `TheMorisakiBookshop.admin.ui` (books, authors, stock DONE 2026-10-19). Orders screens will be built THERE (phase 5).
-8. Polish for launch (phase 6): final header/footer, legal pages (terms, privacy, returns, shipping), error pages, SEO basics.
-11. Footer: links fixed 2026-10-27. Still open: confirm with her that the address (تهران، شریعتی), phone and social URLs are the real shop data. Only one guide link (FAQ); legal pages -> task 8.
+8. Launch polish still open: replace the DRAFT legal texts (`features/legal/legal-pages.ts`) and the FAQ with her real rules (API task 26); SEO that works without JavaScript needs SSR/prerender (decide later); add a contact page if wanted. DONE 2026-10-27: 404 page, page titles/descriptions, draft legal pages + footer links.
+11. Footer: address (تهران، شریعتی), phone and social URLs are SAMPLE data (she said so, 2026-10-27) — replace when she has the real ones (`footer.component.ts`, `.html`).
 12. FAQ (`features/faq`): 4 static entries promise online gateway payment, 2-5 working days delivery, 7-day returns — business rules she has not decided yet (API task 26). Do not publish before she confirms them.
 14. Cart: shipping is always 0 (API too, phase 4). Stock is checked when adding to the cart and at order time (API); a cart saved earlier is re-checked only at checkout.
 
