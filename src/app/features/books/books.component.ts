@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BooksApiService } from './services/books.api.service';
 import { Book } from '../home/models/book.model';
 import { Author } from '../home/models/author.model';
@@ -9,13 +10,16 @@ import { CartService } from '../../shared/services/cart.service';
 import { LikedService } from '../../shared/services/liked.service';
 import { AuthorsApiService } from '../authors/services/authors.api.service';
 import { ReviewsApiService } from '../../shared/services/reviews.api.service';
+import { AuthService } from '../../shared/services/auth.service';
+import { ToastService } from '../../shared/services/toast.service';
+import { SaveReviewRequestModel } from '../../shared/models/save-review.request.model';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
 
 @Component({
   selector: 'app-books',
   standalone: true,
-  imports: [ApiImagePipe, CommonModule, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, CommonModule, FormsModule, RouterLink, ImageFallbackDirective],
   templateUrl: './books.component.html',
   styleUrl: './books.component.scss'
 })
@@ -25,6 +29,9 @@ export class BooksComponent implements OnInit {
   private booksApiService = inject(BooksApiService);
   private authorsApiService = inject(AuthorsApiService);
   private reviewsApiService = inject(ReviewsApiService);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
+  authService = inject(AuthService);
   cartService = inject(CartService);
   likedService = inject(LikedService);
 
@@ -34,6 +41,11 @@ export class BooksComponent implements OnInit {
   similarBooks: Book[] = [];
   reviews: Review[] = [];
   tab: 'description' | 'reviews' = 'description';
+  // The review form: filled with the person's old review when they already wrote one.
+  myRating = 0;
+  myText = '';
+  hasMyReview = false;
+  isSavingReview = signal(false);
   loadingBook = signal(true);
 
   ngOnInit(): void {
@@ -62,6 +74,9 @@ export class BooksComponent implements OnInit {
     this.relatedBooks = [];
     this.similarBooks = [];
     this.reviews = [];
+    this.myRating = 0;
+    this.myText = '';
+    this.hasMyReview = false;
     this.tab = 'description';
   }
 
@@ -101,6 +116,52 @@ export class BooksComponent implements OnInit {
     const result = await this.reviewsApiService.getByBookId(id);
     if (result.isSuccess && result.data) {
       this.reviews = result.data;
+    }
+    await this.getMyReview(id);
+  }
+
+  async getMyReview(id: number): Promise<void> {
+    if (!this.authService.isLoggedIn()) {
+      return;
+    }
+    const result = await this.reviewsApiService.getMyReview(id);
+    if (result.isSuccess && result.data) {
+      this.myRating = result.data.rating ?? 0;
+      this.myText = result.data.text ?? '';
+      this.hasMyReview = true;
+    }
+  }
+
+  goToLoginForReview(): void {
+    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+  }
+
+  async saveReview(): Promise<void> {
+    if (this.myRating < 1) {
+      this.toastService.warning('لطفاً امتیاز را انتخاب کنید.');
+      return;
+    }
+    if (this.myText.trim().length < 3) {
+      this.toastService.warning('متن نظر را بنویسید.');
+      return;
+    }
+    if (this.book.id === undefined) {
+      return;
+    }
+
+    const request = new SaveReviewRequestModel();
+    request.bookId = this.book.id;
+    request.rating = this.myRating;
+    request.text = this.myText.trim();
+
+    this.isSavingReview.set(true);
+    const result = await this.reviewsApiService.saveReview(request);
+    this.isSavingReview.set(false);
+
+    if (result.isSuccess) {
+      this.toastService.success('نظر شما ثبت شد.');
+      this.hasMyReview = true;
+      await this.getReviews(this.book.id);
     }
   }
 

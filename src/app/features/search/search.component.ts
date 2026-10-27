@@ -72,6 +72,13 @@ export class SearchComponent implements OnInit {
 
     this.route.queryParamMap.subscribe(params => {
       this.query.set(params.get('q') ?? '');
+
+      // A category link of the header carries ?genres=...; without it the filters picked on this page stay.
+      const genresFromUrl = params.getAll('genres');
+      if (genresFromUrl.length > 0) {
+        this.selectedGenres.set(genresFromUrl);
+      }
+
       this.search();
     });
   }

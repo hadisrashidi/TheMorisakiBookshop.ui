@@ -1,4 +1,5 @@
 # Done
+- 2026-10-27: Task 10 header category links by genre + account menu links
 2026-10-21: Task 6 (orders part) + task 14 (fake checkout) — checkout and orders page use the API.
 2026-10-13: Tasks 5 + 13 — real login (mobile + SMS code, email + password, reset by SMS code), JWT interceptor; fake localStorage auth and its insecure password reset removed.
 <!-- newest on top: YYYY-MM-DD: task -->

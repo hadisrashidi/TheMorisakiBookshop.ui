@@ -105,6 +105,33 @@
     </div>
 
     <div class="reviews-list" *ngIf="tab === 'reviews'">
+      <div class="card elev-sm review-form" *ngIf="authService.isLoggedIn()">
+        <h4>{{ hasMyReview ? 'ویرایش نظر شما' : 'نظر خود را بنویسید' }}</h4>
+        <div class="star-picker" role="radiogroup" aria-label="امتیاز">
+          <button
+            type="button"
+            class="star-btn"
+            *ngFor="let star of [1, 2, 3, 4, 5]"
+            [class.on]="star <= myRating"
+            [attr.aria-label]="star + ' از ۵'"
+            (click)="myRating = star"
+          >★</button>
+        </div>
+        <textarea
+          class="input"
+          rows="4"
+          maxlength="2000"
+          placeholder="نظر شما درباره این کتاب…"
+          [(ngModel)]="myText"
+        ></textarea>
+        <button type="button" class="btn btn-primary" [disabled]="isSavingReview()" (click)="saveReview()">
+          {{ hasMyReview ? 'ذخیره تغییرات' : 'ثبت نظر' }}
+        </button>
+      </div>
+      <div class="card elev-sm review-form" *ngIf="!authService.isLoggedIn()">
+        <p class="text-muted">برای نوشتن نظر وارد حساب خود شوید.</p>
+        <button type="button" class="btn btn-primary" (click)="goToLoginForReview()">ورود</button>
+      </div>
       <div class="card elev-sm review-card" *ngFor="let review of reviews">
         <div class="review-head">
           <span class="reviewer">{{ review.reviewerName }}</span>
