@@ -1,4 +1,7 @@
 # Archived sessions
+### 2026-10-25 — Empty cart / favourites go home (web session, branch `claude/gifted-curie-7qha13`)
+- Did: `CartComponent.goHomeWhenCartIsEmpty` (after remove / minus), `LikedComponent.remove` navigates home when the list is empty.
+- Verified: `npm run build` ok; Playwright (mock API): removing 1 of 2 stays, removing the last goes to `/`, minus on the last single copy goes to `/`, opening an empty cart stays, same for favourites, no page errors.
 ### 2026-10-24 — Stock check when adding to the cart (web session, branch `claude/gifted-curie-7qha13`)
 - Did: `CartService.addCheckedToCart` (fresh stock via `BooksApiService.getBookById`, error / warning toasts, success toast moved here); the 5 callers (home, search, author page, liked, book page) use it and lost their unused toast injection; `CartItem.stock`; cart page `+` stops at the stock.
 - Verified: `npm run build` ok; Playwright against a MOCKED API (list says in stock but real stock 2: 1st and 2nd add ok, 3rd refused with "only 2, 2 in your cart"; real stock 0 -> "ناموجود", cart stays empty, no page errors). NOT verified against the real API.

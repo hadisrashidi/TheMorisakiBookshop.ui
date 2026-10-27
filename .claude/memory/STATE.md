@@ -17,6 +17,9 @@ Onboarding: done (2026-10-07)
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-10-27 (2) — Header / footer polish (web session, branch `claude/focused-euler-oqo92a`)
+- Did: header category links use `?genres=<genre>` (exact filter) instead of free text `q`; `SearchComponent` reads `genres` from the URL (only when present, so other filters stay); account menu got "سفارش‌های من" and "آدرس‌های من"; footer "سفارش‌ها" -> `/orders`, "پرداخت" renamed "سبد خرید".
+- Verified: `npm run build` ok. NOT verified: browser test.
 ### 2026-10-27 — Write a review (web session, branch `claude/focused-euler-oqo92a`, API + UI)
 - Did: review form (stars + text) in the reviews tab of `BooksComponent` (logged in: form, prefilled with the person's old review via `Reviews/GetMyReview`; logged out: "ورود" button with `returnUrl`); `ReviewsApiService.getMyReview/saveReview`; model `save-review.request.model.ts`.
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0024 never run).
@@ -29,6 +32,3 @@ Onboarding: done (2026-10-07)
 ### 2026-10-26 — Addresses on the API (web session, branch `claude/lucid-faraday-5ab9od`, API + UI)
 - Did: `AddressesApiService`, `AddressesService` rewritten (signal store, `load()`, one-time upload of old localStorage addresses), `AddressesComponent` (async save, `isSaving`, loads on init), `CartComponent` loads addresses before checkout; models `AddressResponseModel`, `SaveAddressRequestModel` (old `address.model.ts` removed).
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0020 never run).
-### 2026-10-25 — Empty cart / favourites go home (web session, branch `claude/gifted-curie-7qha13`)
-- Did: `CartComponent.goHomeWhenCartIsEmpty` (after remove / minus), `LikedComponent.remove` navigates home when the list is empty.
-- Verified: `npm run build` ok; Playwright (mock API): removing 1 of 2 stays, removing the last goes to `/`, minus on the last single copy goes to `/`, opening an empty cart stays, same for favourites, no page errors.

@@ -75,6 +75,12 @@
           <a class="account-item" routerLink="/profile" role="menuitem" (click)="closeAccountMenu()">
             مشاهده پروفایل
           </a>
+          <a class="account-item" routerLink="/orders" role="menuitem" (click)="closeAccountMenu()">
+            سفارش‌های من
+          </a>
+          <a class="account-item" routerLink="/addresses" role="menuitem" (click)="closeAccountMenu()">
+            آدرس‌های من
+          </a>
           <a class="account-item" routerLink="/security" role="menuitem" (click)="closeAccountMenu()">
             ایمیل و رمز عبور
           </a>
@@ -98,9 +104,9 @@
 </div>
 
 <nav class="subnav" aria-label="دسته‌بندی کتاب‌ها" *ngIf="showCategoryNav()">
-  <a routerLink="/search" [queryParams]="{ q: 'رمان' }">رمان</a>
-  <a routerLink="/search" [queryParams]="{ q: 'ادبیات داستانی' }">ادبیات داستانی</a>
-  <a routerLink="/search" [queryParams]="{ q: 'کلاسیک' }">کلاسیک</a>
-  <a routerLink="/search" [queryParams]="{ q: 'جنایی' }">جنایی</a>
-  <a routerLink="/search" [queryParams]="{ q: 'داستان کوتاه' }">داستان کوتاه</a>
+  <a routerLink="/search" [queryParams]="{ genres: 'رمان' }">رمان</a>
+  <a routerLink="/search" [queryParams]="{ genres: 'ادبیات داستانی' }">ادبیات داستانی</a>
+  <a routerLink="/search" [queryParams]="{ genres: 'کلاسیک' }">کلاسیک</a>
+  <a routerLink="/search" [queryParams]="{ genres: 'جنایی' }">جنایی</a>
+  <a routerLink="/search" [queryParams]="{ genres: 'داستان کوتاه' }">داستان کوتاه</a>
 </nav>
