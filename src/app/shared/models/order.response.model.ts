@@ -6,6 +6,8 @@ export class OrderResponseModel {
   status = '';
   subtotal = 0;
   shippingCost = 0;
+  /** Shipping method at order time; empty for older orders. */
+  shippingMethodName = '';
   total = 0;
   recipientName = '';
   recipientMobile = '';

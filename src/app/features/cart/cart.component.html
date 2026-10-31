@@ -65,16 +65,29 @@
             <span class="discount">{{ cartService.discount() }} تومان</span>
           </div>
           }
+          @if (shippingMethods().length > 0) {
+          <h6 class="shipping-title">روش ارسال</h6>
+          @for (method of shippingMethods(); track method.id) {
+          <label class="radio shipping-option">
+            <input type="radio" name="shipping" [checked]="method.id === selectedShippingId()" (change)="chooseShipping(method.id)" />
+            <span class="dot"></span>
+            <span class="shipping-text">
+              <span>{{ method.name }} — {{ method.cost > 0 ? ((method.cost | number) + ' تومان') : 'رایگان' }}</span>
+              <small class="text-muted">{{ method.deliveryText }}</small>
+            </span>
+          </label>
+          }
+          }
           <div class="summary-row">
             <span>هزینه ارسال</span>
-            <span>{{ cartService.shipping() > 0 ? (cartService.shipping() + ' تومان') : 'رایگان' }}</span>
+            <span>{{ shippingCost() > 0 ? ((shippingCost() | number) + ' تومان') : 'رایگان' }}</span>
           </div>
 
           <div class="hr"></div>
 
           <div class="summary-row total-row">
             <span>مبلغ قابل پرداخت</span>
-            <span>{{ cartService.total() }} تومان</span>
+            <span>{{ payableTotal() | number }} تومان</span>
           </div>
 
           <button type="button" class="btn btn-primary btn-block" [disabled]="isPlacing()" (click)="checkout()">

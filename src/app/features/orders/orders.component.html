@@ -50,7 +50,7 @@
               </div>
               <div class="summary-row">
                 <span>هزینه ارسال</span>
-                <span>{{ order.shippingCost > 0 ? (order.shippingCost + ' تومان') : 'رایگان' }}</span>
+                <span>{{ order.shippingMethodName }} {{ order.shippingCost > 0 ? (order.shippingCost + ' تومان') : 'رایگان' }}</span>
               </div>
               <div class="summary-row total-row">
                 <span>مبلغ سفارش</span>

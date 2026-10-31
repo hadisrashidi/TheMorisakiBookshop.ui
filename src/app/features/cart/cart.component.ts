@@ -1,13 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AddressResponseModel } from '../../shared/models/address.response.model';
 import { CartItem } from '../../shared/models/cart-item.model';
 import { PlaceOrderLineRequestModel } from '../../shared/models/place-order-line.request.model';
 import { PlaceOrderRequestModel } from '../../shared/models/place-order.request.model';
+import { ShippingMethodResponseModel } from '../../shared/models/shipping-method.response.model';
 import { AddressesService } from '../../shared/services/addresses.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { CartService } from '../../shared/services/cart.service';
 import { OrdersService } from '../../shared/services/orders.service';
+import { ShippingApiService } from '../../shared/services/shipping.api.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
 import { ApiImagePipe } from '../../shared/pipes/api-image.pipe';
@@ -20,7 +23,7 @@ const POSTAL_CODE_PATTERN = /^(\d{10})?$/;
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [ApiImagePipe, RouterLink, ImageFallbackDirective],
+  imports: [ApiImagePipe, DecimalPipe, RouterLink, ImageFallbackDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
@@ -31,11 +34,66 @@ export class CartComponent {
   private readonly addressesService = inject(AddressesService);
   private readonly authService = inject(AuthService);
   private readonly toast = inject(ToastService);
+  private readonly shippingApiService = inject(ShippingApiService);
   readonly cartService = inject(CartService);
+
+  /** Shipping methods for this cart and the city of the checkout address. */
+  shippingMethods = signal<ShippingMethodResponseModel[]>([]);
+  selectedShippingId = signal(0);
+  private latestShippingRequest = 0;
+
+  selectedShipping = computed(() => {
+    const methods = this.shippingMethods();
+
+    return methods.find(method => method.id === this.selectedShippingId());
+  });
+  shippingCost = computed(() => this.selectedShipping()?.cost ?? 0);
+  payableTotal = computed(() => this.cartService.totalPrice() + this.shippingCost());
 
   /** Order number after a successful checkout; the page then shows the thank-you card. */
   placedOrderNumber = signal<number | null>(null);
   isPlacing = signal(false);
+
+  constructor() {
+    if (this.authService.isLoggedIn()) {
+      this.addressesService.load();
+    }
+
+    // The price and the allowed methods depend on the books' price and on the city of the checkout address.
+    effect(() => {
+      const booksPrice = this.cartService.totalPrice();
+      const city = this.findCheckoutAddress()?.city ?? '';
+
+      untracked(() => this.loadShippingMethods(booksPrice, city));
+    });
+  }
+
+  chooseShipping(id: number) {
+    this.selectedShippingId.set(id);
+  }
+
+  private async loadShippingMethods(booksPrice: number, city: string): Promise<void> {
+    if (booksPrice <= 0) {
+      return;
+    }
+
+    const requestNumber = ++this.latestShippingRequest;
+    const result = await this.shippingApiService.getShippingMethods(booksPrice, city, false);
+
+    // A newer request was started while this one was running: its answer is the one to show.
+    if (requestNumber !== this.latestShippingRequest) {
+      return;
+    }
+
+    const methods = result.isSuccess && result.data ? result.data : [];
+    this.shippingMethods.set(methods);
+
+    // Keep the chosen method while it is still offered, otherwise take the first one.
+    const stillOffered = methods.some(method => method.id === this.selectedShippingId());
+    if (!stillOffered) {
+      this.selectedShippingId.set(methods.length > 0 ? methods[0].id : 0);
+    }
+  }
 
   goToBookDetail(id: number) {
     this.router.navigate(['/books', id]);
@@ -63,6 +121,11 @@ export class CartComponent {
 
   async checkout() {
     if (this.cartService.items().length === 0 || this.isPlacing()) {
+      return;
+    }
+
+    if (this.shippingMethods().length > 0 && this.selectedShippingId() === 0) {
+      this.toast.warning('روش ارسال را انتخاب کنید.');
       return;
     }
 
@@ -131,6 +194,8 @@ export class CartComponent {
     request.recipientMobile = mobile;
     request.address = `${address.city}، ${address.fullAddress}`;
     request.postalCode = postalCode;
+    request.city = address.city;
+    request.shippingMethodId = this.selectedShippingId();
 
     for (const item of this.cartService.items()) {
       if (item.quantity > MAX_QUANTITY_PER_BOOK) {

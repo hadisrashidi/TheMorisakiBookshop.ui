@@ -7,5 +7,8 @@ export class PlaceOrderRequestModel {
   address = '';
   /** Empty or 10 digits. */
   postalCode = '';
+  /** City of the address: decides which shipping methods are allowed. */
+  city = '';
+  shippingMethodId = 0;
   lines: PlaceOrderLineRequestModel[] = [];
 }
