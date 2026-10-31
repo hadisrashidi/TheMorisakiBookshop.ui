@@ -120,10 +120,11 @@ export const routes: Routes = [
       {
         path: 'shipping',
         title: LEGAL_PAGES['shipping'].title,
-        data: { page: 'shipping', description: LEGAL_PAGES['shipping'].description },
+        data: { description: LEGAL_PAGES['shipping'].description },
         loadComponent: () =>
-          import('./features/legal/legal-page.component').then(m => m.LegalPageComponent),
+          import('./features/shipping/shipping.component').then(m => m.ShippingComponent),
       },
+
       {
         path: '**',
         title: 'صفحه پیدا نشد',

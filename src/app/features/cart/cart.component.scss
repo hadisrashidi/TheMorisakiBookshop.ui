@@ -199,3 +199,23 @@
     text-align: start;
   }
 }
+
+.shipping-title {
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.shipping-option {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-1) 0;
+
+  .dot {
+    margin-top: 3px;
+  }
+}
+
+.shipping-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

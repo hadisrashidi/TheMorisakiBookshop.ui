@@ -1,0 +1,27 @@
+<div class="page">
+  <h2>شیوه ارسال</h2>
+
+  @if (loading()) {
+    <p class="text-muted">در حال بارگذاری...</p>
+  } @else if (methods().length > 0) {
+    @for (method of methods(); track method.id) {
+      <section class="card elev-sm section">
+        <h4>{{ method.name }}</h4>
+        <p class="card-body">{{ method.deliveryText }}</p>
+        <p class="price-line">
+          هزینه ارسال: {{ method.price > 0 ? ((method.price | number) + ' تومان') : 'رایگان' }}
+          @if (method.freeAbove !== null && method.price > 0) {
+            — رایگان برای سفارش‌های بالای {{ method.freeAbove | number }} تومان
+          }
+        </p>
+      </section>
+    }
+  }
+
+  @for (note of notes; track note.heading) {
+    <section class="card elev-sm section">
+      <h4>{{ note.heading }}</h4>
+      <p class="card-body">{{ note.text }}</p>
+    </section>
+  }
+</div>

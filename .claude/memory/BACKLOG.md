@@ -15,9 +15,10 @@
 8. Launch polish still open: replace the DRAFT legal texts (`features/legal/legal-pages.ts`) and the FAQ with her real rules (API task 26); SEO that works without JavaScript needs SSR/prerender (decide later); add a contact page if wanted. DONE 2026-10-27: 404 page, page titles/descriptions, draft legal pages + footer links.
 11. Footer: address (تهران، شریعتی), phone and social URLs are SAMPLE data (she said so, 2026-10-27) — replace when she has the real ones (`footer.component.ts`, `.html`).
 12. FAQ (`features/faq`): 4 static entries promise online gateway payment, 2-5 working days delivery, 7-day returns — business rules she has not decided yet (API task 26). Do not publish before she confirms them.
-14. Cart: shipping is always 0 (API too, phase 4). Stock is checked when adding to the cart and at order time (API); a cart saved earlier is re-checked only at checkout.
+14. Cart: shipping now comes from the API (2026-10-31, placeholder prices). Stock is checked when adding to the cart and at order time (API); a cart saved earlier is re-checked only at checkout.
 
 ## From the API repo
+- (DONE in API + UI 2026-10-31, needs API script 0027) Shipping: `GET Shipping/GetShippingMethods?subtotal&city`; `Orders/PlaceOrder` needs `city` + `shippingMethodId`; orders carry `shippingMethodName`.
 - (DONE in API + UI 2026-10-27, needs API script 0024) Reviews: `GET Reviews/GetMyReview?bookId`, `POST Reviews/SaveReview` (token needed). Used by the book page review form.
 - (DONE in API + UI 2026-10-26, needs API script 0021) Cart: `GET Cart/GetMyCart`, `POST Cart/SetQuantity|MergeCart|ClearCart` (token needed). Used by `CartService` for logged-in people.
 - (DONE in API + UI 2026-10-26, needs API script 0020) Addresses: `GET Addresses/GetMyAddresses`, `POST Addresses/AddAddress|UpdateAddress?id|DeleteAddress?id|SetDefaultAddress?id` (token needed). Used by `/addresses` and the checkout.

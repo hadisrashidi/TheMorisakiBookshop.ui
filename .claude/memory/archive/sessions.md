@@ -1,4 +1,7 @@
 # Archived sessions
+### 2026-10-26 (2) — Server cart (web session, branch `claude/lucid-faraday-5ab9od`, API + UI)
+- Did: `CartApiService`, `CartService` (effect on login/logout: merge guest cart, load saved cart, empty on logout; each change saved with `Cart/SetQuantity`), models `CartItemResponseModel`, `SetCartQuantityRequestModel`, `MergeCartRequestModel`.
+- Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0021 never run).
 ### 2026-10-26 — Addresses on the API (web session, branch `claude/lucid-faraday-5ab9od`, API + UI)
 - Did: `AddressesApiService`, `AddressesService` rewritten (signal store, `load()`, one-time upload of old localStorage addresses), `AddressesComponent` (async save, `isSaving`, loads on init), `CartComponent` loads addresses before checkout; models `AddressResponseModel`, `SaveAddressRequestModel` (old `address.model.ts` removed).
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0020 never run).

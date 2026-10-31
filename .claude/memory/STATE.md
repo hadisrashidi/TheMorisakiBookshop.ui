@@ -17,6 +17,9 @@ Onboarding: done (2026-10-07)
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-10-31 — Shipping methods in the cart (web session, branch `claude/focused-euler-oqo92a`, API + UI + admin repos)
+- Did: `ShippingApiService`, `ShippingMethodResponseModel`; `CartComponent` loads the methods for the cart price + city of the checkout address (effect), radio list in the summary, shipping cost + total from the chosen method (`payableTotal`), `PlaceOrderRequestModel.city/shippingMethodId`; orders page shows the method name; `/shipping` is now `features/shipping` (methods from the API + fixed notes from `legal-pages.ts`).
+- Verified: `npm run build` ok; Playwright with a mocked API (options listed, free from 2,000,000, chosen method updates the total, `/shipping` cards). NOT verified: real API (needs API script 0027; the old UI cannot place orders against the new `Orders_Place`).
 ### 2026-10-27 (3) — 404 page, page titles, draft legal pages (web session, branch `claude/focused-euler-oqo92a`, UI only)
 - Her answers: footer contact data is sample data for now; legal pages: "write something, we edit later"; "do them in the order you think is best".
 - Did: `features/not-found` (route `**`, was a redirect to `/`); `core/services/page-title-strategy.ts` (title from route `title`, description from route `data.description`, reset after each navigation) + `shared/services/page-meta.service.ts` (book and author pages set title + description from their data); route titles for all pages; `features/legal/` (`legal-pages.ts` texts, one `LegalPageComponent` for `/terms`, `/privacy`, `/returns`, `/shipping`); footer links to them.
@@ -30,6 +33,3 @@ Onboarding: done (2026-10-07)
 ### 2026-10-26 (3) — Birthdate on the account (web session, same branch, API + UI)
 - Did: `UserModel.birthdate`, `UpdateProfileRequestModel.birthdate`, `ProfileComponent.saveProfileToAccount` (name + birthdate), `AuthService.startSession` prefers the server birthdate, `LoginComponent.finishLogin` uploads a local birthdate once.
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API scripts 0022-0023 never run).
-### 2026-10-26 (2) — Server cart (web session, branch `claude/lucid-faraday-5ab9od`, API + UI)
-- Did: `CartApiService`, `CartService` (effect on login/logout: merge guest cart, load saved cart, empty on logout; each change saved with `Cart/SetQuantity`), models `CartItemResponseModel`, `SetCartQuantityRequestModel`, `MergeCartRequestModel`.
-- Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0021 never run).
