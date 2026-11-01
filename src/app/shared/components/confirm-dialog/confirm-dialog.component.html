@@ -1,0 +1,30 @@
+@if (confirmService.openConfirm(); as open) {
+  <div class="backdrop" (click)="answer(false)">
+    <div
+      class="dialog card elev-md"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+      aria-describedby="confirm-message"
+      [class.danger]="open.options.danger"
+      (click)="$event.stopPropagation()"
+      (keydown)="onKeydown($event, cancelButton, agreeButton)"
+    >
+      <div class="icon" aria-hidden="true">
+        @if (open.options.danger) {
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4M12 17h.01"></path></svg>
+        } @else {
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+        }
+      </div>
+
+      <h3 id="confirm-title">{{ open.options.title }}</h3>
+      <p id="confirm-message">{{ open.options.message }}</p>
+
+      <div class="actions">
+        <button #cancelButton type="button" class="btn btn-secondary" (click)="answer(false)">{{ open.options.cancelText }}</button>
+        <button #agreeButton type="button" class="btn btn-primary" [class.btn-danger]="open.options.danger" (click)="answer(true)">{{ open.options.confirmText }}</button>
+      </div>
+    </div>
+  </div>
+}
