@@ -1,4 +1,7 @@
 # Archived sessions
+### 2026-10-26 (3) — Birthdate on the account (web session, same branch, API + UI)
+- Did: `UserModel.birthdate`, `UpdateProfileRequestModel.birthdate`, `ProfileComponent.saveProfileToAccount` (name + birthdate), `AuthService.startSession` prefers the server birthdate, `LoginComponent.finishLogin` uploads a local birthdate once.
+- Verified: `npm run build` ok. NOT verified: browser test, real API (API scripts 0022-0023 never run).
 ### 2026-10-26 (2) — Server cart (web session, branch `claude/lucid-faraday-5ab9od`, API + UI)
 - Did: `CartApiService`, `CartService` (effect on login/logout: merge guest cart, load saved cart, empty on logout; each change saved with `Cart/SetQuantity`), models `CartItemResponseModel`, `SetCartQuantityRequestModel`, `MergeCartRequestModel`.
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0021 never run).
