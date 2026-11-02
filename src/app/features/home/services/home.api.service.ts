@@ -18,6 +18,13 @@ export class HomeApiService {
     return this.apiHelperService.get<Book[]>(model);
   }
 
+  /** Get the best-selling books (most copies sold). */
+  getBestSellers(): Promise<ApiResponse<Book[]>> {
+    const model = new ApiCallModel();
+    model.url = 'Books/GetBestSellers';
+    return this.apiHelperService.get<Book[]>(model);
+  }
+
   /** Get the newest books. */
   getNewBooks(): Promise<ApiResponse<Book[]>> {
     const model = new ApiCallModel();

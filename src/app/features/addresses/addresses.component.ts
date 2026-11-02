@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ConfirmOptionsModel } from '../../shared/models/confirm-options.model';
+import { ConfirmService } from '../../shared/services/confirm.service';
 import { AddressesService } from '../../shared/services/addresses.service';
 import { AddressResponseModel } from '../../shared/models/address.response.model';
 import { SaveAddressRequestModel } from '../../shared/models/save-address.request.model';
@@ -19,6 +21,7 @@ export class AddressesComponent implements OnInit {
 
   addressesService = inject(AddressesService);
   private toast = inject(ToastService);
+  private confirmService = inject(ConfirmService);
 
   formOpen = signal(false);
   editingId = signal<number | null>(null);
@@ -90,6 +93,16 @@ export class AddressesComponent implements OnInit {
   }
 
   async remove(address: AddressResponseModel) {
+    const options = new ConfirmOptionsModel();
+    options.title = 'حذف آدرس';
+    options.message = `آدرس «${address.title}» حذف شود؟ سفارش‌هایی که قبلاً با این آدرس ثبت شده‌اند تغییری نمی‌کنند.`;
+    options.confirmText = 'بله، حذف شود';
+    options.danger = true;
+
+    if (!(await this.confirmService.ask(options))) {
+      return;
+    }
+
     if (await this.addressesService.remove(address.id)) {
       this.toast.info(`آدرس «${address.title}» حذف شد.`);
     }

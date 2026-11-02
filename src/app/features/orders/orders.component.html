@@ -32,6 +32,20 @@
             <div class="order-body">
               <div class="hr"></div>
 
+              <ol class="timeline" aria-label="مراحل سفارش">
+                @for (step of order.steps; track step.status) {
+                  <li class="step" [class.done]="step.state === 'done'" [class.current]="step.state === 'current'" [class.cancelled]="step.state === 'cancelled'">
+                    <span class="dot" aria-hidden="true"></span>
+                    <span class="step-label">{{ step.label }}</span>
+                    @if (step.dateText) {
+                      <span class="step-date text-muted">{{ step.dateText }}</span>
+                    }
+                  </li>
+                }
+              </ol>
+
+              <div class="hr"></div>
+
               @for (line of order.lines; track line.bookId) {
                 <a class="order-line" [routerLink]="['/books', line.bookId]">
                   <img class="washed thumb" [src]="line.image | apiImage" [alt]="line.title" />
@@ -48,6 +62,12 @@
                 <span>قیمت کالاها</span>
                 <span>{{ order.subtotal }} تومان</span>
               </div>
+              @if (order.discountAmount > 0) {
+                <div class="summary-row">
+                  <span>تخفیف ({{ order.discountCode }})</span>
+                  <span><span dir="ltr">−{{ order.discountAmount }}</span> تومان</span>
+                </div>
+              }
               <div class="summary-row">
                 <span>هزینه ارسال</span>
                 <span>{{ order.shippingMethodName }} {{ order.shippingCost > 0 ? (order.shippingCost + ' تومان') : 'رایگان' }}</span>
@@ -70,7 +90,19 @@
               @if (order.trackingCode) {
                 <div class="summary-row">
                   <span>کد رهگیری</span>
-                  <span dir="ltr">{{ order.trackingCode }}</span>
+                  <span class="tracking">
+                    <span dir="ltr">{{ order.trackingCode }}</span>
+                    <button type="button" class="btn btn-ghost small-btn" (click)="copyTrackingCode(order.trackingCode)">کپی</button>
+                    @if (order.trackingUrl) {
+                      <a class="btn btn-ghost small-btn" [href]="order.trackingUrl" target="_blank" rel="noopener noreferrer">رهگیری در سایت پست</a>
+                    }
+                  </span>
+                </div>
+              }
+
+              @if (order.status === 'PendingPayment') {
+                <div class="cancel-row">
+                  <button type="button" class="btn btn-ghost danger" (click)="cancel(order)">لغو سفارش</button>
                 </div>
               }
             </div>

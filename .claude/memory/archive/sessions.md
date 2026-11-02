@@ -1,4 +1,23 @@
 # Archived sessions
+### 2026-11-01 — Date picker fix (web session, branch `claude/focused-euler-oqo92a`)
+- Did: confirm dialog in the shop (`shared/services/confirm.service.ts`, `shared/components/confirm-dialog`, used by `AddressesComponent.remove`; verified with Playwright: focus on cancel, cancel = no call, confirm = delete call, no browser dialog). `shared/components/jalali-date-picker`: month / year `<select>` showed the first option (فروردین / newest year) while the grid was the right month; options now use `[selected]`. Same fix in the admin UI copy.
+- Verified: `npm run build` ok; Playwright on the admin copy (shows آبان / 1405). NOT verified: the shop profile page in a browser.
+### 2026-10-31 — Shipping methods in the cart (web session, branch `claude/focused-euler-oqo92a`, API + UI + admin repos)
+- Did: `ShippingApiService`, `ShippingMethodResponseModel`; `CartComponent` loads the methods for the cart price + city of the checkout address (effect), radio list in the summary, shipping cost + total from the chosen method (`payableTotal`), `PlaceOrderRequestModel.city/shippingMethodId`; orders page shows the method name; `/shipping` is now `features/shipping` (methods from the API + fixed notes from `legal-pages.ts`).
+- Verified: `npm run build` ok; Playwright with a mocked API (options listed, free from 2,000,000, chosen method updates the total, `/shipping` cards). NOT verified: real API (needs API script 0027; the old UI cannot place orders against the new `Orders_Place`).
+### 2026-10-27 (3) — 404 page, page titles, draft legal pages (web session, branch `claude/focused-euler-oqo92a`, UI only)
+- Her answers: footer contact data is sample data for now; legal pages: "write something, we edit later"; "do them in the order you think is best".
+- Did: `features/not-found` (route `**`, was a redirect to `/`); `core/services/page-title-strategy.ts` (title from route `title`, description from route `data.description`, reset after each navigation) + `shared/services/page-meta.service.ts` (book and author pages set title + description from their data); route titles for all pages; `features/legal/` (`legal-pages.ts` texts, one `LegalPageComponent` for `/terms`, `/privacy`, `/returns`, `/shipping`); footer links to them.
+- Verified: `npm run build` ok; Playwright against `ng serve` (no API): tab title + description right on `/`, `/terms`, `/shipping`, `/cart`, unknown URL shows the 404 card, no page errors. NOT verified: book/author titles (need the API).
+### 2026-10-27 (2) — Header / footer polish (web session, branch `claude/focused-euler-oqo92a`)
+- Did: header category links use `?genres=<genre>` (exact filter) instead of free text `q`; `SearchComponent` reads `genres` from the URL (only when present, so other filters stay); account menu got "سفارش‌های من" and "آدرس‌های من"; footer "سفارش‌ها" -> `/orders`, "پرداخت" renamed "سبد خرید".
+- Verified: `npm run build` ok. NOT verified: browser test.
+### 2026-10-27 — Write a review (web session, branch `claude/focused-euler-oqo92a`, API + UI)
+- Did: review form (stars + text) in the reviews tab of `BooksComponent` (logged in: form, prefilled with the person's old review via `Reviews/GetMyReview`; logged out: "ورود" button with `returnUrl`); `ReviewsApiService.getMyReview/saveReview`; model `save-review.request.model.ts`.
+- Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0024 never run).
+### 2026-10-26 (3) — Birthdate on the account (web session, same branch, API + UI)
+- Did: `UserModel.birthdate`, `UpdateProfileRequestModel.birthdate`, `ProfileComponent.saveProfileToAccount` (name + birthdate), `AuthService.startSession` prefers the server birthdate, `LoginComponent.finishLogin` uploads a local birthdate once.
+- Verified: `npm run build` ok. NOT verified: browser test, real API (API scripts 0022-0023 never run).
 ### 2026-10-26 (2) — Server cart (web session, branch `claude/lucid-faraday-5ab9od`, API + UI)
 - Did: `CartApiService`, `CartService` (effect on login/logout: merge guest cart, load saved cart, empty on logout; each change saved with `Cart/SetQuantity`), models `CartItemResponseModel`, `SetCartQuantityRequestModel`, `MergeCartRequestModel`.
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0021 never run).

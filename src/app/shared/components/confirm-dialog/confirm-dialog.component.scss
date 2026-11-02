@@ -1,0 +1,87 @@
+@use '../../styles/organic-components';
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--color-text) 45%, transparent);
+  animation: backdrop-in 0.15s ease-out;
+}
+
+.dialog {
+  width: min(420px, 100%);
+  padding: var(--space-5, 24px);
+  text-align: start;
+  animation: dialog-in 0.18s ease-out;
+
+  h3 {
+    margin: var(--space-2) 0 var(--space-2);
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.8;
+  }
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--color-accent-700);
+  background: var(--color-accent-200);
+}
+
+.dialog.danger .icon {
+  color: #7e2b23;
+  background: #fbe3e0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-5, 24px);
+}
+
+// The agree button of a destructive action is red.
+.btn-danger {
+  background: #b3261e;
+  border-color: #b3261e;
+  color: #fff;
+
+  &:hover {
+    background: #8f1d17;
+  }
+
+  &:active {
+    background: #741611;
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .dialog {
+    animation: none;
+  }
+}

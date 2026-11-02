@@ -29,4 +29,15 @@ export class OrdersApiService {
     model.url = 'Orders/GetMyOrders';
     return this.apiHelperService.get<OrderResponseModel[]>(model);
   }
+
+  /**
+   * Cancel one of my orders; only possible while it waits for payment. The books go back to the stock.
+   * @param id - Order number
+   */
+  cancelMyOrder(id: number): Promise<ApiResponse<void>> {
+    const model = new ApiCallModel();
+    model.url = 'Orders/CancelMyOrder';
+    model.params = { id };
+    return this.apiHelperService.post<void>(model);
+  }
 }

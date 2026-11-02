@@ -4,7 +4,7 @@ import { ApiResponse } from '@core/models/api/api.response.model';
 import { OrderResponseModel } from '../models/order.response.model';
 import { PlaceOrderRequestModel } from '../models/place-order.request.model';
 import { formatJalali, gregorianToJalali } from '../utils/jalali';
-import { orderStatusLabel } from '../utils/order-status';
+import { buildOrderSteps, carrierTrackingUrl, orderStatusLabel } from '../utils/order-status';
 import { AuthService } from './auth.service';
 import { OrdersApiService } from './orders.api.service';
 
@@ -62,6 +62,17 @@ export class OrdersService {
     return result;
   }
 
+  /** Cancels one of my orders (only while it waits for payment); on success the list is reloaded. */
+  async cancelOrder(id: number): Promise<ApiResponse<void>> {
+    const result = await this.ordersApiService.cancelMyOrder(id);
+
+    if (result.isSuccess) {
+      await this.load();
+    }
+
+    return result;
+  }
+
   private prepare(order: OrderResponseModel): OrderResponseModel {
     // The API sends UTC without a "Z"; without it the browser would read the time as local time.
     const utcText = order.createdAt.endsWith('Z') ? order.createdAt : order.createdAt + 'Z';
@@ -69,6 +80,8 @@ export class OrdersService {
     order.date = formatJalali(gregorianToJalali(new Date(utcText)));
     order.statusLabel = orderStatusLabel(order.status);
     order.itemsCount = order.lines.reduce((sum, line) => sum + line.quantity, 0);
+    order.steps = buildOrderSteps(order.status, order.history);
+    order.trackingUrl = order.trackingCode ? carrierTrackingUrl(order.shippingMethodName) : '';
 
     return order;
   }

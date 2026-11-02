@@ -219,3 +219,32 @@
   flex-direction: column;
   gap: 2px;
 }
+
+.discount-box {
+  margin: var(--space-3) 0;
+}
+
+.discount-form {
+  display: flex;
+  gap: var(--space-2);
+
+  .input {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+.discount-applied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-200);
+}
+
+.small-btn {
+  padding-block: 2px;
+  font-size: 13px;
+}

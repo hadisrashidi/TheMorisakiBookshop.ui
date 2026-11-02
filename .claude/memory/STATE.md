@@ -17,19 +17,18 @@ Onboarding: done (2026-10-07)
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
-### 2026-10-31 — Shipping methods in the cart (web session, branch `claude/focused-euler-oqo92a`, API + UI + admin repos)
-- Did: `ShippingApiService`, `ShippingMethodResponseModel`; `CartComponent` loads the methods for the cart price + city of the checkout address (effect), radio list in the summary, shipping cost + total from the chosen method (`payableTotal`), `PlaceOrderRequestModel.city/shippingMethodId`; orders page shows the method name; `/shipping` is now `features/shipping` (methods from the API + fixed notes from `legal-pages.ts`).
-- Verified: `npm run build` ok; Playwright with a mocked API (options listed, free from 2,000,000, chosen method updates the total, `/shipping` cards). NOT verified: real API (needs API script 0027; the old UI cannot place orders against the new `Orders_Place`).
-### 2026-10-27 (3) — 404 page, page titles, draft legal pages (web session, branch `claude/focused-euler-oqo92a`, UI only)
-- Her answers: footer contact data is sample data for now; legal pages: "write something, we edit later"; "do them in the order you think is best".
-- Did: `features/not-found` (route `**`, was a redirect to `/`); `core/services/page-title-strategy.ts` (title from route `title`, description from route `data.description`, reset after each navigation) + `shared/services/page-meta.service.ts` (book and author pages set title + description from their data); route titles for all pages; `features/legal/` (`legal-pages.ts` texts, one `LegalPageComponent` for `/terms`, `/privacy`, `/returns`, `/shipping`); footer links to them.
-- Verified: `npm run build` ok; Playwright against `ng serve` (no API): tab title + description right on `/`, `/terms`, `/shipping`, `/cart`, unknown URL shows the 404 card, no page errors. NOT verified: book/author titles (need the API).
-### 2026-10-27 (2) — Header / footer polish (web session, branch `claude/focused-euler-oqo92a`)
-- Did: header category links use `?genres=<genre>` (exact filter) instead of free text `q`; `SearchComponent` reads `genres` from the URL (only when present, so other filters stay); account menu got "سفارش‌های من" and "آدرس‌های من"; footer "سفارش‌ها" -> `/orders`, "پرداخت" renamed "سبد خرید".
-- Verified: `npm run build` ok. NOT verified: browser test.
-### 2026-10-27 — Write a review (web session, branch `claude/focused-euler-oqo92a`, API + UI)
-- Did: review form (stars + text) in the reviews tab of `BooksComponent` (logged in: form, prefilled with the person's old review via `Reviews/GetMyReview`; logged out: "ورود" button with `returnUrl`); `ReviewsApiService.getMyReview/saveReview`; model `save-review.request.model.ts`.
-- Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0024 never run).
-### 2026-10-26 (3) — Birthdate on the account (web session, same branch, API + UI)
-- Did: `UserModel.birthdate`, `UpdateProfileRequestModel.birthdate`, `ProfileComponent.saveProfileToAccount` (name + birthdate), `AuthService.startSession` prefers the server birthdate, `LoginComponent.finishLogin` uploads a local birthdate once.
-- Verified: `npm run build` ok. NOT verified: browser test, real API (API scripts 0022-0023 never run).
+### 2026-11-06 — Discount link (web session, branch `claude/focused-euler-oqo92a`)
+- Did: `CartComponent` reads `?code=` (`readCodeFromLink`, one-shot effect `applyLinkCode` for logged-in people with books in the cart); the guest login redirect keeps the code in `returnUrl`.
+- Verified: `npm run build` ok; Playwright with a mocked API (logged in / guest). NOT verified against the real API.
+### 2026-11-04 — Best sellers on the home page (web session, branch `claude/focused-euler-oqo92a`)
+- Did: home block "پرفروش‌ترین‌ها" (between the featured grid and the newest row; same card as the newest row; hidden while empty), `HomeApiService.getBestSellers` -> `Books/GetBestSellers`.
+- Verified: `npm run build` ok; Playwright with a mocked API (block shown with 2 cards; empty list = block hidden). NOT verified: real API (needs API script 0035).
+### 2026-11-03 (2) — Footer from the API (web session, branch `claude/focused-euler-oqo92a`)
+- Did: `FooterComponent` loads name / phone / address / links from `Settings/GetShopInfo` (`ShopInfoApiService`, `ShopInfoResponseModel`); the sample values stay as the fallback; an empty link hides its icon; discount minus signs keep their left-to-right order.
+- Verified: `npm run build` ok. NOT verified in a browser / real API (needs API script 0033).
+### 2026-11-03 — Discount code in the cart (web session, branch `claude/focused-euler-oqo92a`)
+- Did: cart summary: code box ("اعمال"), applied state with "حذف", discount row, total = books − discount + shipping (`payableTotal`); the code is re-checked silently when the cart price changes and after a refused order; `PlaceOrderRequestModel.discountCode`; orders page shows the discount; `DiscountsApiService`, `DiscountPreviewResponseModel`. A guest who tries a code is sent to login.
+- Verified: `npm run build` ok; Playwright with a mocked API (wrong code refused with the API message, WELCOME20 applied, total right, check calls carry the cart price). NOT verified: real API (needs API script 0032).
+### 2026-11-02 — Order tracking on the orders page (web session, branch `claude/focused-euler-oqo92a`)
+- Did: `/orders`: timeline per order (`buildOrderSteps` in `shared/utils/order-status.ts`: ثبت / پرداخت / آماده‌سازی / ارسال / تحویل, or the steps passed + "لغو شد"), tracking code with copy button and a link to the post tracking site (`carrierTrackingUrl`, only when the shipping method name contains "پست"), "لغو سفارش" with the confirm dialog while `PendingPayment` (`OrdersService.cancelOrder`, `OrdersApiService.cancelMyOrder`); models `OrderHistoryResponseModel`, `OrderStepModel`.
+- Verified: `npm run build` ok; Playwright with a mocked API (3 timelines, link, cancel flow). NOT verified: real API (needs API script 0029); the post URL.

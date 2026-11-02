@@ -23,12 +23,14 @@ export class HomeComponent implements OnInit {
   likedService = inject(LikedService);
 
   featuredBooks: Book[] = [];
+  bestSellers: Book[] = [];
   newBooks: Book[] = [];
   authors: Author[] = [];
 
   // Each section loads independently, so they reveal as their data lands
   // rather than the whole page waiting on the slowest call.
   loadingFeatured = signal(true);
+  loadingBestSellers = signal(true);
   loadingNew = signal(true);
   loadingAuthors = signal(true);
 
@@ -40,6 +42,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.getFeaturedBooks();
+    this.getBestSellers();
     this.getNewBooks();
     this.getAuthors();
   }
@@ -50,6 +53,14 @@ export class HomeComponent implements OnInit {
       this.featuredBooks = result.data;
     }
     this.loadingFeatured.set(false);
+  }
+
+  async getBestSellers(): Promise<void> {
+    const result = await this.homeApiService.getBestSellers();
+    if (result.isSuccess && result.data) {
+      this.bestSellers = result.data;
+    }
+    this.loadingBestSellers.set(false);
   }
 
   async getNewBooks(): Promise<void> {
