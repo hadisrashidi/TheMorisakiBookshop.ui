@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AddressResponseModel } from '../../shared/models/address.response.model';
 import { CartItem } from '../../shared/models/cart-item.model';
 import { PlaceOrderLineRequestModel } from '../../shared/models/place-order-line.request.model';
@@ -39,6 +39,7 @@ export class CartComponent {
   private readonly toast = inject(ToastService);
   private readonly shippingApiService = inject(ShippingApiService);
   private readonly discountsApiService = inject(DiscountsApiService);
+  private readonly route = inject(ActivatedRoute);
   readonly cartService = inject(CartService);
 
   /** Shipping methods for this cart and the city of the checkout address. */
@@ -58,6 +59,9 @@ export class CartComponent {
   appliedDiscount = signal<DiscountPreviewResponseModel | null>(null);
   isCheckingDiscount = signal(false);
 
+  /** A code from the link (/cart?code=WELCOME20), waiting for the cart to have books so it can be applied. */
+  private linkCode = '';
+
   discountAmount = computed(() => this.appliedDiscount()?.discountAmount ?? 0);
   payableTotal = computed(() => this.cartService.totalPrice() - this.discountAmount() + this.shippingCost());
 
@@ -69,6 +73,8 @@ export class CartComponent {
     if (this.authService.isLoggedIn()) {
       this.addressesService.load();
     }
+
+    this.readCodeFromLink();
 
     // The price and the allowed methods depend on the books' price and on the city of the checkout address.
     effect(() => {
@@ -84,6 +90,34 @@ export class CartComponent {
 
       untracked(() => this.revalidateDiscount(booksPrice));
     });
+
+    // A code from the link is applied once, as soon as a logged-in person has books in the cart
+    // (the saved cart of an account arrives a moment after the page opens).
+    effect(() => {
+      const booksPrice = this.cartService.totalPrice();
+      const loggedIn = this.authService.isLoggedIn();
+
+      if (this.linkCode !== '' && loggedIn && booksPrice > 0) {
+        untracked(() => this.applyLinkCode());
+      }
+    });
+  }
+
+  /** Puts the code of the link into the code box; a guest is sent to login by the "اعمال" button as usual. */
+  private readCodeFromLink() {
+    const code = (this.route.snapshot.queryParamMap.get('code') ?? '').trim().slice(0, 40);
+
+    if (code === '') {
+      return;
+    }
+
+    this.linkCode = code;
+    this.discountInput.set(code);
+  }
+
+  private applyLinkCode() {
+    this.linkCode = '';
+    this.applyDiscount();
   }
 
   /** Asks the API whether the typed code can be used on this cart. */
@@ -97,7 +131,7 @@ export class CartComponent {
 
     if (!this.authService.isLoggedIn()) {
       this.toast.info('برای استفاده از کد تخفیف وارد حساب خود شوید.');
-      this.router.navigate(['/login'], { queryParams: { returnUrl: '/cart' } });
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/cart?code=' + encodeURIComponent(code) } });
       return;
     }
 

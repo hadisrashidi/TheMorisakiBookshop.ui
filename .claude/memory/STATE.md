@@ -17,6 +17,9 @@ Onboarding: done (2026-10-07)
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-11-06 — Discount link (web session, branch `claude/focused-euler-oqo92a`)
+- Did: `CartComponent` reads `?code=` (`readCodeFromLink`, one-shot effect `applyLinkCode` for logged-in people with books in the cart); the guest login redirect keeps the code in `returnUrl`.
+- Verified: `npm run build` ok; Playwright with a mocked API (logged in / guest). NOT verified against the real API.
 ### 2026-11-04 — Best sellers on the home page (web session, branch `claude/focused-euler-oqo92a`)
 - Did: home block "پرفروش‌ترین‌ها" (between the featured grid and the newest row; same card as the newest row; hidden while empty), `HomeApiService.getBestSellers` -> `Books/GetBestSellers`.
 - Verified: `npm run build` ok; Playwright with a mocked API (block shown with 2 cards; empty list = block hidden). NOT verified: real API (needs API script 0035).
@@ -29,6 +32,3 @@ Onboarding: done (2026-10-07)
 ### 2026-11-02 — Order tracking on the orders page (web session, branch `claude/focused-euler-oqo92a`)
 - Did: `/orders`: timeline per order (`buildOrderSteps` in `shared/utils/order-status.ts`: ثبت / پرداخت / آماده‌سازی / ارسال / تحویل, or the steps passed + "لغو شد"), tracking code with copy button and a link to the post tracking site (`carrierTrackingUrl`, only when the shipping method name contains "پست"), "لغو سفارش" with the confirm dialog while `PendingPayment` (`OrdersService.cancelOrder`, `OrdersApiService.cancelMyOrder`); models `OrderHistoryResponseModel`, `OrderStepModel`.
 - Verified: `npm run build` ok; Playwright with a mocked API (3 timelines, link, cancel flow). NOT verified: real API (needs API script 0029); the post URL.
-### 2026-11-01 — Date picker fix (web session, branch `claude/focused-euler-oqo92a`)
-- Did: confirm dialog in the shop (`shared/services/confirm.service.ts`, `shared/components/confirm-dialog`, used by `AddressesComponent.remove`; verified with Playwright: focus on cancel, cancel = no call, confirm = delete call, no browser dialog). `shared/components/jalali-date-picker`: month / year `<select>` showed the first option (فروردین / newest year) while the grid was the right month; options now use `[selected]`. Same fix in the admin UI copy.
-- Verified: `npm run build` ok; Playwright on the admin copy (shows آبان / 1405). NOT verified: the shop profile page in a browser.

@@ -1,4 +1,7 @@
 # Archived sessions
+### 2026-11-01 — Date picker fix (web session, branch `claude/focused-euler-oqo92a`)
+- Did: confirm dialog in the shop (`shared/services/confirm.service.ts`, `shared/components/confirm-dialog`, used by `AddressesComponent.remove`; verified with Playwright: focus on cancel, cancel = no call, confirm = delete call, no browser dialog). `shared/components/jalali-date-picker`: month / year `<select>` showed the first option (فروردین / newest year) while the grid was the right month; options now use `[selected]`. Same fix in the admin UI copy.
+- Verified: `npm run build` ok; Playwright on the admin copy (shows آبان / 1405). NOT verified: the shop profile page in a browser.
 ### 2026-10-31 — Shipping methods in the cart (web session, branch `claude/focused-euler-oqo92a`, API + UI + admin repos)
 - Did: `ShippingApiService`, `ShippingMethodResponseModel`; `CartComponent` loads the methods for the cart price + city of the checkout address (effect), radio list in the summary, shipping cost + total from the chosen method (`payableTotal`), `PlaceOrderRequestModel.city/shippingMethodId`; orders page shows the method name; `/shipping` is now `features/shipping` (methods from the API + fixed notes from `legal-pages.ts`).
 - Verified: `npm run build` ok; Playwright with a mocked API (options listed, free from 2,000,000, chosen method updates the total, `/shipping` cards). NOT verified: real API (needs API script 0027; the old UI cannot place orders against the new `Orders_Place`).
