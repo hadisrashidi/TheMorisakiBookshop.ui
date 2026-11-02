@@ -17,6 +17,9 @@ Onboarding: done (2026-10-07)
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-11-03 (2) — Footer from the API (web session, branch `claude/focused-euler-oqo92a`)
+- Did: `FooterComponent` loads name / phone / address / links from `Settings/GetShopInfo` (`ShopInfoApiService`, `ShopInfoResponseModel`); the sample values stay as the fallback; an empty link hides its icon; discount minus signs keep their left-to-right order.
+- Verified: `npm run build` ok. NOT verified in a browser / real API (needs API script 0033).
 ### 2026-11-03 — Discount code in the cart (web session, branch `claude/focused-euler-oqo92a`)
 - Did: cart summary: code box ("اعمال"), applied state with "حذف", discount row, total = books − discount + shipping (`payableTotal`); the code is re-checked silently when the cart price changes and after a refused order; `PlaceOrderRequestModel.discountCode`; orders page shows the discount; `DiscountsApiService`, `DiscountPreviewResponseModel`. A guest who tries a code is sent to login.
 - Verified: `npm run build` ok; Playwright with a mocked API (wrong code refused with the API message, WELCOME20 applied, total right, check calls carry the cart price). NOT verified: real API (needs API script 0032).
@@ -29,7 +32,3 @@ Onboarding: done (2026-10-07)
 ### 2026-10-31 — Shipping methods in the cart (web session, branch `claude/focused-euler-oqo92a`, API + UI + admin repos)
 - Did: `ShippingApiService`, `ShippingMethodResponseModel`; `CartComponent` loads the methods for the cart price + city of the checkout address (effect), radio list in the summary, shipping cost + total from the chosen method (`payableTotal`), `PlaceOrderRequestModel.city/shippingMethodId`; orders page shows the method name; `/shipping` is now `features/shipping` (methods from the API + fixed notes from `legal-pages.ts`).
 - Verified: `npm run build` ok; Playwright with a mocked API (options listed, free from 2,000,000, chosen method updates the total, `/shipping` cards). NOT verified: real API (needs API script 0027; the old UI cannot place orders against the new `Orders_Place`).
-### 2026-10-27 (3) — 404 page, page titles, draft legal pages (web session, branch `claude/focused-euler-oqo92a`, UI only)
-- Her answers: footer contact data is sample data for now; legal pages: "write something, we edit later"; "do them in the order you think is best".
-- Did: `features/not-found` (route `**`, was a redirect to `/`); `core/services/page-title-strategy.ts` (title from route `title`, description from route `data.description`, reset after each navigation) + `shared/services/page-meta.service.ts` (book and author pages set title + description from their data); route titles for all pages; `features/legal/` (`legal-pages.ts` texts, one `LegalPageComponent` for `/terms`, `/privacy`, `/returns`, `/shipping`); footer links to them.
-- Verified: `npm run build` ok; Playwright against `ng serve` (no API): tab title + description right on `/`, `/terms`, `/shipping`, `/cart`, unknown URL shows the 404 card, no page errors. NOT verified: book/author titles (need the API).

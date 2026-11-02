@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ShopInfoResponseModel } from '../../models/shop-info.response.model';
+import { ShopInfoApiService } from '../../services/shop-info.api.service';
 
 @Component({
   selector: 'app-footer',
@@ -8,13 +10,26 @@ import { RouterLink } from '@angular/router';
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss'
 })
-export class FooterComponent {
+export class FooterComponent implements OnInit {
+  private readonly shopInfoApiService = inject(ShopInfoApiService);
 
-  // Shop contact details. The Instagram and Telegram handles are
-  // placeholders — swap them for the real accounts. WhatsApp is derived
-  // from the shop phone number below (0919… → 98919…, no leading zero).
-  readonly phone = '09193757648';
-  readonly instagramUrl = 'https://instagram.com/morisaki.bookshop';
-  readonly telegramUrl = 'https://t.me/morisaki_bookshop';
-  readonly whatsappUrl = 'https://wa.me/989193757648';
+  // The shop's details come from the API (the admin panel edits them). Until they arrive, or when the API cannot be
+  // reached, the footer shows the sample details below.
+  info = signal<ShopInfoResponseModel>({
+    shopName: '',
+    phone: '09193757648',
+    email: '',
+    address: 'تهران، شریعتی',
+    instagramUrl: 'https://instagram.com/morisaki.bookshop',
+    telegramUrl: 'https://t.me/morisaki_bookshop',
+    whatsappUrl: 'https://wa.me/989193757648'
+  });
+
+  async ngOnInit(): Promise<void> {
+    const result = await this.shopInfoApiService.getShopInfo();
+
+    if (result.isSuccess && result.data) {
+      this.info.set(result.data);
+    }
+  }
 }
