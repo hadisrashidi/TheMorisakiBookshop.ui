@@ -1,4 +1,7 @@
 # Archived sessions
+### 2026-10-27 — Write a review (web session, branch `claude/focused-euler-oqo92a`, API + UI)
+- Did: review form (stars + text) in the reviews tab of `BooksComponent` (logged in: form, prefilled with the person's old review via `Reviews/GetMyReview`; logged out: "ورود" button with `returnUrl`); `ReviewsApiService.getMyReview/saveReview`; model `save-review.request.model.ts`.
+- Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0024 never run).
 ### 2026-10-26 (3) — Birthdate on the account (web session, same branch, API + UI)
 - Did: `UserModel.birthdate`, `UpdateProfileRequestModel.birthdate`, `ProfileComponent.saveProfileToAccount` (name + birthdate), `AuthService.startSession` prefers the server birthdate, `LoginComponent.finishLogin` uploads a local birthdate once.
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API scripts 0022-0023 never run).
