@@ -10,6 +10,9 @@ export class OrderResponseModel {
   shippingCost = 0;
   /** Shipping method at order time; empty for older orders. */
   shippingMethodName = '';
+  /** Discount code used on this order (empty = none) and the toman it took off the books. */
+  discountCode = '';
+  discountAmount = 0;
   total = 0;
   recipientName = '';
   recipientMobile = '';

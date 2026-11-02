@@ -1,4 +1,7 @@
 # Archived sessions
+### 2026-10-27 (2) — Header / footer polish (web session, branch `claude/focused-euler-oqo92a`)
+- Did: header category links use `?genres=<genre>` (exact filter) instead of free text `q`; `SearchComponent` reads `genres` from the URL (only when present, so other filters stay); account menu got "سفارش‌های من" and "آدرس‌های من"; footer "سفارش‌ها" -> `/orders`, "پرداخت" renamed "سبد خرید".
+- Verified: `npm run build` ok. NOT verified: browser test.
 ### 2026-10-27 — Write a review (web session, branch `claude/focused-euler-oqo92a`, API + UI)
 - Did: review form (stars + text) in the reviews tab of `BooksComponent` (logged in: form, prefilled with the person's old review via `Reviews/GetMyReview`; logged out: "ورود" button with `returnUrl`); `ReviewsApiService.getMyReview/saveReview`; model `save-review.request.model.ts`.
 - Verified: `npm run build` ok. NOT verified: browser test, real API (API script 0024 never run).

@@ -10,5 +10,7 @@ export class PlaceOrderRequestModel {
   /** City of the address: decides which shipping methods are allowed. */
   city = '';
   shippingMethodId = 0;
+  /** Optional discount code; the server checks it again. */
+  discountCode = '';
   lines: PlaceOrderLineRequestModel[] = [];
 }

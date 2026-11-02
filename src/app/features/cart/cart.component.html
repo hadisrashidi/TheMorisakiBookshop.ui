@@ -65,6 +65,37 @@
             <span class="discount">{{ cartService.discount() }} تومان</span>
           </div>
           }
+          <div class="discount-box">
+            @if (appliedDiscount(); as discount) {
+              <div class="discount-applied">
+                <span>کد <strong dir="ltr">{{ discount.code }}</strong> اعمال شد</span>
+                <button type="button" class="btn btn-ghost small-btn" (click)="removeDiscount()">حذف</button>
+              </div>
+            } @else {
+              <form class="discount-form" (ngSubmit)="applyDiscount()">
+                <input
+                  class="input"
+                  type="text"
+                  name="discountCode"
+                  dir="ltr"
+                  autocomplete="off"
+                  placeholder="کد تخفیف"
+                  aria-label="کد تخفیف"
+                  [ngModel]="discountInput()"
+                  (ngModelChange)="discountInput.set($event)"
+                />
+                <button type="submit" class="btn btn-secondary" [disabled]="isCheckingDiscount()">اعمال</button>
+              </form>
+            }
+          </div>
+
+          @if (discountAmount() > 0) {
+          <div class="summary-row">
+            <span>تخفیف کد</span>
+            <span class="discount">−{{ discountAmount() | number }} تومان</span>
+          </div>
+          }
+
           @if (shippingMethods().length > 0) {
           <h6 class="shipping-title">روش ارسال</h6>
           @for (method of shippingMethods(); track method.id) {

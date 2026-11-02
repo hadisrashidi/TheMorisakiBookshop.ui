@@ -18,6 +18,7 @@
 14. Cart: shipping now comes from the API (2026-10-31, placeholder prices). Stock is checked when adding to the cart and at order time (API); a cart saved earlier is re-checked only at checkout.
 
 ## From the API repo
+- (DONE in API + UI 2026-11-03, needs API script 0032) Discount codes: `POST Discounts/CheckCode`, `discountCode` on `PlaceOrder`, `discountCode` / `discountAmount` on orders.
 - (DONE in API + UI 2026-11-02, needs API script 0029) Order tracking: `history` on every order of `GetMyOrders`, `POST Orders/CancelMyOrder?id`.
 - (DONE in API + UI 2026-10-31, needs API script 0027) Shipping: `GET Shipping/GetShippingMethods?subtotal&city`; `Orders/PlaceOrder` needs `city` + `shippingMethodId`; orders carry `shippingMethodName`.
 - (DONE in API + UI 2026-10-27, needs API script 0024) Reviews: `GET Reviews/GetMyReview?bookId`, `POST Reviews/SaveReview` (token needed). Used by the book page review form.

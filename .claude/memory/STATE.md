@@ -17,6 +17,9 @@ Onboarding: done (2026-10-07)
 - Storefront only. Next: she tests login against the real API, then BACKLOG task 3 rest / 6. (Admin lives in the admin repos.)
 
 ## Session log
+### 2026-11-03 — Discount code in the cart (web session, branch `claude/focused-euler-oqo92a`)
+- Did: cart summary: code box ("اعمال"), applied state with "حذف", discount row, total = books − discount + shipping (`payableTotal`); the code is re-checked silently when the cart price changes and after a refused order; `PlaceOrderRequestModel.discountCode`; orders page shows the discount; `DiscountsApiService`, `DiscountPreviewResponseModel`. A guest who tries a code is sent to login.
+- Verified: `npm run build` ok; Playwright with a mocked API (wrong code refused with the API message, WELCOME20 applied, total right, check calls carry the cart price). NOT verified: real API (needs API script 0032).
 ### 2026-11-02 — Order tracking on the orders page (web session, branch `claude/focused-euler-oqo92a`)
 - Did: `/orders`: timeline per order (`buildOrderSteps` in `shared/utils/order-status.ts`: ثبت / پرداخت / آماده‌سازی / ارسال / تحویل, or the steps passed + "لغو شد"), tracking code with copy button and a link to the post tracking site (`carrierTrackingUrl`, only when the shipping method name contains "پست"), "لغو سفارش" with the confirm dialog while `PendingPayment` (`OrdersService.cancelOrder`, `OrdersApiService.cancelMyOrder`); models `OrderHistoryResponseModel`, `OrderStepModel`.
 - Verified: `npm run build` ok; Playwright with a mocked API (3 timelines, link, cancel flow). NOT verified: real API (needs API script 0029); the post URL.
@@ -30,6 +33,3 @@ Onboarding: done (2026-10-07)
 - Her answers: footer contact data is sample data for now; legal pages: "write something, we edit later"; "do them in the order you think is best".
 - Did: `features/not-found` (route `**`, was a redirect to `/`); `core/services/page-title-strategy.ts` (title from route `title`, description from route `data.description`, reset after each navigation) + `shared/services/page-meta.service.ts` (book and author pages set title + description from their data); route titles for all pages; `features/legal/` (`legal-pages.ts` texts, one `LegalPageComponent` for `/terms`, `/privacy`, `/returns`, `/shipping`); footer links to them.
 - Verified: `npm run build` ok; Playwright against `ng serve` (no API): tab title + description right on `/`, `/terms`, `/shipping`, `/cart`, unknown URL shows the 404 card, no page errors. NOT verified: book/author titles (need the API).
-### 2026-10-27 (2) — Header / footer polish (web session, branch `claude/focused-euler-oqo92a`)
-- Did: header category links use `?genres=<genre>` (exact filter) instead of free text `q`; `SearchComponent` reads `genres` from the URL (only when present, so other filters stay); account menu got "سفارش‌های من" and "آدرس‌های من"; footer "سفارش‌ها" -> `/orders`, "پرداخت" renamed "سبد خرید".
-- Verified: `npm run build` ok. NOT verified: browser test.

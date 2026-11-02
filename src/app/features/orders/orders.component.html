@@ -62,6 +62,12 @@
                 <span>قیمت کالاها</span>
                 <span>{{ order.subtotal }} تومان</span>
               </div>
+              @if (order.discountAmount > 0) {
+                <div class="summary-row">
+                  <span>تخفیف ({{ order.discountCode }})</span>
+                  <span>−{{ order.discountAmount }} تومان</span>
+                </div>
+              }
               <div class="summary-row">
                 <span>هزینه ارسال</span>
                 <span>{{ order.shippingMethodName }} {{ order.shippingCost > 0 ? (order.shippingCost + ' تومان') : 'رایگان' }}</span>
