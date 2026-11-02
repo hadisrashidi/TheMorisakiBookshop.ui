@@ -18,6 +18,7 @@
 14. Cart: shipping now comes from the API (2026-10-31, placeholder prices). Stock is checked when adding to the cart and at order time (API); a cart saved earlier is re-checked only at checkout.
 
 ## From the API repo
+- (DONE in API + UI 2026-11-04, needs API script 0035) `GET Books/GetBestSellers` for the home page block.
 - (DONE in API + UI 2026-11-03, needs API script 0033) `GET Settings/GetShopInfo` for the footer.
 - (DONE in API + UI 2026-11-03, needs API script 0032) Discount codes: `POST Discounts/CheckCode`, `discountCode` on `PlaceOrder`, `discountCode` / `discountAmount` on orders.
 - (DONE in API + UI 2026-11-02, needs API script 0029) Order tracking: `history` on every order of `GetMyOrders`, `POST Orders/CancelMyOrder?id`.

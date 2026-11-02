@@ -41,6 +41,58 @@
     </a>
   </div>
 
+  <!-- Hidden while loading and when nothing was sold yet -->
+  <ng-container *ngIf="loadingBestSellers() || bestSellers.length > 0">
+    <div class="section-head">
+      <h2>پرفروش‌ترین‌ها</h2>
+    </div>
+    <div class="scroll-row" *ngIf="loadingBestSellers()">
+      <div class="card elev-sm new-book" *ngFor="let s of skeletonRow" aria-hidden="true">
+        <div class="skeleton skeleton-cover"></div>
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line short"></div>
+      </div>
+    </div>
+
+    <div class="scroll-row" *ngIf="!loadingBestSellers()">
+      <a
+        class="card elev-sm new-book"
+        *ngFor="let book of bestSellers"
+        [routerLink]="['/books', book.id]"
+      >
+        <button
+          type="button"
+          class="btn btn-icon like-btn"
+          [class.liked]="isLiked(book)"
+          (click)="toggleLiked($event, book)"
+          [attr.aria-label]="isLiked(book) ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" [attr.fill]="isLiked(book) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </button>
+
+        <img class="washed cover" [src]="book.image | apiImage" [alt]="book.title" />
+        <p class="card-title clamp-2">{{ book.title }}</p>
+        <span class="price">{{ book.price }} تومان</span>
+
+        <div class="new-book-foot">
+          <span class="tag" [class.tag-accent-2]="book.inStock" [class.tag-neutral]="!book.inStock">
+            {{ book.inStock ? 'موجود' : 'ناموجود' }}
+          </span>
+          <button
+            type="button"
+            class="btn btn-icon btn-primary"
+            [disabled]="!book.inStock"
+            [attr.aria-label]="'افزودن ' + book.title + ' به سبد خرید'"
+            (click)="addToCart($event, book)"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"></path></svg>
+          </button>
+        </div>
+      </a>
+    </div>
+
+  </ng-container>
+
   <div class="section-head">
     <h2>جدیدترین کتاب‌ها</h2>
     <a routerLink="/search" [queryParams]="{ sort: 'newest' }" class="view-all">مشاهده همه</a>
